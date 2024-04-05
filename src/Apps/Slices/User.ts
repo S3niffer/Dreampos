@@ -8,6 +8,7 @@ export const StatusPossibility = {
     NotFound: "هیچ کاربری با این مشخصات یافت نشد",
     Email_Already_Used: "درحال حاضر یک حساب کاربری با ایمیل مورد نظر شما درسایت موجود میباشد (🙄)",
     CheckingData: "درحال بررسی اطلاعات",
+    InValidPassword: "گذرواژه وارد شده صحیح نمی باشد",
     Idle: "بیکار",
 } as const
 
@@ -66,22 +67,29 @@ const userSlice = createSlice({
                 message: StatusPossibility["CheckingData"],
             }
             const User = Users.filter(user => {
-                if (user[1].Email.toLocaleLowerCase() === Email.toLocaleLowerCase() && user[1].Password === Password) return true
+                if (user[1].Email.toLocaleLowerCase() === Email.toLocaleLowerCase()) return true
             }) as T_Users
 
             if (User.length !== 0) {
-                const objUser: I_UserInLocal = {
-                    Email: User[0][1].Email,
-                    Id: User[0][0],
-                    ImgSrc: User[0][1].ImgSrc,
-                    Name: User[0][1].Name,
-                    Password: User[0][1].Password,
-                }
+                if (User[0][1].Password === Password) {
+                    const objUser: I_UserInLocal = {
+                        Email: User[0][1].Email,
+                        Id: User[0][0],
+                        ImgSrc: User[0][1].ImgSrc,
+                        Name: User[0][1].Name,
+                        Password: User[0][1].Password,
+                    }
 
-                state.user = objUser
-                state.status = {
-                    value: "Logged_In",
-                    message: StatusPossibility["Logged_In"],
+                    state.user = objUser
+                    state.status = {
+                        value: "Logged_In",
+                        message: StatusPossibility["Logged_In"],
+                    }
+                } else {
+                    state.status = {
+                        value: "InValidPassword",
+                        message: StatusPossibility["InValidPassword"],
+                    }
                 }
             } else {
                 state.status = {

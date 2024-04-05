@@ -1,6 +1,6 @@
 import loginPic from "../Assets/Pics/login.jpg"
 import { HiOutlineMail } from "react-icons/hi"
-import { FiEye, FiEyeOff, FiLock } from "react-icons/fi"
+import { FiEye, FiEyeOff, FiLock, FiX } from "react-icons/fi"
 import { useEffect, useState } from "react"
 import ThemeChanger from "../Components/ThemeChanger"
 import Logo from "../Components/Logo"
@@ -157,6 +157,12 @@ const Login = () => {
                                     if (UserState.status.value === "NotFound") {
                                         Dispatch(ChangeStatus("Idle"))
                                         setLoginParameters({ Email: "", Password: "" })
+                                        setFormIsValid(false)
+                                    }
+                                    if (UserState.status.value === "InValidPassword") {
+                                        Dispatch(ChangeStatus("Idle"))
+                                        setLoginParameters(prv => ({ ...prv, Password: "" }))
+                                        setFormIsValid(false)
                                     }
                                 }}
                             >
@@ -182,6 +188,8 @@ const Login = () => {
                                         <TiTickOutline className='inline w-14 h-14 text-added-border fill-green-600' />
                                     ) : UserState.status.value === "NotFound" ? (
                                         <MdErrorOutline className='inline w-14 h-14 text-added-border fill-yellow-500' />
+                                    ) : UserState.status.value === "InValidPassword" ? (
+                                        <FiX className='inline w-14 h-14 text-red-600' />
                                     ) : (
                                         <svg
                                             aria-hidden='true'

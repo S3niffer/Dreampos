@@ -56,12 +56,7 @@ const Register = () => {
 
                 if (isEmailUsed) {
                     Dispatch(ChangeStatus("Email_Already_Used"))
-                    const twoSecondTimeOut = setTimeout(() => {
-                        Dispatch(ChangeStatus("Idle"))
-                    }, 2000)
-                    return () => {
-                        clearTimeout(twoSecondTimeOut)
-                    }
+                    return
                 }
             }
 
@@ -190,6 +185,11 @@ const Register = () => {
                                 data-modal-hide='popup-modal'
                                 onClick={() => {
                                     setIsShowModal(false)
+
+                                    if (UserState.status.value === "Email_Already_Used") {
+                                        Dispatch(ChangeStatus("Idle"))
+                                        setRegisterParameters(prv => ({ ...prv, Email: "" }))
+                                    }
                                 }}
                             >
                                 <svg
@@ -212,7 +212,7 @@ const Register = () => {
                                 <div role='status'>
                                     {UserState.status.value === "Logged_In" ? (
                                         <TiTickOutline className='inline w-14 h-14 text-added-border fill-green-600' />
-                                    ) : UserState.status.value === "NotFound" ? (
+                                    ) : UserState.status.value === "Email_Already_Used" ? (
                                         <MdErrorOutline className='inline w-14 h-14 text-added-border fill-yellow-500' />
                                     ) : (
                                         <svg
