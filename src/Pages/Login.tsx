@@ -7,10 +7,11 @@ import Logo from "../Components/Logo"
 import InputTag from "../Components/InputTag"
 import { Link, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
-import { GetUsers, Get_UserINFo, LogIn } from "../Apps/Slices/User"
+import { ChangeStatus, GetUsers, Get_UserINFo, LogIn } from "../Apps/Slices/User"
 import { UnknownAction } from "@reduxjs/toolkit"
 import { TiTickOutline } from "react-icons/ti"
 import Portal from "../Components/Portal"
+import { MdErrorOutline } from "react-icons/md"
 
 const Login = () => {
     const [passwordVisibility, setPasswordVisibility] = useState(false)
@@ -53,6 +54,7 @@ const Login = () => {
         if (UserState.status.value === "Logged_In") {
             const twoSecondTimeOut = setTimeout(() => {
                 Navigate("/")
+                Dispatch(ChangeStatus("Idle"))
             }, 2000)
             return () => {
                 clearTimeout(twoSecondTimeOut)
@@ -152,6 +154,10 @@ const Login = () => {
                                 data-modal-hide='popup-modal'
                                 onClick={() => {
                                     setIsShowModal(false)
+                                    if (UserState.status.value === "NotFound") {
+                                        Dispatch(ChangeStatus("Idle"))
+                                        setLoginParameters({ Email: "", Password: "" })
+                                    }
                                 }}
                             >
                                 <svg
@@ -172,7 +178,11 @@ const Login = () => {
                             </button>
                             <div className='p-4 md:p-5  text-center'>
                                 <div role='status'>
-                                    {UserState.status.value !== "Logged_In" ? (
+                                    {UserState.status.value === "Logged_In" ? (
+                                        <TiTickOutline className='inline w-14 h-14 text-added-border fill-green-600' />
+                                    ) : UserState.status.value === "NotFound" ? (
+                                        <MdErrorOutline className='inline w-14 h-14 text-added-border fill-yellow-500' />
+                                    ) : (
                                         <svg
                                             aria-hidden='true'
                                             className='inline w-12 aspect-square text-added-border animate-spin fill-added-main'
@@ -189,8 +199,6 @@ const Login = () => {
                                                 fill='currentFill'
                                             />
                                         </svg>
-                                    ) : (
-                                        <TiTickOutline className='inline w-14 h-14 text-added-border fill-green-600' />
                                     )}
                                     <span className='sr-only'>Loading...</span>
                                 </div>

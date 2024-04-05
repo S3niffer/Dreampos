@@ -1,6 +1,7 @@
 import loginPic from "../Assets/Pics/login.jpg"
 import { HiOutlineMail } from "react-icons/hi"
-import { FiEye, FiEyeOff, FiUser, FiLock, FiLogIn } from "react-icons/fi"
+import { FiEye, FiEyeOff, FiUser, FiLock } from "react-icons/fi"
+import { MdErrorOutline } from "react-icons/md"
 import { TiTickOutline } from "react-icons/ti"
 import { useEffect, useState } from "react"
 import ThemeChanger from "../Components/ThemeChanger"
@@ -20,7 +21,7 @@ const Register = () => {
         Password: "",
     })
     const [formIsValid, setFormIsValid] = useState<boolean>(false)
-    const [isShowModal, setIsShowModal] = useState<boolean>(!false)
+    const [isShowModal, setIsShowModal] = useState<boolean>(false)
 
     const Dispatch = useDispatch()
     const UserState = useSelector(Get_UserINFo)
@@ -55,7 +56,12 @@ const Register = () => {
 
                 if (isEmailUsed) {
                     Dispatch(ChangeStatus("Email_Already_Used"))
-                    return
+                    const twoSecondTimeOut = setTimeout(() => {
+                        Dispatch(ChangeStatus("Idle"))
+                    }, 2000)
+                    return () => {
+                        clearTimeout(twoSecondTimeOut)
+                    }
                 }
             }
 
@@ -64,6 +70,7 @@ const Register = () => {
         if (UserState.status.value === "Logged_In") {
             const twoSecondTimeOut = setTimeout(() => {
                 Navigate("/")
+                Dispatch(ChangeStatus("Idle"))
             }, 2000)
             return () => {
                 clearTimeout(twoSecondTimeOut)
@@ -203,7 +210,11 @@ const Register = () => {
                             </button>
                             <div className='p-4 md:p-5  text-center'>
                                 <div role='status'>
-                                    {UserState.status.value !== "Logged_In" ? (
+                                    {UserState.status.value === "Logged_In" ? (
+                                        <TiTickOutline className='inline w-14 h-14 text-added-border fill-green-600' />
+                                    ) : UserState.status.value === "NotFound" ? (
+                                        <MdErrorOutline className='inline w-14 h-14 text-added-border fill-yellow-500' />
+                                    ) : (
                                         <svg
                                             aria-hidden='true'
                                             className='inline w-12 aspect-square text-added-border animate-spin fill-added-main'
@@ -220,8 +231,6 @@ const Register = () => {
                                                 fill='currentFill'
                                             />
                                         </svg>
-                                    ) : (
-                                        <TiTickOutline className='inline w-14 h-14 text-added-border fill-green-600' />
                                     )}
                                     <span className='sr-only'>Loading...</span>
                                 </div>

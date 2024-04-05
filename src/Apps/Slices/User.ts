@@ -6,15 +6,15 @@ export const StatusPossibility = {
     Getting_Users: "درحال ارسال اطلاعات به سرور",
     Users_Saved: "اطلاعات با موفقیت به سرور ارسال شد",
     NotFound: "هیچ کاربری با این مشخصات یافت نشد",
-    Email_Already_Used: 'درحال حاضر یک حساب کاربری با ایمیل مورد نظر شما درسایت موجود میباشد (🙄)',
+    Email_Already_Used: "درحال حاضر یک حساب کاربری با ایمیل مورد نظر شما درسایت موجود میباشد (🙄)",
     CheckingData: "درحال بررسی اطلاعات",
     Idle: "بیکار",
 } as const
 
 const initialState: T_UserIntialState = {
     status: {
-        value: "Email_Already_Used",
-        message: StatusPossibility["Email_Already_Used"],
+        value: "Idle",
+        message: StatusPossibility["Idle"],
     },
     user: {},
     users: [],
@@ -82,6 +82,11 @@ const userSlice = createSlice({
                 state.status = {
                     value: "Logged_In",
                     message: StatusPossibility["Logged_In"],
+                }
+            } else {
+                state.status = {
+                    value: "NotFound",
+                    message: StatusPossibility["NotFound"],
                 }
             }
         },
