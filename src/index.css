@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.test-light {
+    color: hsl(29deg, 100%, 63%, 1); /* main */
+    color: hsl(228deg, 100%, 99%, 1); /* bg */
+    color: hsl(0deg, 0%, 100%, 1); /* bg-secondary */
+    color: hsl(211deg, 24%, 17%, 1); /* text */
+    color: hsl(208deg, 13%, 45%, 1); /* text-secondary */
+    color: hsl(210deg, 13%, 62%, 0.32); /* border */
+}
+.test-dark {
+    color: hsl(29deg, 100%, 63%, 1); /* main */
+    color: hsl(240deg, 43%, 14%, 1); /* bg */
+    color: hsl(240deg, 39%, 19%, 1); /* bg-secondary */
+    color: hsl(230deg, 45%, 73%, 1); /* text */
+    color: hsl(207deg, 17%, 62%, 1); /* text-secondary */
+    color: hsl(210deg, 13%, 62%, 0.32); /* border */
+}
+
+@layer base {
+    *,
+    *::after,
+    *::before {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+        --main: 29deg, 100%, 63%;
+        --bg: 228deg, 100%, 99%;
+        --bg-secondary: 0deg, 0%, 100%;
+        --text: 211deg, 24%, 17%;
+        --text-secondary: 208deg, 13%, 45%;
+        --border: 210deg, 13%, 62%, 0.32;
+        --sideBarWidth: 256px;
+        --topBarHeight: 30px;
+        overflow-x: hidden;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --bg: 240deg, 43%, 14%;
+            --bg-secondary: 240deg, 39%, 19%;
+            --text: 230deg, 45%, 73%;
+            --text-secondary: 207deg, 17%, 62%;
+        }
+    }
+    :root[dark] {
+        --bg: 240deg, 43%, 14%;
+        --bg-secondary: 240deg, 39%, 19%;
+        --text: 230deg, 45%, 73%;
+        --text-secondary: 207deg, 17%, 62%;
+    }
+
+    .dir-rtl {
+        direction: rtl;
+    }
+    .dir-ltr {
+        direction: ltr;
+    }
+
+    #modal {
+        position: sticky;
+        top: 0;
+        height: 0;
+        width: 0;
+        z-index: 999;
+    }
+
+    @font-face {
+        font-family: "irSans";
+        src: url("./Assets/Fonts/IRANSans.eot");
+        src: url("./Assets/Fonts/IRANSans.otf");
+        src: url("./Assets/Fonts/IRANSans.ttf");
+        src: url("./Assets/Fonts/IRANSans.woff");
+    }
+
+    svg {
+        color: hsl(var(--text-secondary));
+    }
+
+    .logininputContainer:has(input:focus) {
+        border: 1px solid hsl(var(--main));
+    }
+
+    @media screen and (min-width: 450px) {
+        :root {
+            --topBarHeight: 40px;
+        }
+    }
+    @media screen and (min-width: 640px) {
+        :root {
+            --topBarHeight: 50px;
+        }
+    }
+    @media screen and (min-width: 976px) {
+        :root {
+            --topBarHeight: 55px;
+        }
+    }
+    @media screen and (min-width: 1200px) {
+        :root {
+            --topBarHeight: 60px;
+        }
+    }
+}
