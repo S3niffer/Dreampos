@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit"
 
 export const StatusPossibility = {
     Logged_Out: "خدافظ",
-    Logged_In: "درحال انتقال به صفحه اصلی",
+    Logged_In: "خوش آمدی",
     Getting_Users: "درحال ارسال اطلاعات به سرور",
     Users_Saved: "اطلاعات با موفقیت به سرور ارسال شد",
     NotFound: "هیچ کاربری با این مشخصات یافت نشد",
@@ -48,6 +48,21 @@ export const RegisterReducer = createAsyncThunk("User/Register", async (data: I_
         .then(res => res)
 })
 
+export const LogintUserByID = createAsyncThunk("User/LogintUserByID", async ({ id, setIsLoading }: I_LoginUserById) => {
+    return await fetch(`https://dashboard-a5184-default-rtdb.firebaseio.com/Users/${id}.json`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then(res => res.json())
+        .then(res => res)
+})
+
+const SaveUserID_InLocalStorage = (id: I_UserInLocal["Id"]) => {
+    localStorage.setItem("userID", JSON.stringify(id))
+}
+
 const userSlice = createSlice({
     name: "User",
     initialState,
@@ -58,6 +73,7 @@ const userSlice = createSlice({
                 message: StatusPossibility["Logged_Out"],
             }
             state.user = {}
+            localStorage.removeItem("userID")
         },
         LogIn(state, action: { payload: I_UserLoginParameter }) {
             const Users = current(state.users)
@@ -72,7 +88,7 @@ const userSlice = createSlice({
 
             if (User.length !== 0) {
                 if (User[0][1].Password === Password) {
-                    const objUser: I_UserInLocal = {
+                    const UserObj: I_UserInLocal = {
                         Email: User[0][1].Email,
                         Id: User[0][0],
                         ImgSrc: User[0][1].ImgSrc,
@@ -80,11 +96,12 @@ const userSlice = createSlice({
                         Password: User[0][1].Password,
                     }
 
-                    state.user = objUser
+                    state.user = UserObj
                     state.status = {
                         value: "Logged_In",
                         message: StatusPossibility["Logged_In"],
                     }
+                    SaveUserID_InLocalStorage(UserObj.Id)
                 } else {
                     state.status = {
                         value: "InValidPassword",
@@ -141,6 +158,27 @@ const userSlice = createSlice({
                     value: "Logged_In",
                     message: StatusPossibility["Logged_In"],
                 }
+                SaveUserID_InLocalStorage(UserObj.Id)
+            })
+            .addCase(LogintUserByID.fulfilled, (state, action) => {
+                if (action.payload) {
+                    const UserObj: I_UserInLocal = {
+                        Email: action.payload.Email,
+                        Id: action.meta.arg.id,
+                        ImgSrc: action.payload.ImgSrc,
+                        Name: action.payload.Name,
+                        Password: action.payload.Password,
+                    }
+                    state.user = UserObj
+                    state.status = {
+                        value: "Logged_In",
+                        message: StatusPossibility["Logged_In"],
+                    }
+                    action.meta.arg.setIsLoading(false)
+                } else {
+                    localStorage.removeItem("userID")
+                    action.meta.arg.setIsLoading(false)
+                }
             })
     },
 })
@@ -148,3 +186,11 @@ const userSlice = createSlice({
 export default userSlice.reducer
 export const Get_UserINFo = (state: T_StoreItems): T_UserIntialState => state.User
 export const { LogOut, LogIn, ChangeStatus } = userSlice.actions
+
+// {type: 'User/LogintUserByID/fulfilled', payload: {…}, meta: {…}}
+// meta:
+// {arg: '-Nuh3MD2XOV8pE90lUtb', requestId: 'qLzeUqYeIG_X7erVVK7iX', requestStatus: 'fulfilled'}
+// payload:
+// {Email: 'test7@Gmail.com', ImgSrc: '', Name: 'test7', Password: '12345678'}
+// type:
+// "User/LogintUserByID/fulfilled"

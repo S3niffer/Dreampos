@@ -34,6 +34,11 @@ declare global {
 
     type T_UserInDB = Omit<I_UserInLocal, "Id">
 
+    interface I_LoginUserById {
+        id: string
+        setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+    }
+
     // inputTag props
     type T_InputTagProps = React.ComponentProps<"input"> & {
         label: string
