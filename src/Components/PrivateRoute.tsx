@@ -4,9 +4,9 @@ import { Navigate } from "react-router-dom"
 import { Get_UserINFo } from "../Apps/Slices/User"
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
-    const { user } = useSelector(Get_UserINFo)
+    const isLogggedIn = Object.keys(useSelector(Get_UserINFo).user).includes("Email")
 
-    if (Object.keys(user).includes("Email")) {
+    if (isLogggedIn) {
         return children
     } else return <Navigate to={"/signin"} />
 }
