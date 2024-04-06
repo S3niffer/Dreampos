@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 import ThemeChanger from "../Components/ThemeChanger"
 import Logo from "../Components/Logo"
 import InputTag from "../Components/InputTag"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { ChangeStatus, GetUsers, Get_UserINFo, RegisterReducer } from "../Apps/Slices/User"
 import { useDispatch, useSelector } from "react-redux"
 import { UnknownAction } from "@reduxjs/toolkit"
@@ -25,7 +25,6 @@ const Register = () => {
 
     const Dispatch = useDispatch()
     const UserState = useSelector(Get_UserINFo)
-    const Navigate = useNavigate()
 
     const _FormChangerHandler = (e: React.FormEvent<HTMLFormElement>) => {
         if (
@@ -47,30 +46,21 @@ const Register = () => {
     }
 
     useEffect(() => {
-        if (UserState.status.value === "Users_Saved" || UserState.status.value === "NotFound") {
-            if (UserState.status.value !== "NotFound") {
-                const Users = UserState.users
-                const isEmailUsed = Users.some(user => {
-                    return user[1].Email.toLocaleLowerCase() === RegisterParameters.Email.toLocaleLowerCase()
-                })
+        if (UserState.status.value !== "Users_Saved" && UserState.status.value !== "NotFound") return
 
-                if (isEmailUsed) {
-                    Dispatch(ChangeStatus("Email_Already_Used"))
-                    return
-                }
-            }
+        if (UserState.status.value === "Users_Saved") {
+            const Users = UserState.users
+            const isEmailUsed = Users.some(user => {
+                return user[1].Email.toLocaleLowerCase() === RegisterParameters.Email.toLocaleLowerCase()
+            })
 
-            Dispatch(RegisterReducer(RegisterParameters) as unknown as UnknownAction)
-        }
-        if (UserState.status.value === "Logged_In") {
-            const twoSecondTimeOut = setTimeout(() => {
-                Navigate("/")
-                Dispatch(ChangeStatus("Idle"))
-            }, 2000)
-            return () => {
-                clearTimeout(twoSecondTimeOut)
+            if (isEmailUsed) {
+                Dispatch(ChangeStatus("Email_Already_Used"))
+                return
             }
         }
+
+        Dispatch(RegisterReducer(RegisterParameters) as unknown as UnknownAction)
     }, [UserState.status])
 
     return (

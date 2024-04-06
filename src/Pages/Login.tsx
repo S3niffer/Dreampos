@@ -22,7 +22,6 @@ const Login = () => {
     const [isShowModal, setIsShowModal] = useState<boolean>(false)
 
     const Dispatch = useDispatch()
-    const Navigate = useNavigate()
     const UserState = useSelector(Get_UserINFo)
 
     // checking the form inputs and change the status of formIsValid
@@ -50,15 +49,6 @@ const Login = () => {
     useEffect(() => {
         if (UserState.status.value === "Users_Saved") {
             Dispatch(LogIn({ Email: loginParameters.Email, Password: loginParameters.Password }))
-        }
-        if (UserState.status.value === "Logged_In") {
-            const twoSecondTimeOut = setTimeout(() => {
-                Navigate("/")
-                Dispatch(ChangeStatus("Idle"))
-            }, 2000)
-            return () => {
-                clearTimeout(twoSecondTimeOut)
-            }
         }
     }, [UserState.status])
 
