@@ -2,23 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.test-light {
-    color: hsl(29deg, 100%, 63%, 1); /* main */
-    color: hsl(228deg, 100%, 99%, 1); /* bg */
-    color: hsl(0deg, 0%, 100%, 1); /* bg-secondary */
-    color: hsl(211deg, 24%, 17%, 1); /* text */
-    color: hsl(208deg, 13%, 45%, 1); /* text-secondary */
-    color: hsl(210deg, 13%, 62%, 0.32); /* border */
-}
-.test-dark {
-    color: hsl(29deg, 100%, 63%, 1); /* main */
-    color: hsl(240deg, 43%, 14%, 1); /* bg */
-    color: hsl(240deg, 39%, 19%, 1); /* bg-secondary */
-    color: hsl(230deg, 45%, 73%, 1); /* text */
-    color: hsl(207deg, 17%, 62%, 1); /* text-secondary */
-    color: hsl(210deg, 13%, 62%, 0.32); /* border */
-}
-
 @layer base {
     *,
     *::after,
@@ -191,6 +174,41 @@
         src: url("./Assets/Fonts/IRANSans.otf");
         src: url("./Assets/Fonts/IRANSans.ttf");
         src: url("./Assets/Fonts/IRANSans.woff");
+    }
+
+    ::-webkit-scrollbar {
+        height: 5px;
+        width: 5px;
+        border-radius: 50px !important;
+    }
+
+    ::-webkit-scrollbar-track {
+        background-color: hsl(var(--bg));
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: hsl(var(--main));
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: hsl(0, 0%, 33%);
+    }
+
+    .sideBarContainer::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+
+    .sideBarContainer::-webkit-scrollbar-thumb {
+        background-color: transparent;
+        border-radius: 1rem;
+        -webkit-border-radius: 1rem;
+        -moz-border-radius: 1rem;
+        -ms-border-radius: 1rem;
+        -o-border-radius: 1rem;
+    }
+
+    .sideBarContainer:hover::-webkit-scrollbar-thumb {
+        background-color: hsl(var(--border));
     }
 
     svg {
