@@ -168,6 +168,18 @@
         z-index: 999;
     }
 
+    .SideBarLinks.active {
+        background-color: hsl(var(--text), 1);
+        color: hsl(var(--bg), 1);
+        padding-right: 0.75rem;
+        border-bottom-left-radius: 1.5rem;
+        border-top-left-radius: 1.5rem;
+    }
+
+    .SideBarLinks.inActive div:hover {
+        padding-right: 1.25rem;
+    }
+
     @font-face {
         font-family: "irSans";
         src: url("./Assets/Fonts/IRANSans.eot");
