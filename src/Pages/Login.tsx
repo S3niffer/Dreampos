@@ -137,7 +137,7 @@ const Login = () => {
             {isShowModal ? (
                 <Portal>
                     <div className='relative p-4 w-full max-w-md max-h-full'>
-                        <div className='relative bg-added-bg-primary rounded-lg shadow'>
+                        <div className='relative bg-added-bg-primary rounded-lg shadow-md shadow-added-border'>
                             <button
                                 type='button'
                                 className='absolute top-3 end-2.5 bg-transparent hover:bg-added-border rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center group'
