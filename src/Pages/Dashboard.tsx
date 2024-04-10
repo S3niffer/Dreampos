@@ -1,6 +1,7 @@
 import { useState } from "react"
 import TopBar from "../Components/TopBar"
 import SideBar from "../Components/SideBar"
+import { Outlet } from "react-router-dom"
 
 const Dashboard = () => {
     const [sideBar, setSideBar] = useState(false)
@@ -26,62 +27,7 @@ const Dashboard = () => {
                     `}
                 >
                     <div className='dir-rtl text-right'>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut omnis, fugiat necessitatibus numquam
-                        recusandae impedit ipsum sequi quo ab corporis? Eveniet rem incidunt laboriosam odit similique nulla
-                        accusantium optio, fuga deleniti. Voluptas ducimus quasi culpa quos dolores alias repellat quas? Incidunt
-                        quas magni tempore dolorem accusantium provident enim recusandae non consectetur ducimus explicabo sed
-                        saepe inventore impedit, nulla odio delectus. Fuga blanditiis vitae architecto maiores, ut quam aut eaque,
-                        quaerat laudantium iusto ratione illo. Quibusdam incidunt optio expedita unde reiciendis.
-                        <br />
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut omnis, fugiat necessitatibus numquam
-                        recusandae impedit ipsum sequi quo ab corporis? Eveniet rem incidunt laboriosam odit similique nulla
-                        accusantium optio, fuga deleniti. Voluptas ducimus quasi culpa quos dolores alias repellat quas? Incidunt
-                        quas magni tempore dolorem accusantium provident enim recusandae non consectetur ducimus explicabo sed
-                        saepe inventore impedit, nulla odio delectus. Fuga blanditiis vitae architecto maiores, ut quam aut eaque,
-                        quaerat laudantium iusto ratione illo. Quibusdam incidunt optio expedita unde reiciendis.
-                        <br />
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut omnis, fugiat necessitatibus numquam
-                        recusandae impedit ipsum sequi quo ab corporis? Eveniet rem incidunt laboriosam odit similique nulla
-                        accusantium optio, fuga deleniti. Voluptas ducimus quasi culpa quos dolores alias repellat quas? Incidunt
-                        quas magni tempore dolorem accusantium provident enim recusandae non consectetur ducimus explicabo sed
-                        saepe inventore impedit, nulla odio delectus. Fuga blanditiis vitae architecto maiores, ut quam aut eaque,
-                        quaerat laudantium iusto ratione illo. Quibusdam incidunt optio expedita unde reiciendis.
-                        <br />
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut omnis, fugiat necessitatibus numquam
-                        recusandae impedit ipsum sequi quo ab corporis? Eveniet rem incidunt laboriosam odit similique nulla
-                        accusantium optio, fuga deleniti. Voluptas ducimus quasi culpa quos dolores alias repellat quas? Incidunt
-                        quas magni tempore dolorem accusantium provident enim recusandae non consectetur ducimus explicabo sed
-                        saepe inventore impedit, nulla odio delectus. Fuga blanditiis vitae architecto maiores, ut quam aut eaque,
-                        quaerat laudantium iusto ratione illo. Quibusdam incidunt optio expedita unde reiciendis.
-                        <br />
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut omnis, fugiat necessitatibus numquam
-                        recusandae impedit ipsum sequi quo ab corporis? Eveniet rem incidunt laboriosam odit similique nulla
-                        accusantium optio, fuga deleniti. Voluptas ducimus quasi culpa quos dolores alias repellat quas? Incidunt
-                        quas magni tempore dolorem accusantium provident enim recusandae non consectetur ducimus explicabo sed
-                        saepe inventore impedit, nulla odio delectus. Fuga blanditiis vitae architecto maiores, ut quam aut eaque,
-                        quaerat laudantium iusto ratione illo. Quibusdam incidunt optio expedita unde reiciendis.
-                        <br />
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut omnis, fugiat necessitatibus numquam
-                        recusandae impedit ipsum sequi quo ab corporis? Eveniet rem incidunt laboriosam odit similique nulla
-                        accusantium optio, fuga deleniti. Voluptas ducimus quasi culpa quos dolores alias repellat quas? Incidunt
-                        quas magni tempore dolorem accusantium provident enim recusandae non consectetur ducimus explicabo sed
-                        saepe inventore impedit, nulla odio delectus. Fuga blanditiis vitae architecto maiores, ut quam aut eaque,
-                        quaerat laudantium iusto ratione illo. Quibusdam incidunt optio expedita unde reiciendis.
-                        <br />
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut omnis, fugiat necessitatibus numquam
-                        recusandae impedit ipsum sequi quo ab corporis? Eveniet rem incidunt laboriosam odit similique nulla
-                        accusantium optio, fuga deleniti. Voluptas ducimus quasi culpa quos dolores alias repellat quas? Incidunt
-                        quas magni tempore dolorem accusantium provident enim recusandae non consectetur ducimus explicabo sed
-                        saepe inventore impedit, nulla odio delectus. Fuga blanditiis vitae architecto maiores, ut quam aut eaque,
-                        quaerat laudantium iusto ratione illo. Quibusdam incidunt optio expedita unde reiciendis.
-                        <br />
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut omnis, fugiat necessitatibus numquam
-                        recusandae impedit ipsum sequi quo ab corporis? Eveniet rem incidunt laboriosam odit similique nulla
-                        accusantium optio, fuga deleniti. Voluptas ducimus quasi culpa quos dolores alias repellat quas? Incidunt
-                        quas magni tempore dolorem accusantium provident enim recusandae non consectetur ducimus explicabo sed
-                        saepe inventore impedit, nulla odio delectus. Fuga blanditiis vitae architecto maiores, ut quam aut eaque,
-                        quaerat laudantium iusto ratione illo. Quibusdam incidunt optio expedita unde reiciendis.
-                        <br />
+                        <Outlet />
                     </div>
                 </div>
             </div>
