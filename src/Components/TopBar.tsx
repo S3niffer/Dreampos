@@ -1,7 +1,6 @@
 import { RiCloseFill, RiMenuFoldLine } from "react-icons/ri"
 import Logo from "./Logo"
 import ThemeChanger from "./ThemeChanger"
-import NotificationIcon from "./NotificationIcon"
 import Avatar from "./Avatar"
 
 const TopBar = ({ sideBar, setSideBar }: { sideBar: boolean; setSideBar: (value: React.SetStateAction<boolean>) => void }) => {
@@ -30,10 +29,6 @@ const TopBar = ({ sideBar, setSideBar }: { sideBar: boolean; setSideBar: (value:
             </div>
             <div className='flex items-center justify-end gap-2 w-1/3'>
                 <ThemeChanger
-                    className='w-5 min-[450px]:w-6 sm:w-7 md:w-9 lg:w-10 xl:w-13'
-                    IconClass='sm:text-lg md:text-xl'
-                />
-                <NotificationIcon
                     className='w-5 min-[450px]:w-6 sm:w-7 md:w-9 lg:w-10 xl:w-13'
                     IconClass='sm:text-lg md:text-xl'
                 />
