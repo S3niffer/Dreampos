@@ -59,6 +59,9 @@ declare global {
         Email: T_UserInDB["Email"]
         Password: T_UserInDB["Password"]
     }
+
+    // SidebarLik Component
+    type T_SideBarLinkComponentProps = { Icon: IconType; title: string } & React.ComponentProps<typeof NavLink>
 }
 
 export {}

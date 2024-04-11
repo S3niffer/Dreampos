@@ -1,7 +1,6 @@
-import { IconType } from "react-icons"
 import { NavLink } from "react-router-dom"
 
-const SideBarLink = ({ Icon, title, to }: { Icon: IconType; title: string } & React.ComponentProps<typeof NavLink>) => {
+const SideBarLink = ({ Icon, title, to }: T_SideBarLinkComponentProps) => {
     return (
         <NavLink
             className={link => `SideBarLinks ${link.isActive ? 'active' : 'inActive'}`}
