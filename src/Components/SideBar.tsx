@@ -13,7 +13,7 @@ const SideBar = () => {
         <>
             <div className={`h-[calc(100vh-var(--topBarHeight))] text-added-text-secondary sideBarContainer`}>
                 <div className='dir-ltr overflow-y-auto h-[calc(100%-60px)]'>
-                    <div className='dir-rtl flex flex-col gap-1.5 pt-1.5 sm:pt-2'>
+                    <div className='dir-rtl flex flex-col gap-1.5 py-1.5 sm:pt-2'>
                         <SideBarLink
                             Icon={RiDashboard2Line}
                             title='صفحه اصلی'
