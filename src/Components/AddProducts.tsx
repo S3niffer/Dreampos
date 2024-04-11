@@ -92,7 +92,7 @@ const AddProducts = () => {
                     </div>
                     <div className='mt-4 flex justify-between items-center'>
                         <button className='bg-added-text-secondary hover:bg-added-text-primary/90 text-white rounded-md p-2'>
-                            پاک کردن
+                            پاک کردن ورودی ها
                         </button>
                         <button
                             className='transition-all duration-300 bg-added-main border border-added-main hover:bg-added-bg-secondary
