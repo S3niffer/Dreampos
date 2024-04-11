@@ -49,7 +49,7 @@ const SideBar = () => {
                 <div className='h-[60px] border-t-2 border-t-added-border  flex flex-col justify-center'>
                     <div
                         onClick={() => setIsPortalActive(true)}
-                        className='p-2 pr-2 flex gap-2 items-center hover:bg-added-text-primary/80 hover:text-added-bg-primary cursor-pointer  rounded-bl-3xl rounded-tl-3xl group transition-all duration-300 '
+                        className='p-2 pr-2 flex gap-2 items-center hover:bg-added-border cursor-pointer transition-all duration-300 text-red-600 hover:pr-3 w-[90%] mx-auto'
                     >
                         <LuLogOut className='text-2xl text-inherit' />
                         <span>{"خروج"}</span>
