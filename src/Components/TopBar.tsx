@@ -33,13 +33,6 @@ const TopBar = ({ sideBar, setSideBar }: { sideBar: boolean; setSideBar: (value:
                     IconClass='sm:text-lg md:text-xl'
                 />
                 <Avatar className='w-5 min-[450px]:w-6 sm:w-7 md:w-9 lg:w-10 xl:w-13 overflow-hidden' />
-                <span className='hidden sm:block text-[0.7rem] leading-[0.7rem] md:text-[0.75rem] md:leading-[0.8rem] lg:text-[0.85rem] lg:leading-4  xl:text-[0.9rem] xl:leading-[1.2rem]'>
-                    <span className='text-[0.6rem] md:text-[0.7rem] lg:text-[0.75rem] xl:text-[0.78rem] text-added-text-secondary'>
-                        خوش آمدید
-                    </span>
-                    <br />
-                    محمد عرفان حیدر
-                </span>
             </div>
         </div>
     )
