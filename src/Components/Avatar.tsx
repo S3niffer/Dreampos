@@ -1,30 +1,32 @@
 import IconeBox from "./IconeBox"
-import avatarPic from "../assets/Pics/avator1.jpg"
+import DefaultAvatar from "../assets/Pics/Default Avatar.png"
 import { LuLogOut, LuShirt } from "react-icons/lu"
 import { Link } from "react-router-dom"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { useState } from "react"
 import Portal from "./Portal"
-import { LogOut } from "../Apps/Slices/User"
+import { Get_UserINFo, LogOut } from "../Apps/Slices/User"
 
 const Avatar = ({ className }: { className?: string }) => {
     const [isPortalActive, setIsPortalActive] = useState(false)
     const Dispatch = useDispatch()
+    const UserInfo = useSelector(Get_UserINFo)
+    const User = UserInfo.user as I_UserInLocal
+
     return (
         <div className='flex items-center  gap-2 hover:bg-added-border cursor-pointer rounded-lg group relative'>
             <IconeBox className={className}>
                 <img
-                    src={avatarPic}
+                    src={User.ImgSrc ? User.ImgSrc : DefaultAvatar}
                     alt='Avatar'
                     className='h-full w-full'
                 />
             </IconeBox>
             <span className='hidden sm:block text-[0.7rem] leading-[0.7rem] md:text-[0.75rem] md:leading-[0.8rem] lg:text-[0.85rem] lg:leading-4  xl:text-[0.9rem] xl:leading-[1.2rem] pl-2'>
-                <span className='text-[0.6rem] md:text-[0.7rem] lg:text-[0.75rem] xl:text-[0.78rem] text-added-text-secondary'>
+                <span className='text-[0.6rem] md:text-[0.7rem] lg:text-[0.75rem] xl:text-[0.78rem] text-added-text-secondary block pb-1.5'>
                     خوش آمدید
                 </span>
-                <br />
-                محمد عرفان حیدر
+                {User.Name}
             </span>
             <div className='absolute opacity-0 -left-1 top-4 -z-50 transition-all duration-300 group-hover:opacity-100 group-hover:z-0 sm:top-6 md:top-8 md:left-12 md:w-full lg:top-10 xl:top-11 lg:left-9'>
                 <div className='bg-transparent w-20 pt-2 p-1 min-[450px]:w-24 sm:w-36 md:w-48 '>
