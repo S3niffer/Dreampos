@@ -1,9 +1,10 @@
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { Get_UserINFo } from "../Apps/Slices/User"
 import UploadSVG from "../assets/Pics/upload.svg"
 import { useEffect, useRef, useState } from "react"
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
 import { storage } from "../Firebase"
+import { AddImage } from "../Apps/Slices/UploadedImage"
 
 const AddProducts = () => {
     const the_Date = new Date()
@@ -11,7 +12,10 @@ const AddProducts = () => {
     const userID = (UserInfo.user as I_UserInLocal).Id
     const [ImageOBJ, setImageOBJ] = useState<I_ImageOBJ>({ file: undefined, status: "idle" })
     const ImageProgress_Ref = useRef(0)
+
     const [link, setLink] = useState("")
+
+    const Dispatch = useDispatch()
 
     useEffect(() => {
         if (!ImageOBJ.file) return
@@ -42,10 +46,16 @@ const AddProducts = () => {
                 error => {},
                 () => {
                     getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
+                        const ImageData: T_UploadedImage<"Products"> = {
+                            status: "unUsed",
+                            link: downloadURL,
+                            name: `(${date})${file.name}`,
+                            kind: "Products",
+                        }
+                        Dispatch(AddImage(ImageData))
                         setState({ file: undefined, status: "idle" })
                         setLink(downloadURL)
                         progressRef = 0
-                        console.log(downloadURL)
                     })
                 }
             )

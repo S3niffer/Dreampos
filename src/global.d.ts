@@ -76,6 +76,28 @@ declare global {
         setState: React.Dispatch<React.SetStateAction<I_ImageOBJ>>,
         progressRef: number
     ) => void
+
+    // ImageBaskets
+    type ImageBaskets = "Products" | "CustomerAvatar" | "AdminAvatar"
+
+    // ImageUploaded
+    type T_UploadedImage<T extends ImageBaskets> = {
+        name: string
+        link: string
+        kind: T
+    } & (
+        | {
+              status: "unUsed"
+          }
+        | {
+              status: "Used"
+              id: string
+          }
+    )
+
+    type T_UploadedImages = {
+        [k in ImageBaskets]: T_UploadedImage<k>[]
+    }
 }
 
 export {}
