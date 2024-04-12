@@ -62,6 +62,20 @@ declare global {
 
     // SidebarLik Component
     type T_SideBarLinkComponentProps = { Icon: IconType; title: string } & React.ComponentProps<typeof NavLink>
+
+    // ImageOBJ
+    interface I_ImageOBJ {
+        file: File | undefined
+        status: "running" | "paused" | "failed" | "idle"
+    }
+
+    // uploadImageHandler
+    type T_UploadImageHandler = (
+        date: string,
+        file: File,
+        setState: React.Dispatch<React.SetStateAction<I_ImageOBJ>>,
+        progressRef: number
+    ) => void
 }
 
 export {}

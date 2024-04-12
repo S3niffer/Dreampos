@@ -1,11 +1,67 @@
 import { useSelector } from "react-redux"
 import { Get_UserINFo } from "../Apps/Slices/User"
 import UploadSVG from "../assets/Pics/upload.svg"
+import { useEffect, useRef, useState } from "react"
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
+import { storage } from "../Firebase"
 
 const AddProducts = () => {
     const the_Date = new Date()
     const UserInfo = useSelector(Get_UserINFo)
     const userID = (UserInfo.user as I_UserInLocal).Id
+    const [ImageOBJ, setImageOBJ] = useState<I_ImageOBJ>({ file: undefined, status: "idle" })
+    const ImageProgress_Ref = useRef(0)
+    const [link, setLink] = useState("")
+
+    useEffect(() => {
+        if (!ImageOBJ.file) return
+
+        const _UploadImageHandler: T_UploadImageHandler = (date, file, setState, progressRef) => {
+            const storageRef = ref(storage, String(`Products/(${date})${file.name}`))
+            const uploadTask = uploadBytesResumable(storageRef, file)
+
+            uploadTask.on(
+                "state_changed",
+                snapshot => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                    progressRef = progress
+
+                    switch (snapshot.state) {
+                        case "paused":
+                            setState(prv => ({ ...prv, status: "paused" }))
+                            break
+                        case "running":
+                            setState(prv => ({ ...prv, status: "running" }))
+                            break
+                        case "canceled":
+                        case "error":
+                            setState({ file: undefined, status: "failed" })
+                            break
+                    }
+                },
+                error => {},
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
+                        setState({ file: undefined, status: "idle" })
+                        setLink(downloadURL)
+                        progressRef = 0
+                        console.log(downloadURL)
+                    })
+                }
+            )
+        }
+
+        const _DateFormatter = (date: Date): string => {
+            return `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, "0")}${date
+                .getDate()
+                .toString()
+                .padStart(2, "0")}_${
+                date.getHours() === 0 ? "12am" : date.getHours() > 12 ? date.getHours() - 12 + "pm" : date.getHours() + "am"
+            }${date.getMinutes().toString().padStart(2, "0")}min`
+        }
+
+        _UploadImageHandler(_DateFormatter(new Date()), ImageOBJ.file, setImageOBJ, ImageProgress_Ref.current)
+    }, [ImageOBJ.file])
 
     return (
         <div className='p-4 md:p-5 lg:p-7'>
@@ -30,6 +86,20 @@ const AddProducts = () => {
                                 className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main'
                                 id='getProductName'
                                 placeholder='عنوان محصول را وارد کنید'
+                            />
+                        </div>
+                        <div className='flex flex-col gap-2.5 p-1'>
+                            <label
+                                htmlFor='getProductPrice'
+                                className='cursor-pointer'
+                            >
+                                قیمت
+                            </label>
+                            <input
+                                type='text'
+                                className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main'
+                                id='getProductPrice'
+                                placeholder='قیمت محصول را وارد کنید'
                             />
                         </div>
                         <div className='flex flex-col gap-2.5 p-1'>
@@ -68,6 +138,12 @@ const AddProducts = () => {
                                     type='file'
                                     className='hidden'
                                     id='getProductImage'
+                                    onChange={e => {
+                                        const files = e.target.files
+                                        if (!files) return
+                                        setImageOBJ(prv => ({ ...prv, file: files[0] }))
+                                    }}
+                                    disabled={ImageOBJ.status !== "idle"}
                                 />
                                 <img
                                     src={UploadSVG}
@@ -81,12 +157,16 @@ const AddProducts = () => {
                         </div>
                         <div className='w-3/6 sm:w-2/6 p-1'>
                             <div className='pb-2.5'>پیش نمایش</div>
-                            <div className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 flex justify-center items-center flex-col gap-2 bg-added-bg-secondary focus:border-added-main h-[114px] min-[447px]:h-[99px] sm:h-[106px] md:h-[114px] lg:h-[146px]'>
-                                <img
-                                    src={UploadSVG}
-                                    className='w-full h-full'
-                                    alt='product'
-                                />
+                            <div className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 flex justify-center items-center flex-col gap-2 bg-added-bg-secondary focus:border-added-main h-[114px] min-[447px]:h-[99px] sm:h-[106px] md:h-[114px] lg:h-[146px] dir-rtl'>
+                                {ImageOBJ.status === "running" ? (
+                                    "درحال بارگذاری " + ImageProgress_Ref.current + "%"
+                                ) : (
+                                    <img
+                                        src={link ? link : UploadSVG}
+                                        className='w-full h-full object-contain'
+                                        alt='product'
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>
