@@ -4,7 +4,7 @@ const initialState: T_Products = [] as T_Products
 
 export const AddProduct = createAsyncThunk(
     "Products/AddProduct",
-    async (arg: { data: T_ProductsInDB; func: (id: string, link: string) => void }) => {
+    async (arg: { data: T_ProductsInDB; func: (id: string) => void }) => {
         return await fetch(`https://dashboard-a5184-default-rtdb.firebaseio.com/Products.json`, {
             method: "POST",
             body: JSON.stringify(arg.data),
@@ -28,10 +28,8 @@ const ProductsSlice = createSlice({
             })
             .addCase(AddProduct.fulfilled, (state, action) => {
                 const id = action.payload.name
-                const link = action.meta.arg.data.ImgSrce
 
-                action.meta.arg.func(id, link)
-                console.log(action)
+                action.meta.arg.func(id)
             })
     },
 })

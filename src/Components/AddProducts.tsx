@@ -42,10 +42,8 @@ const AddProducts = () => {
         }
 
         if (copyState.AdminId && copyState.Date && copyState.Name && copyState.ImgSrce) {
-            console.log("true")
             setFormIsvalid(true)
         } else {
-            console.log("false")
             setFormIsvalid(false)
         }
         return copyState
@@ -58,18 +56,18 @@ const AddProducts = () => {
     const _addProductHandler = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
-        const _addUploadedImageStore = (id: string, link: string) => {
+        const _addUploadedImageStore = (id: string) => {
             const ImageData: T_UploadedImage<"Products"> = {
                 id,
                 kind: "Products",
-                link,
+                link: CurrentImage.link,
                 name: CurrentImage.name,
                 status: "Used",
             }
 
             setTimeout(() => {
                 Dispatch(EditImage(ImageData))
-            }, 2000)
+            }, 500)
         }
 
         Dispatch(AddProduct({ data: ProductsData, func: _addUploadedImageStore }) as unknown as UnknownAction)
