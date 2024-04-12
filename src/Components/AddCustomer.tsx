@@ -4,7 +4,7 @@ import UploadSVG from "../assets/Pics/upload.svg"
 import { useState } from "react"
 import { FiEye, FiEyeOff } from "react-icons/fi"
 
-const AddUser = () => {
+const AddCustomer = () => {
     const the_Date = new Date()
     const UserInfo = useSelector(Get_UserINFo)
     const userID = (UserInfo.user as I_UserInLocal).Id
@@ -175,4 +175,4 @@ const AddUser = () => {
         </div>
     )
 }
-export default AddUser
+export default AddCustomer

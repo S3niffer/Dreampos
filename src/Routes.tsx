@@ -7,7 +7,7 @@ import Overview from "./Components/Overview"
 import Products from "./Components/Products"
 import AddProducts from "./Components/AddProducts"
 import Users from "./Components/Users"
-import AddUser from "./Components/AddUser"
+import AddCustomer from "./Components/AddCustomer"
 import Profile from "./Components/Profile"
 
 const Routes: RouteObject[] = [
@@ -25,7 +25,7 @@ const Routes: RouteObject[] = [
             { path: "products", element: <Products /> },
             { path: "add-product", element: <AddProducts /> },
             { path: "users-list", element: <Users /> },
-            { path: "add-user", element: <AddUser /> },
+            { path: "add-customer", element: <AddCustomer /> },
             { path: "profile", element: <Profile /> },
         ],
     },
