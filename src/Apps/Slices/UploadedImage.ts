@@ -29,9 +29,43 @@ const UImagesSlice = createSlice({
 
             localStorage.setItem("UploadedImages", JSON.stringify(current(state)))
         },
+        EditImage: (state: T_UploadedImages, action: { type: string; payload: T_UploadedImage<ImageBaskets> }) => {
+            const Value = action.payload
+            const copyState = current(state)
+            let result
+
+            switch (Value.kind) {
+                case "AdminAvatar":
+                    result = copyState.AdminAvatar.map(image => {
+                        if (image.name == Value.name) {
+                            return Value
+                        } else return image
+                    })
+                    state.AdminAvatar = result as T_UploadedImage<"AdminAvatar">[]
+                    break
+                case "CustomerAvatar":
+                    result = copyState.CustomerAvatar.map(image => {
+                        if (image.name == Value.name) {
+                            return Value
+                        } else return image
+                    })
+                    state.CustomerAvatar = result as T_UploadedImage<"CustomerAvatar">[]
+                    break
+                case "Products":
+                    result = copyState.Products.map(image => {
+                        if (image.name == Value.name) {
+                            return Value
+                        } else return image
+                    })
+
+                    state.Products = result as T_UploadedImage<"Products">[]
+                    break
+            }
+            localStorage.setItem("UploadedImages", JSON.stringify(current(state)))
+        },
     },
 })
 
 export default UImagesSlice.reducer
 export const Get_Images = (state: T_StoreItems): T_UploadedImages => state.Images
-export const { AddImage } = UImagesSlice.actions
+export const { AddImage, EditImage } = UImagesSlice.actions

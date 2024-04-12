@@ -1,21 +1,79 @@
 import { useDispatch, useSelector } from "react-redux"
 import { Get_UserINFo } from "../Apps/Slices/User"
 import UploadSVG from "../assets/Pics/upload.svg"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useReducer, useRef, useState } from "react"
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
 import { storage } from "../Firebase"
-import { AddImage } from "../Apps/Slices/UploadedImage"
+import { AddImage, EditImage } from "../Apps/Slices/UploadedImage"
+import { FiLock } from "react-icons/fi"
+import { AddProduct } from "../Apps/Slices/Products"
+import { UnknownAction } from "@reduxjs/toolkit"
 
 const AddProducts = () => {
-    const the_Date = new Date()
+    const Dispatch = useDispatch()
     const UserInfo = useSelector(Get_UserINFo)
     const userID = (UserInfo.user as I_UserInLocal).Id
-    const [ImageOBJ, setImageOBJ] = useState<I_ImageOBJ>({ file: undefined, status: "idle" })
+    const [FormIsvalid, setFormIsvalid] = useState<boolean>(false)
     const ImageProgress_Ref = useRef(0)
+    const InitialProductData: T_ProductsInDB = {
+        AdminId: userID,
+        Date: new Date(),
+        ImgSrce: "",
+        Name: "",
+        Price: 0,
+    }
 
-    const [link, setLink] = useState("")
+    const Reducer = (state: T_ProductsInDB, action: T_AddProductsAction) => {
+        let copyState: T_ProductsInDB
 
-    const Dispatch = useDispatch()
+        switch (action.type) {
+            case "Price":
+                copyState = { ...state, Price: Number(action.payload) }
+                break
+            case "ImgSrce":
+                copyState = { ...state, ImgSrce: action.payload }
+                break
+            case "Name":
+                copyState = { ...state, Name: action.payload }
+                break
+            default:
+                copyState = { ...state }
+                break
+        }
+
+        if (copyState.AdminId && copyState.Date && copyState.Name && copyState.ImgSrce) {
+            console.log("true")
+            setFormIsvalid(true)
+        } else {
+            console.log("false")
+            setFormIsvalid(false)
+        }
+        return copyState
+    }
+
+    const [ImageOBJ, setImageOBJ] = useState<I_ImageOBJ>({ file: undefined, status: "idle" })
+    const [ProductsData, ProductsDataDipatcher] = useReducer(Reducer, InitialProductData)
+    const [CurrentImage, setCurrentImage] = useState<I_CurrentImage>({ link: "", name: "" })
+
+    const _addProductHandler = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        const _addUploadedImageStore = (id: string, link: string) => {
+            const ImageData: T_UploadedImage<"Products"> = {
+                id,
+                kind: "Products",
+                link,
+                name: CurrentImage.name,
+                status: "Used",
+            }
+
+            setTimeout(() => {
+                Dispatch(EditImage(ImageData))
+            }, 2000)
+        }
+
+        Dispatch(AddProduct({ data: ProductsData, func: _addUploadedImageStore }) as unknown as UnknownAction)
+    }
 
     useEffect(() => {
         if (!ImageOBJ.file) return
@@ -53,8 +111,8 @@ const AddProducts = () => {
                             kind: "Products",
                         }
                         Dispatch(AddImage(ImageData))
+                        setCurrentImage({ link: downloadURL, name: ImageData.name })
                         setState({ file: undefined, status: "idle" })
-                        setLink(downloadURL)
                         progressRef = 0
                     })
                 }
@@ -73,6 +131,11 @@ const AddProducts = () => {
         _UploadImageHandler(_DateFormatter(new Date()), ImageOBJ.file, setImageOBJ, ImageProgress_Ref.current)
     }, [ImageOBJ.file])
 
+    useEffect(() => {
+        if (CurrentImage.link === "" || CurrentImage.name === "") return
+        ProductsDataDipatcher({ type: "ImgSrce", payload: CurrentImage.link })
+    }, [CurrentImage])
+
     return (
         <div className='p-4 md:p-5 lg:p-7'>
             <div className='text-sm md:text-base lg:text-lg'>
@@ -82,7 +145,7 @@ const AddProducts = () => {
             </div>
 
             <div className='bg-added-bg-secondary rounded-md shadow-sm p-2 md:p-4 lg:p-6 mt-5 md:mt-7 lg:mt-10 border border-added-border'>
-                <form>
+                <form onSubmit={_addProductHandler}>
                     <div className='grid grid-cols-1 sm:grid-cols-2 gap-1.5 md:gap-y-3'>
                         <div className='flex flex-col gap-2.5 p-1'>
                             <label
@@ -96,6 +159,10 @@ const AddProducts = () => {
                                 className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main'
                                 id='getProductName'
                                 placeholder='عنوان محصول را وارد کنید'
+                                value={ProductsData.Name}
+                                onChange={e => {
+                                    ProductsDataDipatcher({ type: "Name", payload: e.target.value })
+                                }}
                             />
                         </div>
                         <div className='flex flex-col gap-2.5 p-1'>
@@ -106,10 +173,14 @@ const AddProducts = () => {
                                 قیمت
                             </label>
                             <input
-                                type='text'
+                                type='number'
                                 className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main'
                                 id='getProductPrice'
                                 placeholder='قیمت محصول را وارد کنید'
+                                value={ProductsData.Price}
+                                onChange={e => {
+                                    ProductsDataDipatcher({ type: "Price", payload: Number(e.target.value) })
+                                }}
                             />
                         </div>
                         <div className='flex flex-col gap-2.5 p-1'>
@@ -117,7 +188,7 @@ const AddProducts = () => {
                             <input
                                 type='text'
                                 className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main cursor-pointer disabled:bg-black/5'
-                                value={userID}
+                                value={ProductsData.AdminId}
                                 disabled
                             />
                         </div>
@@ -126,7 +197,7 @@ const AddProducts = () => {
                             <input
                                 type='text'
                                 className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main cursor-pointer disabled:bg-black/5'
-                                value={String(new Intl.DateTimeFormat("fa-IR").format(the_Date))}
+                                value={String(new Intl.DateTimeFormat("fa-IR").format(ProductsData.Date))}
                                 disabled
                             />
                         </div>
@@ -172,7 +243,7 @@ const AddProducts = () => {
                                     "درحال بارگذاری " + ImageProgress_Ref.current + "%"
                                 ) : (
                                     <img
-                                        src={link ? link : UploadSVG}
+                                        src={CurrentImage.link ? CurrentImage.link : UploadSVG}
                                         className='w-full h-full object-contain'
                                         alt='product'
                                     />
@@ -186,9 +257,12 @@ const AddProducts = () => {
                         </button>
                         <button
                             className='transition-all duration-300 bg-added-main border border-added-main hover:bg-added-bg-secondary
-                        hover:text-added-main text-white rounded-md p-2 w-28'
+                        hover:text-added-main text-white rounded-md p-2 w-28 cursor-pointer disabled:bg-added-border flex items-center justify-center gap-2'
+                            disabled={!FormIsvalid}
+                            type='submit'
                         >
                             ارسال
+                            {FormIsvalid ? null : <FiLock />}
                         </button>
                     </div>
                 </form>

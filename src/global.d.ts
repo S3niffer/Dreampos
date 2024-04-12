@@ -77,10 +77,16 @@ declare global {
         progressRef: number
     ) => void
 
-    // ImageBaskets
+    // currentImage
+
+    interface I_CurrentImage {
+        link: string
+        name: string
+    }
+
+    // ImagesUploaded
     type ImageBaskets = "Products" | "CustomerAvatar" | "AdminAvatar"
 
-    // ImageUploaded
     type T_UploadedImage<T extends ImageBaskets> = {
         name: string
         link: string
@@ -98,6 +104,30 @@ declare global {
     type T_UploadedImages = {
         [k in ImageBaskets]: T_UploadedImage<k>[]
     }
+
+    // AddProducts Values
+    interface I_ProductInlocal {
+        Id: string
+        AdminId: string
+        ImgSrce: string
+        Price: number
+        Name: string
+        Date: Date
+    }
+
+    type T_ProductsInDB = Omit<I_ProductInlocal, "Id">
+
+    type T_Products = [string, T_ProductsInDB][]
+
+    type T_AddProductsAction =
+        | {
+              type: "ImgSrce" | "Name"
+              payload: string
+          }
+        | {
+              type: "Price"
+              payload: number
+          }
 }
 
 export {}
