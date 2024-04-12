@@ -187,10 +187,3 @@ export default userSlice.reducer
 export const Get_UserINFo = (state: T_StoreItems): T_UserIntialState => state.User
 export const { LogOut, LogIn, ChangeStatus } = userSlice.actions
 
-// {type: 'User/LogintUserByID/fulfilled', payload: {…}, meta: {…}}
-// meta:
-// {arg: '-Nuh3MD2XOV8pE90lUtb', requestId: 'qLzeUqYeIG_X7erVVK7iX', requestStatus: 'fulfilled'}
-// payload:
-// {Email: 'test7@Gmail.com', ImgSrc: '', Name: 'test7', Password: '12345678'}
-// type:
-// "User/LogintUserByID/fulfilled"
