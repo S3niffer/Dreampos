@@ -108,6 +108,11 @@ declare global {
     // RemoveFIlesFromFBStorage
     type T_RemoveFromArray = <T extends ImageBaskets>(a: T_UploadedImage<T>[], fn: string) => T_UploadedImage<T>[]
 
+    //imagesReducerActions
+
+    type T_SingleImageChangeAction = { type: string; payload: T_UploadedImage<ImageBaskets> }
+    type T_AllImageChangeAction = { type: string; payload: T_UploadedImages }
+
     // AddProducts Values
     interface I_ProductInlocal {
         Id: string

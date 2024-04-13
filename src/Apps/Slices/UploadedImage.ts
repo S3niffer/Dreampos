@@ -11,7 +11,7 @@ const UImagesSlice = createSlice({
     name: "UploadedImages",
     initialState,
     reducers: {
-        AddImage: (state: T_UploadedImages, action: { type: string; payload: T_UploadedImage<ImageBaskets> }) => {
+        AddImage: (state: T_UploadedImages, action: T_SingleImageChangeAction) => {
             const Value = action.payload
 
             switch (Value.kind) {
@@ -30,7 +30,7 @@ const UImagesSlice = createSlice({
 
             localStorage.setItem("UploadedImages", JSON.stringify(current(state)))
         },
-        EditImage: (state: T_UploadedImages, action: { type: string; payload: T_UploadedImage<ImageBaskets> }) => {
+        EditImage: (state: T_UploadedImages, action: T_SingleImageChangeAction) => {
             const Value = action.payload
             const copyState = current(state)
             let result
@@ -65,7 +65,7 @@ const UImagesSlice = createSlice({
             localStorage.setItem("UploadedImages", JSON.stringify(current(state)))
             RemoveFIlesFromFBStorage()
         },
-        WriteToRedux: (state: T_UploadedImages, action: { type: string; payload: T_UploadedImages }) => {
+        WriteToRedux: (state: T_UploadedImages, action: T_AllImageChangeAction) => {
             state.AdminAvatar = action.payload.AdminAvatar
             state.CustomerAvatar = action.payload.CustomerAvatar
             state.Products = action.payload.Products
