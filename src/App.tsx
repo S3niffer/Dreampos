@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { Get_UserINFo, LogintUserByID } from "./Apps/Slices/User"
 import { useEffect, useState } from "react"
 import { UnknownAction } from "@reduxjs/toolkit"
+import Loading from "./Components/Loading"
 
 function App() {
     const location = useLocation()
@@ -35,13 +36,7 @@ function App() {
     return (
         <div className='font-irSans text-added-text-primary dir-rtl'>
             <ThemeHandler />
-            {isLoading ? (
-                <div className='flex justify-center items-center h-screen bg-added-bg-primary'>
-                    <div className='whirly-loader'> </div>
-                </div>
-            ) : (
-                <RouteProvider />
-            )}
+            {isLoading ? <Loading /> : <RouteProvider />}
         </div>
     )
 }
