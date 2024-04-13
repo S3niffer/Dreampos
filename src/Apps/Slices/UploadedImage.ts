@@ -63,9 +63,14 @@ const UImagesSlice = createSlice({
             }
             localStorage.setItem("UploadedImages", JSON.stringify(current(state)))
         },
+        WriteToRedux: (state: T_UploadedImages, action: { type: string; payload: T_UploadedImages }) => {
+            state.AdminAvatar = action.payload.AdminAvatar
+            state.CustomerAvatar = action.payload.CustomerAvatar
+            state.Products = action.payload.Products
+        },
     },
 })
 
 export default UImagesSlice.reducer
 export const Get_Images = (state: T_StoreItems): T_UploadedImages => state.Images
-export const { AddImage, EditImage } = UImagesSlice.actions
+export const { AddImage, EditImage, WriteToRedux } = UImagesSlice.actions

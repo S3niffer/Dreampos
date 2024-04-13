@@ -6,6 +6,7 @@ import { Get_UserINFo, LogintUserByID } from "./Apps/Slices/User"
 import { useEffect, useState } from "react"
 import { UnknownAction } from "@reduxjs/toolkit"
 import Loading from "./Components/Loading"
+import { WriteToRedux } from "./Apps/Slices/UploadedImage"
 
 function App() {
     const location = useLocation()
@@ -30,6 +31,12 @@ function App() {
         if (!isLogggedIn && userID) {
             setIsLoading(true)
             Dispatch(LogintUserByID({ id: userID, setIsLoading }) as unknown as UnknownAction)
+        }
+
+        const getImages_fromLocal = localStorage.getItem("UploadedImages")
+        const Images = getImages_fromLocal ? (JSON.parse(getImages_fromLocal) as T_UploadedImages) : undefined
+        if (Images) {
+            Dispatch(WriteToRedux(Images))
         }
     }, [])
 
