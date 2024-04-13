@@ -70,7 +70,9 @@ const AddProducts = () => {
             }, 500)
         }
 
-        Dispatch(AddProduct({ data: ProductsData, func: _addUploadedImageStore }) as unknown as UnknownAction)
+        Dispatch(
+            AddProduct({ data: { ...ProductsData, Date: new Date() }, func: _addUploadedImageStore }) as unknown as UnknownAction
+        )
     }
 
     useEffect(() => {
