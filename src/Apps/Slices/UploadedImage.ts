@@ -1,4 +1,5 @@
 import { createSlice, current } from "@reduxjs/toolkit"
+import RemoveFIlesFromFBStorage from "../../Components/RemoveFIlesFromFBStorage"
 
 const initialState: T_UploadedImages = {
     Products: [],
@@ -62,6 +63,7 @@ const UImagesSlice = createSlice({
                     break
             }
             localStorage.setItem("UploadedImages", JSON.stringify(current(state)))
+            RemoveFIlesFromFBStorage()
         },
         WriteToRedux: (state: T_UploadedImages, action: { type: string; payload: T_UploadedImages }) => {
             state.AdminAvatar = action.payload.AdminAvatar

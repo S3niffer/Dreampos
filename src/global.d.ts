@@ -105,6 +105,9 @@ declare global {
         [k in ImageBaskets]: T_UploadedImage<k>[]
     }
 
+    // RemoveFIlesFromFBStorage
+    type T_RemoveFromArray = <T extends ImageBaskets>(a: T_UploadedImage<T>[], fn: string) => T_UploadedImage<T>[]
+
     // AddProducts Values
     interface I_ProductInlocal {
         Id: string
