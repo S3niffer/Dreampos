@@ -26,7 +26,7 @@ const SideBar = () => {
                         />
                         <SideBarLink
                             Icon={LuPackagePlus}
-                            title='اضافه کردن محصول'
+                            title='افزودن محصول'
                             to={"/add-product"}
                         />
                         <SideBarLink
@@ -36,8 +36,8 @@ const SideBar = () => {
                         />
                         <SideBarLink
                             Icon={LuUserPlus}
-                            title='اضافه کردن کاربر'
-                            to={"/add-user"}
+                            title='افزودن کاربر'
+                            to={"/add-customer"}
                         />
                         <SideBarLink
                             Icon={LuShirt}
