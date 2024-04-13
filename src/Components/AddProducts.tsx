@@ -144,7 +144,10 @@ const AddProducts = () => {
                             break
                     }
                 },
-                error => {},
+                error => {
+                    setState({ file: undefined, status: "failed" })
+                    console.log(error)
+                },
                 () => {
                     getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
                         const ImageData: T_UploadedImage<"Products"> = {
