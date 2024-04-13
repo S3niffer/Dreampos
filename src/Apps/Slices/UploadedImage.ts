@@ -1,5 +1,6 @@
 import { createSlice, current } from "@reduxjs/toolkit"
-import RemoveFIlesFromFBStorage from "../../Components/RemoveFIlesFromFBStorage"
+import { deleteObject, ref } from "firebase/storage"
+import { storage } from "../../Firebase"
 
 const initialState: T_UploadedImages = {
     Products: [],
@@ -58,12 +59,40 @@ const UImagesSlice = createSlice({
                             return Value
                         } else return image
                     })
-
                     state.Products = result as T_UploadedImage<"Products">[]
                     break
             }
+
             localStorage.setItem("UploadedImages", JSON.stringify(current(state)))
-            RemoveFIlesFromFBStorage()
+
+            const Images = state
+
+            const _RemoveFromArray: T_RemoveFromArray = (array, fn) => {
+                return array.filter(Img => {
+                    if (Img.status === "unUsed") {
+                        const desertRef = ref(storage, `${fn}/${Img.name}`)
+                        deleteObject(desertRef)
+                            .then()
+                            .catch(e => console.log(e))
+                        return false
+                    } else return true
+                })
+            }
+
+            let AdminAvatar = _RemoveFromArray(Images.AdminAvatar, "AdminAvatar")
+            let CustomerAvatar = _RemoveFromArray(Images.CustomerAvatar, "CustomerAvatar")
+            let Products = _RemoveFromArray(Images.Products, "Products")
+
+            const filteredImages: T_UploadedImages = {
+                AdminAvatar,
+                CustomerAvatar,
+                Products,
+            }
+
+            localStorage.setItem("UploadedImages", JSON.stringify(filteredImages))
+            state.AdminAvatar = AdminAvatar
+            state.CustomerAvatar = CustomerAvatar
+            state.Products = Products
         },
         WriteToRedux: (state: T_UploadedImages, action: T_AllImageChangeAction) => {
             state.AdminAvatar = action.payload.AdminAvatar
