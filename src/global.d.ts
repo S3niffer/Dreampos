@@ -137,6 +137,34 @@ declare global {
         | {
               type: "REST"
           }
+
+    type AddProductActionReducer = { data: T_ProductsInDB; func: (id: string) => void }
+
+    //   ADDcustomer
+    interface I_CustomerInLocal {
+        Id: string
+        AdminId: string
+        Email: string
+        ImgSrce: string
+        Name: string
+        Date: Date
+        Password: string
+    }
+
+    type T_CustomerInDB = Omit<I_CustomerInLocal, "Id">
+    type T_CustomerInDBWithoutDate = Omit<T_CustomerInDB, "Date">
+    type T_Customers = [string, T_CustomerInDB][]
+
+    type T_AddCustomerAction =
+        | {
+              type: "ImgSrce" | "Name" | "Password" | "Email"
+              payload: string
+          }
+        | {
+              type: "REST"
+          }
+
+    type AddCustomerActionReducer = { data: T_CustomerInDB; func: (id: string) => void }
 }
 
 export {}

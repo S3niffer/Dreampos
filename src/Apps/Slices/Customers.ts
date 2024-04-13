@@ -1,0 +1,31 @@
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+
+const initialState: T_Customers = [] as T_Customers
+
+export const AddCustomer = createAsyncThunk("Customers/AddCustomer", async (arg: AddCustomerActionReducer) => {
+    return await fetch(`https://dashboard-a5184-default-rtdb.firebaseio.com/Customers.json`, {
+        method: "POST",
+        body: JSON.stringify(arg.data),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then(res => res.json())
+        .then(res => res)
+})
+
+const CustomersSlice = createSlice({
+    name: "Customers",
+    initialState,
+    reducers: {},
+    extraReducers: builder => {
+        builder.addCase(AddCustomer.fulfilled, (state, action) => {
+            const id = action.payload.name
+
+            action.meta.arg.func(id)
+        })
+    },
+})
+
+export default CustomersSlice.reducer
+export const GettAllCustomers = (state: T_StoreItems): T_Customers => state.Customers

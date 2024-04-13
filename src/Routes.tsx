@@ -7,7 +7,7 @@ import Overview from "./Components/Overview"
 import Products from "./Components/Products"
 import AddProducts from "./Components/AddProducts"
 import Users from "./Components/Users"
-import AddCustomer from "./Components/AddCustomer"
+import AddCustomer from "./Components/AddCustomers"
 import Profile from "./Components/Profile"
 
 const Routes: RouteObject[] = [
