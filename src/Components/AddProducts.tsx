@@ -11,20 +11,18 @@ import { UnknownAction } from "@reduxjs/toolkit"
 
 const AddProducts = () => {
     const Dispatch = useDispatch()
-    const UserInfo = useSelector(Get_UserINFo)
-    const userID = (UserInfo.user as I_UserInLocal).Id
+    const userID = (useSelector(Get_UserINFo).user as I_UserInLocal).Id
     const [FormIsvalid, setFormIsvalid] = useState<boolean>(false)
     const ImageProgress_Ref = useRef(0)
-    const InitialProductData: T_ProductsInDB = {
+    const [CurrentImage, setCurrentImage] = useState<I_CurrentImage>({ link: "", name: "", file: undefined, status: "idle" })
+    const InitialProductData: T_ProductsInDBWithoutDate = {
         AdminId: userID,
-        Date: new Date(),
         ImgSrce: "",
         Name: "",
         Price: 0,
     }
-
-    const Reducer = (state: T_ProductsInDB, action: T_AddProductsAction) => {
-        let copyState: T_ProductsInDB
+    const Reducer = (state: T_ProductsInDBWithoutDate, action: T_AddProductsAction) => {
+        let copyState: T_ProductsInDBWithoutDate
 
         switch (action.type) {
             case "Price":
@@ -36,25 +34,36 @@ const AddProducts = () => {
             case "Name":
                 copyState = { ...state, Name: action.payload }
                 break
+            case "REST":
+                copyState = {
+                    ...state,
+                    ImgSrce: "",
+                    Name: "",
+                    Price: 0,
+                }
+                break
             default:
                 copyState = { ...state }
                 break
         }
 
-        if (copyState.AdminId && copyState.Date && copyState.Name && copyState.ImgSrce) {
+        if (copyState.AdminId && copyState.Name && copyState.ImgSrce) {
             setFormIsvalid(true)
         } else {
             setFormIsvalid(false)
         }
         return copyState
     }
-
-    const [ImageOBJ, setImageOBJ] = useState<I_ImageOBJ>({ file: undefined, status: "idle" })
     const [ProductsData, ProductsDataDipatcher] = useReducer(Reducer, InitialProductData)
-    const [CurrentImage, setCurrentImage] = useState<I_CurrentImage>({ link: "", name: "" })
+
+    const _ResetValues = () => {
+        ProductsDataDipatcher({ type: "REST" })
+        setCurrentImage(prv => ({ ...prv, file: undefined, link: "", name: "", status: "idle" }))
+    }
 
     const _addProductHandler = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        if (!FormIsvalid) return
 
         const _addUploadedImageStore = (id: string) => {
             const ImageData: T_UploadedImage<"Products"> = {
@@ -64,6 +73,7 @@ const AddProducts = () => {
                 name: CurrentImage.name,
                 status: "Used",
             }
+            _ResetValues()
 
             setTimeout(() => {
                 Dispatch(EditImage(ImageData))
@@ -104,7 +114,7 @@ const AddProducts = () => {
                     case "۹":
                         return "9"
                     case "٫":
-                        return "." // Replace Persian decimal separator with English one
+                        return "."
                     default:
                         return ""
                 }
@@ -118,69 +128,69 @@ const AddProducts = () => {
         }
     }
 
-    useEffect(() => {
-        if (!ImageOBJ.file) return
+    const _UploadImageHandler: T_UploadImageHandler = (date, file, setState, progressRef, basketName) => {
+        const storageRef = ref(storage, String(`${basketName}/(${date})${file.name}`))
+        const uploadTask = uploadBytesResumable(storageRef, file)
 
-        const _UploadImageHandler: T_UploadImageHandler = (date, file, setState, progressRef) => {
-            const storageRef = ref(storage, String(`Products/(${date})${file.name}`))
-            const uploadTask = uploadBytesResumable(storageRef, file)
+        uploadTask.on(
+            "state_changed",
+            snapshot => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                progressRef = progress
 
-            uploadTask.on(
-                "state_changed",
-                snapshot => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                    progressRef = progress
-
-                    switch (snapshot.state) {
-                        case "paused":
-                            setState(prv => ({ ...prv, status: "paused" }))
-                            break
-                        case "running":
-                            setState(prv => ({ ...prv, status: "running" }))
-                            break
-                        case "canceled":
-                        case "error":
-                            setState({ file: undefined, status: "failed" })
-                            break
-                    }
-                },
-                error => {
-                    setState({ file: undefined, status: "failed" })
-                    console.log(error)
-                },
-                () => {
-                    getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
-                        const ImageData: T_UploadedImage<"Products"> = {
-                            status: "unUsed",
-                            link: downloadURL,
-                            name: `(${date})${file.name}`,
-                            kind: "Products",
-                        }
-                        Dispatch(AddImage(ImageData))
-                        setCurrentImage({ link: downloadURL, name: ImageData.name })
-                        setState({ file: undefined, status: "idle" })
-                        progressRef = 0
-                    })
+                switch (snapshot.state) {
+                    case "paused":
+                        setState(prv => ({ ...prv, status: "paused" }))
+                        break
+                    case "running":
+                        setState(prv => ({ ...prv, status: "running" }))
+                        break
+                    case "canceled":
+                    case "error":
+                        setState(prv => ({ ...prv, file: undefined, status: "failed" }))
+                        break
                 }
-            )
-        }
+            },
+            error => {
+                setState(prv => ({ ...prv, file: undefined, status: "failed" }))
+                console.log(error)
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
+                    const ImageData: T_UploadedImage<typeof basketName> = {
+                        status: "unUsed",
+                        link: downloadURL,
+                        name: `(${date})${file.name}`,
+                        kind: `${basketName}`,
+                    }
+                    Dispatch(AddImage(ImageData))
+                    setState({ link: downloadURL, name: ImageData.name, file: undefined, status: "idle" })
+                    progressRef = 0
+                })
+            }
+        )
+    }
 
-        const _DateFormatter = (date: Date): string => {
-            return `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, "0")}${date
-                .getDate()
-                .toString()
-                .padStart(2, "0")}_${
-                date.getHours() === 0 ? "12am" : date.getHours() > 12 ? date.getHours() - 12 + "pm" : date.getHours() + "am"
-            }${date.getMinutes().toString().padStart(2, "0")}min`
-        }
+    const _DateFormatter = (date: Date): string => {
+        return `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, "0")}${date
+            .getDate()
+            .toString()
+            .padStart(2, "0")}_${
+            date.getHours() === 0 ? "12am" : date.getHours() > 12 ? date.getHours() - 12 + "pm" : date.getHours() + "am"
+        }${date.getMinutes().toString().padStart(2, "0")}min`
+    }
 
-        _UploadImageHandler(_DateFormatter(new Date()), ImageOBJ.file, setImageOBJ, ImageProgress_Ref.current)
-    }, [ImageOBJ.file])
+    useEffect(() => {
+        if (!CurrentImage.file) return
+
+        _UploadImageHandler(_DateFormatter(new Date()), CurrentImage.file, setCurrentImage, ImageProgress_Ref.current, "Products")
+    }, [CurrentImage.file])
 
     useEffect(() => {
         if (CurrentImage.link === "" || CurrentImage.name === "") return
+
         ProductsDataDipatcher({ type: "ImgSrce", payload: CurrentImage.link })
-    }, [CurrentImage])
+    }, [CurrentImage.link, CurrentImage.name])
 
     return (
         <div className='p-4 md:p-5 lg:p-7'>
@@ -241,7 +251,7 @@ const AddProducts = () => {
                             <input
                                 type='text'
                                 className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main cursor-pointer disabled:bg-black/5'
-                                value={String(new Intl.DateTimeFormat("fa-IR").format(ProductsData.Date))}
+                                value={String(new Intl.DateTimeFormat("fa-IR").format(new Date()))}
                                 disabled
                             />
                         </div>
@@ -266,9 +276,9 @@ const AddProducts = () => {
                                     onChange={e => {
                                         const files = e.target.files
                                         if (!files) return
-                                        setImageOBJ(prv => ({ ...prv, file: files[0] }))
+                                        setCurrentImage(prv => ({ ...prv, file: files[0] }))
                                     }}
-                                    disabled={ImageOBJ.status !== "idle"}
+                                    disabled={CurrentImage.status !== "idle"}
                                 />
                                 <img
                                     src={UploadSVG}
@@ -283,7 +293,7 @@ const AddProducts = () => {
                         <div className='w-3/6 sm:w-2/6 p-1'>
                             <div className='pb-2.5'>پیش نمایش</div>
                             <div className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 flex justify-center items-center flex-col gap-2 bg-added-bg-secondary focus:border-added-main h-[114px] min-[447px]:h-[99px] sm:h-[106px] md:h-[114px] lg:h-[146px] dir-rtl'>
-                                {ImageOBJ.status === "running" ? (
+                                {CurrentImage.status === "running" ? (
                                     "درحال بارگذاری " + ImageProgress_Ref.current + "%"
                                 ) : (
                                     <img
@@ -295,18 +305,24 @@ const AddProducts = () => {
                             </div>
                         </div>
                     </div>
-                    <div className='mt-4 flex justify-between items-center'>
-                        <button className='bg-added-text-secondary hover:bg-added-text-primary/90 text-white rounded-md p-2'>
+                    <div className='mt-7 flex justify-between items-center text-xs min-[400px]:text-base'>
+                        <button
+                            onClick={_ResetValues}
+                            type='button'
+                            className='bg-added-text-secondary hover:bg-added-text-primary/90 text-white rounded-md p-2'
+                        >
                             پاک کردن ورودی ها
                         </button>
                         <button
-                            className='transition-all duration-300 bg-added-main border border-added-main hover:bg-added-bg-secondary
-                        hover:text-added-main text-white rounded-md p-2 w-28 cursor-pointer disabled:bg-added-border flex items-center justify-center gap-2'
+                            className='transition-all duration-300 border text-white border-added-main bg-added-main hover:bg-added-bg-secondary hover:text-added-main
+                         rounded-md p-2 cursor-pointer disabled:bg-added-border disabled:border-added-border disabled:text-added-text-primary'
                             disabled={!FormIsvalid}
                             type='submit'
                         >
-                            ارسال
-                            {FormIsvalid ? null : <FiLock />}
+                            <div className='flex items-center justify-center gap-1'>
+                                ثبت
+                                {FormIsvalid ? null : <FiLock className='mb-1' />}
+                            </div>
                         </button>
                     </div>
                 </form>

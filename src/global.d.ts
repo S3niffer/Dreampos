@@ -63,25 +63,21 @@ declare global {
     // SidebarLik Component
     type T_SideBarLinkComponentProps = { Icon: IconType; title: string } & React.ComponentProps<typeof NavLink>
 
-    // ImageOBJ
-    interface I_ImageOBJ {
-        file: File | undefined
-        status: "running" | "paused" | "failed" | "idle"
-    }
-
     // uploadImageHandler
     type T_UploadImageHandler = (
         date: string,
         file: File,
-        setState: React.Dispatch<React.SetStateAction<I_ImageOBJ>>,
-        progressRef: number
+        setState: React.Dispatch<React.SetStateAction<I_CurrentImage>>,
+        progressRef: number,
+        basketNmae: ImageBaskets
     ) => void
 
     // currentImage
-
     interface I_CurrentImage {
         link: string
         name: string
+        file: File | undefined
+        status: "running" | "paused" | "failed" | "idle"
     }
 
     // ImagesUploaded
@@ -125,6 +121,8 @@ declare global {
 
     type T_ProductsInDB = Omit<I_ProductInlocal, "Id">
 
+    type T_ProductsInDBWithoutDate = Omit<T_ProductsInDB, "Date">
+
     type T_Products = [string, T_ProductsInDB][]
 
     type T_AddProductsAction =
@@ -135,6 +133,9 @@ declare global {
         | {
               type: "Price"
               payload: number
+          }
+        | {
+              type: "REST"
           }
 }
 
