@@ -2,35 +2,28 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 
 const initialState: T_Products = [] as T_Products
 
-export const AddProduct = createAsyncThunk(
-    "Products/AddProduct",
-    async (arg: { data: T_ProductsInDB; func: (id: string) => void }) => {
-        return await fetch(`https://dashboard-a5184-default-rtdb.firebaseio.com/Products.json`, {
-            method: "POST",
-            body: JSON.stringify(arg.data),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then(res => res.json())
-            .then(res => res)
-    }
-)
+export const AddProduct = createAsyncThunk("Products/AddProduct", async (arg: AddProductActionReducer) => {
+    return await fetch(`https://dashboard-a5184-default-rtdb.firebaseio.com/Products.json`, {
+        method: "POST",
+        body: JSON.stringify(arg.data),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then(res => res.json())
+        .then(res => res)
+})
 
 const ProductsSlice = createSlice({
     name: "Products",
     initialState,
     reducers: {},
     extraReducers: builder => {
-        builder
-            .addCase(AddProduct.pending, (state, action) => {
-                // changeStatus
-            })
-            .addCase(AddProduct.fulfilled, (state, action) => {
-                const id = action.payload.name
+        builder.addCase(AddProduct.fulfilled, (state, action) => {
+            const id = action.payload.name
 
-                action.meta.arg.func(id)
-            })
+            action.meta.arg.func(id)
+        })
     },
 })
 
