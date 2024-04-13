@@ -75,6 +75,49 @@ const AddProducts = () => {
         )
     }
 
+    const _ConvertValueToPersianFormat = (value: number): string => {
+        return (+value).toLocaleString("fa-IR")
+    }
+
+    const _HandleAddingPersianFormatToNormalAndSaveInState = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const removePersianDigitsAndSeparators = (str: string) => {
+            return str.replace(/[۰-۹٫]/g, match => {
+                switch (match) {
+                    case "۰":
+                        return "0"
+                    case "۱":
+                        return "1"
+                    case "۲":
+                        return "2"
+                    case "۳":
+                        return "3"
+                    case "۴":
+                        return "4"
+                    case "۵":
+                        return "5"
+                    case "۶":
+                        return "6"
+                    case "۷":
+                        return "7"
+                    case "۸":
+                        return "8"
+                    case "۹":
+                        return "9"
+                    case "٫":
+                        return "." // Replace Persian decimal separator with English one
+                    default:
+                        return ""
+                }
+            })
+        }
+
+        const enteredValue = removePersianDigitsAndSeparators(event.target.value).toString().replace(/٬/g, "")
+
+        if (!isNaN(Number(enteredValue))) {
+            ProductsDataDipatcher({ type: "Price", payload: Number(enteredValue) })
+        }
+    }
+
     useEffect(() => {
         if (!ImageOBJ.file) return
 
@@ -173,14 +216,12 @@ const AddProducts = () => {
                                 قیمت
                             </label>
                             <input
-                                type='number'
+                                type='text'
                                 className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main'
                                 id='getProductPrice'
                                 placeholder='قیمت محصول را وارد کنید'
-                                value={ProductsData.Price}
-                                onChange={e => {
-                                    ProductsDataDipatcher({ type: "Price", payload: Number(e.target.value) })
-                                }}
+                                value={_ConvertValueToPersianFormat(ProductsData.Price)}
+                                onChange={_HandleAddingPersianFormatToNormalAndSaveInState}
                             />
                         </div>
                         <div className='flex flex-col gap-2.5 p-1'>
