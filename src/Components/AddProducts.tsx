@@ -13,6 +13,7 @@ const AddProducts = () => {
     const Dispatch = useDispatch()
     const userID = (useSelector(Get_UserINFo).user as I_UserInLocal).Id
     const [FormIsvalid, setFormIsvalid] = useState<boolean>(false)
+    const [isShowAlert, setIsShowAlert] = useState<boolean>(false)
     const ImageProgress_Ref = useRef(0)
     const [CurrentImage, setCurrentImage] = useState<I_CurrentImage>({ link: "", name: "", file: undefined, status: "idle" })
     const InitialProductData: T_ProductsInDBWithoutDate = {
@@ -74,6 +75,7 @@ const AddProducts = () => {
                 status: "Used",
             }
             _ResetValues()
+            setIsShowAlert(true)
 
             setTimeout(() => {
                 Dispatch(EditImage(ImageData))
@@ -192,6 +194,15 @@ const AddProducts = () => {
         ProductsDataDipatcher({ type: "ImgSrce", payload: CurrentImage.link })
     }, [CurrentImage.link, CurrentImage.name])
 
+    useEffect(() => {
+        if (isShowAlert) {
+            const FiveSecondsTimeOut = setTimeout(() => {
+                setIsShowAlert(false)
+            }, 5000)
+            return () => clearTimeout(FiveSecondsTimeOut)
+        }
+    }, [isShowAlert])
+
     return (
         <div className='p-4 md:p-5 lg:p-7'>
             <div className='text-sm md:text-base lg:text-lg'>
@@ -200,7 +211,36 @@ const AddProducts = () => {
                 <span className='text-added-text-secondary text-xs md:text-sm lg:text-base'>محصول جدید را اضافه کنید</span>
             </div>
 
-            <div className='bg-added-bg-secondary rounded-md shadow-sm p-2 md:p-4 lg:p-6 mt-5 md:mt-7 lg:mt-10 border border-added-border'>
+            <div className='bg-added-bg-secondary rounded-md shadow-sm p-2 md:p-4 lg:p-6 mt-16 border border-added-border relative'>
+                {isShowAlert ? (
+                    <div className={`absolute -top-14 w-full left-0 addCustomerAlert ${isShowAlert ? "active" : ""}`}>
+                        <div
+                            className='bg-green-100 border-green-400 text-green-700 border  px-4 py-3 rounded relative'
+                            role='alert'
+                        >
+                            <div className='bell absolute top-0 bg-green-400 h-1 right-0'></div>
+                            <div className='flex items-center text-right dir-rtl text-sm sm:text-base'>
+                                <strong className='font-bold'>موفق!</strong>
+                                <span className='pr-1'>محصول مورد نظر با موفقیت اضافه شد .</span>
+                            </div>
+                            <span className='absolute top-0 bottom-0 left-0 px-2 py-2.5 sm:px-4 sm:py-3'>
+                                <svg
+                                    className='fill-current h-6 w-6 text-green-500'
+                                    role='button'
+                                    xmlns='http://www.w3.org/2000/svg'
+                                    viewBox='0 0 20 20'
+                                    onClick={() => {
+                                        setIsShowAlert(false)
+                                    }}
+                                >
+                                    <title>Close</title>
+                                    <path d='M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z' />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                ) : null}
+
                 <form onSubmit={_addProductHandler}>
                     <div className='grid grid-cols-1 sm:grid-cols-2 gap-1.5 md:gap-y-3'>
                         <div className='flex flex-col gap-2.5 p-1'>
