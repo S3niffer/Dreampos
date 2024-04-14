@@ -8,8 +8,8 @@ import { AddImage, EditImage } from "../Apps/Slices/UploadedImage"
 import { FiLock } from "react-icons/fi"
 import { AddProduct } from "../Apps/Slices/Products"
 import { UnknownAction } from "@reduxjs/toolkit"
-import Loading from "./Loading"
-import OutLetParent from "./OutLetParent"
+import Loading from "../Components/Loading"
+import OutLetParent from "../Components/OutLetParent"
 
 const AddProducts = () => {
     const Dispatch = useDispatch()

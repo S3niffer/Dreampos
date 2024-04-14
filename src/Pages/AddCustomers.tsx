@@ -8,8 +8,8 @@ import { storage } from "../Firebase"
 import { AddImage, EditImage } from "../Apps/Slices/UploadedImage"
 import { UnknownAction } from "@reduxjs/toolkit"
 import { AddCustomer } from "../Apps/Slices/Customers"
-import Loading from "./Loading"
-import OutLetParent from "./OutLetParent"
+import Loading from "../Components/Loading"
+import OutLetParent from "../Components/OutLetParent"
 
 const AddCustomers = () => {
     const Dispatch = useDispatch()
