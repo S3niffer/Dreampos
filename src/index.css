@@ -175,6 +175,12 @@
         }
     }
 
+    .hovered {
+        background-color: hsla(var(--border)) !important;
+        border-color: hsl(var(--main), 1) !important;
+    }
+
+
     #modal {
         position: sticky;
         top: 0;

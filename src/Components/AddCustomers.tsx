@@ -382,11 +382,36 @@ const AddCustomers = () => {
                                 <label
                                     htmlFor='getCustomerImage'
                                     className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 cursor-pointer flex justify-center items-center flex-col gap-2 bg-added-bg-secondary focus:border-added-main hover:bg-added-border'
+                                    onDrop={e => {
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        ;(e.target as HTMLElement).classList.remove("hovered")
+
+                                        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                                            setCurrentImage(prv => ({ ...prv, file: e.dataTransfer.files[0] }))
+                                        }
+                                    }}
+                                    onDragEnter={e => {
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        ;(e.target as HTMLElement).classList.add("hovered")
+                                    }}
+                                    onDragOver={e => {
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        ;(e.target as HTMLElement).classList.add("hovered")
+                                    }}
+                                    onDragLeave={e => {
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        ;(e.target as HTMLElement).classList.remove("hovered")
+                                    }}
                                 >
                                     <input
                                         type='file'
                                         className='hidden'
                                         id='getCustomerImage'
+                                        accept='image/*'
                                         onChange={e => {
                                             const files = e.target.files
                                             if (!files) return
