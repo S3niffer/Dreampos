@@ -43,7 +43,14 @@ function App() {
     return (
         <div className='font-irSans text-added-text-primary dir-rtl'>
             <ThemeHandler />
-            {isLoading ? <Loading /> : <RouteProvider />}
+
+            {isLoading ? (
+                <div className='flex justify-center items-center h-screen bg-added-bg-primary'>
+                    <Loading />
+                </div>
+            ) : (
+                <RouteProvider />
+            )}
         </div>
     )
 }
