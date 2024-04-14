@@ -8,11 +8,13 @@ import { storage } from "../Firebase"
 import { AddImage, EditImage } from "../Apps/Slices/UploadedImage"
 import { UnknownAction } from "@reduxjs/toolkit"
 import { AddCustomer } from "../Apps/Slices/Customers"
+import Loading from "./Loading"
 
 const AddCustomers = () => {
     const Dispatch = useDispatch()
     const userID = (useSelector(Get_UserINFo).user as I_UserInLocal).Id
     const [passwordVisibility, setPasswordVisibility] = useState(false)
+    const [isShowLoading, setIsShowLoading] = useState<boolean>(false)
     const [secondaryPassword, setSecondaryPassword] = useState<string>("")
     const [isShowAlert, setIsShowAlert] = useState<{ status: boolean; type: "Danger" | "Success" }>({
         status: false,
@@ -76,6 +78,7 @@ const AddCustomers = () => {
     const _addCustomerHandler = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!FormIsvalid) return
+        setIsShowLoading(true)
 
         const _addUploadedImageStore = (id: string) => {
             const ImageData: T_UploadedImage<"CustomerAvatar"> = {
@@ -86,6 +89,7 @@ const AddCustomers = () => {
                 status: "Used",
             }
             _ResetValues()
+            setIsShowLoading(false)
             setIsShowAlert({ status: true, type: "Success" })
 
             setTimeout(() => {
@@ -99,6 +103,7 @@ const AddCustomers = () => {
             )
         } else {
             setIsShowAlert({ status: true, type: "Danger" })
+            setIsShowLoading(false)
         }
     }
 
@@ -233,6 +238,17 @@ const AddCustomers = () => {
                         </div>
                     </div>
                 ) : null}
+
+                {isShowLoading ? (
+                    <div className='absolute w-[calc(100%-16px)] h-[calc(100%-16px)] z-40 backdrop-blur-[2px] left-2 top-2'>
+                        <div className='flex h-full items-center justify-center'>
+                            <div className='-translate-x-1/2 -translate-y-1/2'>
+                                <Loading />
+                            </div>
+                        </div>
+                    </div>
+                ) : null}
+
                 <form onSubmit={_addCustomerHandler}>
                     <div className='grid grid-cols-1 sm:grid-cols-2 gap-1.5 md:gap-y-3'>
                         <div className='flex flex-col gap-2.5 p-1'>

@@ -8,12 +8,14 @@ import { AddImage, EditImage } from "../Apps/Slices/UploadedImage"
 import { FiLock } from "react-icons/fi"
 import { AddProduct } from "../Apps/Slices/Products"
 import { UnknownAction } from "@reduxjs/toolkit"
+import Loading from "./Loading"
 
 const AddProducts = () => {
     const Dispatch = useDispatch()
     const userID = (useSelector(Get_UserINFo).user as I_UserInLocal).Id
     const [FormIsvalid, setFormIsvalid] = useState<boolean>(false)
     const [isShowAlert, setIsShowAlert] = useState<boolean>(false)
+    const [isShowLoading, setIsShowLoading] = useState<boolean>(false)
     const ImageProgress_Ref = useRef(0)
     const [CurrentImage, setCurrentImage] = useState<I_CurrentImage>({ link: "", name: "", file: undefined, status: "idle" })
     const InitialProductData: T_ProductsInDBWithoutDate = {
@@ -65,6 +67,7 @@ const AddProducts = () => {
     const _addProductHandler = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!FormIsvalid) return
+        setIsShowLoading(true)
 
         const _addUploadedImageStore = (id: string) => {
             const ImageData: T_UploadedImage<"Products"> = {
@@ -75,6 +78,7 @@ const AddProducts = () => {
                 status: "Used",
             }
             _ResetValues()
+            setIsShowLoading(false)
             setIsShowAlert(true)
 
             setTimeout(() => {
@@ -237,6 +241,16 @@ const AddProducts = () => {
                                     <path d='M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z' />
                                 </svg>
                             </span>
+                        </div>
+                    </div>
+                ) : null}
+
+                {isShowLoading ? (
+                    <div className='absolute w-[calc(100%-16px)] h-[calc(100%-16px)] z-40 backdrop-blur-[2px] left-2 top-2'>
+                        <div className='flex h-full items-center justify-center'>
+                            <div className='-translate-x-1/2 -translate-y-1/2'>
+                                <Loading />
+                            </div>
                         </div>
                     </div>
                 ) : null}
