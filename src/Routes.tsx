@@ -9,6 +9,7 @@ import AddProducts from "./Components/AddProducts"
 import Users from "./Components/Users"
 import AddCustomer from "./Components/AddCustomers"
 import Profile from "./Components/Profile"
+import OutLetParent from "./Components/OutLetParent"
 
 const Routes: RouteObject[] = [
     { path: "/signin", element: <Login /> },
@@ -21,12 +22,40 @@ const Routes: RouteObject[] = [
             </PrivateRoute>
         ),
         children: [
-            { path: "", element: <Overview /> },
-            { path: "products", element: <Products /> },
+            {
+                path: "",
+                element: (
+                    <OutLetParent>
+                        <Overview />
+                    </OutLetParent>
+                ),
+            },
+            {
+                path: "products",
+                element: (
+                    <OutLetParent>
+                        <Products />
+                    </OutLetParent>
+                ),
+            },
             { path: "add-product", element: <AddProducts /> },
-            { path: "users-list", element: <Users /> },
+            {
+                path: "users-list",
+                element: (
+                    <OutLetParent>
+                        <Users />
+                    </OutLetParent>
+                ),
+            },
             { path: "add-customer", element: <AddCustomer /> },
-            { path: "profile", element: <Profile /> },
+            {
+                path: "profile",
+                element: (
+                    <OutLetParent>
+                        <Profile />
+                    </OutLetParent>
+                ),
+            },
         ],
     },
 ]

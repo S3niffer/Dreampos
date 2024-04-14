@@ -22,14 +22,8 @@ const Dashboard = () => {
                 >
                     <SideBar />
                 </div>
-                <div
-                    className={`dir-ltr overflow-auto h-[calc(100vh-var(--topBarHeight))] bg-added-bg-primary w-full md:w-[calc(100vw-var(--sideBarWidth))]
-                    `}
-                >
-                    <div className='dir-rtl text-right'>
-                        <Outlet />
-                    </div>
-                </div>
+
+                <Outlet />
             </div>
         </div>
     )
