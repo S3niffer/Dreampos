@@ -14,6 +14,10 @@ const AddCustomers = () => {
     const userID = (useSelector(Get_UserINFo).user as I_UserInLocal).Id
     const [passwordVisibility, setPasswordVisibility] = useState(false)
     const [secondaryPassword, setSecondaryPassword] = useState<string>("")
+    const [isShowAlert, setIsShowAlert] = useState<{ status: boolean; type: "Danger" | "Success" }>({
+        status: false,
+        type: "Danger",
+    })
     const [FormIsvalid, setFormIsvalid] = useState<boolean>(false)
     const ImageProgress_Ref = useRef(0)
     const [CurrentImage, setCurrentImage] = useState<I_CurrentImage>({ link: "", name: "", file: undefined, status: "idle" })
@@ -54,14 +58,7 @@ const AddCustomers = () => {
                 break
         }
 
-        if (
-            copyState.AdminId &&
-            copyState.Name &&
-            copyState.ImgSrce &&
-            copyState.Email &&
-            copyState.Password.length > 3 &&
-            copyState.Password == secondaryPassword
-        ) {
+        if (copyState.AdminId && copyState.Name && copyState.ImgSrce && copyState.Email && copyState.Password.length > 3) {
             setFormIsvalid(true)
         } else {
             setFormIsvalid(false)
@@ -73,6 +70,7 @@ const AddCustomers = () => {
     const _ResetValues = () => {
         DataDipatcher({ type: "REST" })
         setCurrentImage(prv => ({ ...prv, file: undefined, link: "", name: "", status: "idle" }))
+        setSecondaryPassword("")
     }
 
     const _addCustomerHandler = (e: React.FormEvent<HTMLFormElement>) => {
@@ -88,13 +86,20 @@ const AddCustomers = () => {
                 status: "Used",
             }
             _ResetValues()
+            setIsShowAlert({ status: true, type: "Success" })
 
             setTimeout(() => {
                 Dispatch(EditImage(ImageData))
             }, 500)
         }
 
-        Dispatch(AddCustomer({ data: { ...Data, Date: new Date() }, func: _addUploadedImageStore }) as unknown as UnknownAction)
+        if (Data.Password === secondaryPassword) {
+            Dispatch(
+                AddCustomer({ data: { ...Data, Date: new Date() }, func: _addUploadedImageStore }) as unknown as UnknownAction
+            )
+        } else {
+            setIsShowAlert({ status: true, type: "Danger" })
+        }
     }
 
     const _UploadImageHandler: T_UploadImageHandler = (date, file, setState, progressRef, basketName) => {
@@ -167,6 +172,15 @@ const AddCustomers = () => {
         DataDipatcher({ type: "ImgSrce", payload: CurrentImage.link })
     }, [CurrentImage.link, CurrentImage.name])
 
+    useEffect(() => {
+        if (isShowAlert.status) {
+            const FiveSecondsTimeOut = setTimeout(() => {
+                setIsShowAlert(prv => ({ ...prv, status: false }))
+            }, 5000)
+            return () => clearTimeout(FiveSecondsTimeOut)
+        }
+    }, [isShowAlert.status])
+
     return (
         <div className='p-4 md:p-5 lg:p-7'>
             <div className='text-sm md:text-base lg:text-lg'>
@@ -175,7 +189,50 @@ const AddCustomers = () => {
                 <span className='text-added-text-secondary text-xs md:text-sm lg:text-base'>کابر جدید را اضافه کنید</span>
             </div>
 
-            <div className='bg-added-bg-secondary rounded-md shadow-sm p-2 md:p-4 lg:p-6 mt-5 md:mt-7 lg:mt-10 border border-added-border'>
+            <div className='bg-added-bg-secondary rounded-md shadow-sm p-2 md:p-4 lg:p-6 mt-16 border border-added-border relative'>
+                {isShowAlert.status ? (
+                    <div className={`absolute -top-14 w-full left-0 addCustomerAlert ${isShowAlert ? "active" : ""}`}>
+                        <div
+                            className={`${
+                                isShowAlert.type === "Danger"
+                                    ? " bg-red-100 border-red-400 text-red-700 "
+                                    : " bg-green-100 border-green-400 text-green-700 "
+                            }  border  px-4 py-3 rounded relative`}
+                            role='alert'
+                        >
+                            <div
+                                className={`bell absolute top-0 ${
+                                    isShowAlert.type === "Danger" ? " bg-red-400 " : " bg-green-400 "
+                                }  h-1 right-0`}
+                            ></div>
+                            <div className='flex items-center text-right dir-rtl text-sm sm:text-base'>
+                                <strong className='font-bold'>{isShowAlert.type === "Danger" ? "توجه" : "موفق"}!</strong>
+                                <span className='pr-1'>
+                                    {isShowAlert.type === "Danger"
+                                        ? "هردو گذرواژه شما باید باهم برابر باشند"
+                                        : "کاربر مورد نظر با موفقیت اضافه شد"}{" "}
+                                    .
+                                </span>
+                            </div>
+                            <span className='absolute top-0 bottom-0 left-0 px-2 py-2.5 sm:px-4 sm:py-3'>
+                                <svg
+                                    className={`fill-current h-6 w-6 ${
+                                        isShowAlert.type === "Danger" ? " text-red-500 " : " text-green-500 "
+                                    }`}
+                                    role='button'
+                                    xmlns='http://www.w3.org/2000/svg'
+                                    viewBox='0 0 20 20'
+                                    onClick={() => {
+                                        setIsShowAlert(prv => ({ ...prv, status: false }))
+                                    }}
+                                >
+                                    <title>Close</title>
+                                    <path d='M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z' />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                ) : null}
                 <form onSubmit={_addCustomerHandler}>
                     <div className='grid grid-cols-1 sm:grid-cols-2 gap-1.5 md:gap-y-3'>
                         <div className='flex flex-col gap-2.5 p-1'>
@@ -219,14 +276,14 @@ const AddCustomers = () => {
                                 htmlFor='getCustomerPassword'
                                 className='cursor-pointer'
                             >
-                                رمزعبور
+                                گذرواژه
                             </label>
                             <div className='logininputContainer border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main relative'>
                                 <input
                                     type={passwordVisibility ? "text" : "password"}
-                                    className='outline-none w-[90%] h-full'
+                                    className='outline-none w-[90%] h-full bg-transparent'
                                     id='getCustomerPassword'
-                                    placeholder='رمزعبور کاربر را وارد کنید'
+                                    placeholder='گذرواژه کاربر را وارد کنید'
                                     value={Data.Password}
                                     onChange={e => {
                                         DataDipatcher({ type: "Password", payload: e.target.value })
@@ -249,14 +306,14 @@ const AddCustomers = () => {
                                 htmlFor='secondaryPassword'
                                 className='cursor-pointer'
                             >
-                                تکرار رمزعبور
+                                تکرار گذرواژه
                             </label>
                             <div className='logininputContainer border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main relative'>
                                 <input
                                     type={passwordVisibility ? "text" : "password"}
-                                    className='outline-none w-[90%] h-full'
+                                    className='outline-none w-[90%] h-full bg-transparent'
                                     id='secondaryPassword'
-                                    placeholder='رمزعبور کاربر دوباره را وارد کنید'
+                                    placeholder='گذرواژه کاربر را دوباره وارد کنید'
                                     value={secondaryPassword}
                                     onChange={e => {
                                         setSecondaryPassword(e.target.value)

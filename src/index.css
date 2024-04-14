@@ -160,6 +160,21 @@
         }
     }
 
+    .addCustomerAlert.active > div > .bell {
+        animation: increase-width 5000ms;
+        -webkit-animation: increase-width 5000ms;
+    }
+
+    @keyframes increase-width {
+        0% {
+            width: 0;
+        }
+
+        100% {
+            width: 100%;
+        }
+    }
+
     #modal {
         position: sticky;
         top: 0;
