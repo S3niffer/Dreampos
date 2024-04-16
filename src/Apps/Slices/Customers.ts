@@ -13,17 +13,32 @@ export const AddCustomer = createAsyncThunk("Customers/AddCustomer", async (arg:
         .then(res => res.json())
         .then(res => res)
 })
+export const Get_Customers = createAsyncThunk("Customers/GetCustomers", async () => {
+    return await fetch(`https://dashboard-a5184-default-rtdb.firebaseio.com/Customers.json`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then(res => res.json())
+        .then(res => res)
+})
 
 const CustomersSlice = createSlice({
     name: "Customers",
     initialState,
     reducers: {},
     extraReducers: builder => {
-        builder.addCase(AddCustomer.fulfilled, (state, action) => {
-            const id = action.payload.name
+        builder
+            .addCase(AddCustomer.fulfilled, (state, action) => {
+                const id = action.payload.name
 
-            action.meta.arg.func(id)
-        })
+                action.meta.arg.func(id)
+            })
+            .addCase(Get_Customers.fulfilled, (state, action) => {
+                const Customers = Object.entries(action.payload) as T_Customers
+                return Customers
+            })
     },
 })
 
