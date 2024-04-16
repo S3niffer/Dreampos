@@ -6,7 +6,7 @@ import Register from "./Pages/Register"
 import Overview from "./Pages/Overview"
 import Products from "./Pages/Products"
 import AddProducts from "./Pages/AddProducts"
-import Users from "./Pages/Users"
+import Customers from "./Pages/Customers"
 import AddCustomer from "./Pages/AddCustomers"
 import Profile from "./Pages/Profile"
 import OutLetParent from "./Components/OutLetParent"
@@ -40,10 +40,10 @@ const Routes: RouteObject[] = [
             },
             { path: "add-product", element: <AddProducts /> },
             {
-                path: "users-list",
+                path: "customers",
                 element: (
                     <OutLetParent>
-                        <Users />
+                        <Customers />
                     </OutLetParent>
                 ),
             },
