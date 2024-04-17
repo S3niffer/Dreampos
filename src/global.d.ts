@@ -39,6 +39,11 @@ declare global {
         setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
     }
 
+    type EditAdminReducer = {
+        type: keyof Omit<I_UserInLocal, "Id">
+        payload: string
+    }
+
     // inputTag props
     type T_InputTagProps = React.ComponentProps<"input"> & {
         label: string
