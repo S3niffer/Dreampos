@@ -288,7 +288,7 @@ const AddProducts = () => {
                                 </label>
                                 <input
                                     type='text'
-                                    className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main'
+                                    className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main dir-ltr'
                                     id='getProductPrice'
                                     placeholder='قیمت محصول را وارد کنید'
                                     value={_ConvertValueToPersianFormat(ProductsData.Price)}
@@ -299,7 +299,7 @@ const AddProducts = () => {
                                 <label htmlFor=''>شناسه فرد اضافه کننده</label>
                                 <input
                                     type='text'
-                                    className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main cursor-pointer disabled:bg-black/5'
+                                    className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main cursor-pointer disabled:bg-black/5 dir-ltr'
                                     value={ProductsData.AdminId}
                                     disabled
                                 />
@@ -308,7 +308,7 @@ const AddProducts = () => {
                                 <label htmlFor=''>تاریخ</label>
                                 <input
                                     type='text'
-                                    className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main cursor-pointer disabled:bg-black/5'
+                                    className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main cursor-pointer disabled:bg-black/5 dir-ltr'
                                     value={String(new Intl.DateTimeFormat("fa-IR").format(new Date()))}
                                     disabled
                                 />
