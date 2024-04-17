@@ -1,6 +1,6 @@
+import OutLetParent from "../Components/OutLetParent"
+
 const Overview = () => {
-  return (
-    <div>Overview</div>
-  )
+    return <OutLetParent>Overview</OutLetParent>
 }
 export default Overview

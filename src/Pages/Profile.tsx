@@ -1,6 +1,6 @@
+import OutLetParent from "../Components/OutLetParent"
+
 const Profile = () => {
-  return (
-    <div>Profile</div>
-  )
+    return <OutLetParent>Profile</OutLetParent>
 }
 export default Profile
