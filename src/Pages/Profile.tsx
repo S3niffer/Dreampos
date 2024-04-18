@@ -18,9 +18,11 @@ const Profile = () => {
     const [passwordVisibility, setPasswordVisibility] = useState<boolean>(false)
     const [isShowAlert, setIsShowAlert] = useState<boolean>(false)
     const [isShowLoading, setIsShowLoading] = useState<boolean>(false)
+    const [isShowPasswordGetter, setIsShowPasswordGetter] = useState({ status: false, Value: "" })
     const ImageProgress_Ref = useRef(0)
     const getAdminAvatarInput = useRef<HTMLInputElement>(null)
     const Page_Ref = useRef<HTMLDivElement>(null)
+    const Form_Ref = useRef<HTMLFormElement>(null)
     const [CurrentImage, setCurrentImage] = useState<I_CurrentImage>({ link: "", name: "", file: undefined, status: "idle" })
     const InitialState = { ...User, Password: "" }
     const Reducer = (state: I_UserInLocal, action: EditAdminReducer) => {
@@ -91,7 +93,12 @@ const Profile = () => {
     const _EditProfileHandler = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         if (!FormIsvalid) return
-        setIsShowLoading(true)
+        // setIsShowLoading(true)
+        setIsShowPasswordGetter({ status: true, Value: "" })
+        Page_Ref.current?.scrollBy({
+            top: -(Form_Ref.current?.scrollHeight! / 2.5),
+            behavior: "smooth",
+        })
 
         const _AfterEdited = () => {}
         // Dispatch()
@@ -136,6 +143,101 @@ const Profile = () => {
 
     return (
         <OutLetParent DRef={Page_Ref}>
+            {/* password getter */}
+            <div
+                className={`absolute w-full h-full z-20 backdrop-blur-sm flex items-center justify-center ${
+                    isShowPasswordGetter.status ? "block" : "hidden"
+                }`}
+            >
+                <div className='relative p-4 w-full max-w-md max-h-full'>
+                    <div className='relative bg-added-bg-primary rounded-lg shadow shadow-added-border dir-ltr'>
+                        <button
+                            type='button'
+                            className='absolute top-3 end-2.5 bg-transparent hover:bg-added-border rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center group'
+                            data-modal-hide='popup-modal'
+                            onClick={() => {
+                                setIsShowPasswordGetter({ status: false, Value: "" })
+                            }}
+                        >
+                            <svg
+                                className='w-3 h-3 text-added-text-secondary group-hover:text-added-main'
+                                aria-hidden='true'
+                                xmlns='http://www.w3.org/2000/svg'
+                                viewBox='0 0 14 14'
+                            >
+                                <path
+                                    stroke='currentColor'
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                    strokeWidth='2'
+                                    d='m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6'
+                                />
+                            </svg>
+                            <span className='sr-only'>Close modal</span>
+                        </button>
+                        <div className='p-4 md:p-5 text-center'>
+                            <svg
+                                className='mx-auto mb-4 text-added-text-secondary w-12 h-12'
+                                aria-hidden='true'
+                                xmlns='http://www.w3.org/2000/svg'
+                                fill='none'
+                                viewBox='0 0 20 20'
+                            >
+                                <path
+                                    stroke='currentColor'
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                    strokeWidth='2'
+                                    d='M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
+                                />
+                            </svg>
+                            <h3 className='mb-5 text-lg font-normal text-added-text-primary'>
+                                برای ادامه گذرواژه خودتان را وارد کنید
+                            </h3>
+                            <div className='mb-5 outline-none border-added-border border rounded-sm bg-added-bg-secondary w-64 mx-auto relative h-10'>
+                                <input
+                                    type={passwordVisibility ? "text" : "password"}
+                                    className='outline-none absolute left-1 top-2 bottom-1 right-9 bg-transparent'
+                                    value={isShowPasswordGetter.Value}
+                                    onChange={e => {
+                                        setIsShowPasswordGetter(prv => ({ ...prv, Value: e.target.value }))
+                                    }}
+                                />
+                                <div
+                                    onClick={() => {
+                                        setPasswordVisibility(prv => !prv)
+                                    }}
+                                    className='absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer'
+                                >
+                                    {passwordVisibility ? (
+                                        <FiEyeOff className='md:text-lg lg:text-xl' />
+                                    ) : (
+                                        <FiEye className='md:text-lg lg:text-xl' />
+                                    )}
+                                </div>
+                            </div>
+                            <button
+                                data-modal-hide='popup-modal'
+                                type='button'
+                                className='text-white bg-added-main/85 hover:bg-added-main transition-all duration-150  font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center hover:text-blue-700'
+                            >
+                                برو
+                            </button>
+                            <button
+                                data-modal-hide='popup-modal'
+                                type='button'
+                                className='py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700'
+                                onClick={() => {
+                                    setIsShowPasswordGetter({ status: false, Value: "" })
+                                }}
+                            >
+                                بیخیال
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div className='p-4 md:p-5 lg:p-7'>
                 <div className='text-sm md:text-base lg:text-lg'>
                     پروفایل {""}
@@ -183,7 +285,10 @@ const Profile = () => {
                         </div>
                     ) : null}
 
-                    <form onSubmit={_EditProfileHandler}>
+                    <form
+                        onSubmit={_EditProfileHandler}
+                        ref={Form_Ref}
+                    >
                         <div className='h-32 relative'>
                             <div className='h-28 bg-gradient-to-r from-[#EA5455] to-[#FF9F43] rounded-md'></div>
                             <div className='bg-added-bg-secondary rounded-full aspect-square border-[6px] border-added-bg-primary w-36 -bottom-1/3 left-1/2 -translate-x-1/2 absolute flex items-center justify-center overflow-hidden shadow-xl shadow-added-border cursor-pointer group'>
