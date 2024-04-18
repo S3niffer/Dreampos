@@ -59,6 +59,18 @@ export const LogintUserByID = createAsyncThunk("User/LogintUserByID", async ({ i
         .then(res => res)
 })
 
+export const EditUserByID = createAsyncThunk("User/EditUserByID", async ({ id, newUser, _func }: I_EditUserById) => {
+    return await fetch(`https://dashboard-a5184-default-rtdb.firebaseio.com/Users/${id}.json`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+    })
+        .then(res => res.json())
+        .then(res => res)
+})
+
 const SaveUserID_InLocalStorage = (id: I_UserInLocal["Id"]) => {
     localStorage.setItem("userID", JSON.stringify(id))
 }
@@ -174,11 +186,18 @@ const userSlice = createSlice({
                         value: "Logged_In",
                         message: StatusPossibility["Logged_In"],
                     }
-                    action.meta.arg.setIsLoading(false)
+                    if (action.meta.arg.setIsLoading) {
+                        action.meta.arg.setIsLoading(false)
+                    }
                 } else {
                     localStorage.removeItem("userID")
-                    action.meta.arg.setIsLoading(false)
+                    if (action.meta.arg.setIsLoading) {
+                        action.meta.arg.setIsLoading(false)
+                    }
                 }
+            })
+            .addCase(EditUserByID.fulfilled, (state, action) => {
+                action.meta.arg._func()
             })
     },
 })
@@ -186,4 +205,3 @@ const userSlice = createSlice({
 export default userSlice.reducer
 export const Get_UserINFo = (state: T_StoreItems): T_UserIntialState => state.User
 export const { LogOut, LogIn, ChangeStatus } = userSlice.actions
-

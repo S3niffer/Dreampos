@@ -36,7 +36,13 @@ declare global {
 
     interface I_LoginUserById {
         id: string
-        setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+        setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>
+    }
+
+    interface I_EditUserById {
+        id: string
+        newUser: T_UserInDB
+        _func: () => void
     }
 
     type EditAdminReducer = {
