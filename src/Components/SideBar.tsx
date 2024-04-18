@@ -32,7 +32,7 @@ const SideBar = () => {
                         <SideBarLink
                             Icon={LuUser}
                             title='کاربران'
-                            to={"/users-list"}
+                            to={"/customers"}
                         />
                         <SideBarLink
                             Icon={LuUserPlus}
