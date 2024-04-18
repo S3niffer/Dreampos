@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import DefaultAvatar from "../assets/Pics/Default Avatar.png"
-import { Get_UserINFo } from "../Apps/Slices/User"
+import { EditUserByID, Get_UserINFo, LogintUserByID } from "../Apps/Slices/User"
 import { useEffect, useReducer, useRef, useState } from "react"
 import OutLetParent from "../Components/OutLetParent"
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
@@ -16,7 +16,10 @@ const Profile = () => {
     const User = useSelector(Get_UserINFo).user as I_UserInLocal
     const [FormIsvalid, setFormIsvalid] = useState<boolean>(false)
     const [passwordVisibility, setPasswordVisibility] = useState<boolean>(false)
-    const [isShowAlert, setIsShowAlert] = useState<boolean>(false)
+    const [isShowAlert, setIsShowAlert] = useState<{ value: "Success" | "Error"; status: boolean }>({
+        value: "Success",
+        status: false,
+    })
     const [isShowLoading, setIsShowLoading] = useState<boolean>(false)
     const [isShowPasswordGetter, setIsShowPasswordGetter] = useState({ status: false, Value: "" })
     const ImageProgress_Ref = useRef(0)
@@ -42,7 +45,7 @@ const Profile = () => {
             default:
                 state = state
         }
-        if (state.Email && state.Id && state.Name) {
+        if (state.Email && state.Id && state.Name && state.Password ? state.Password.length >= 8 : true) {
             setFormIsvalid(true)
         } else {
             setFormIsvalid(false)
@@ -90,18 +93,56 @@ const Profile = () => {
         )
     }
 
-    const _EditProfileHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    const _SubmitProfileHandler = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         if (!FormIsvalid) return
-        // setIsShowLoading(true)
         setIsShowPasswordGetter({ status: true, Value: "" })
         Page_Ref.current?.scrollBy({
             top: -(Form_Ref.current?.scrollHeight! / 2.5),
             behavior: "smooth",
         })
+    }
 
-        const _AfterEdited = () => {}
-        // Dispatch()
+    const _EditProfileHandler = () => {
+        setIsShowLoading(true)
+        if (User.Password === isShowPasswordGetter.Value) {
+            const _AfterUploaded = () => {
+                setIsShowAlert({ status: true, value: "Success" })
+                setIsShowPasswordGetter(prv => ({ ...prv, status: false }))
+
+                const ImageData: T_UploadedImage<"AdminAvatar"> = {
+                    id: User.Id,
+                    kind: "AdminAvatar",
+                    link: CurrentImage.link,
+                    name: CurrentImage.name,
+                    status: "Used",
+                }
+
+                setTimeout(() => {
+                    Dispatch(LogintUserByID({ id: User.Id }) as unknown as UnknownAction)
+                }, 1000)
+
+                setTimeout(() => {
+                    Dispatch(EditImage(ImageData))
+                    setIsShowAlert({ status: true, value: "Success" })
+                    setIsShowPasswordGetter(prv => ({ ...prv, status: false }))
+                    setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
+                    setIsShowLoading(false)
+                }, 500)
+            }
+
+            const newUser: T_UserInDB = {
+                Email: Data.Email,
+                ImgSrc: Data.ImgSrc,
+                Name: Data.Name,
+                Password: Data.Password ? Data.Password : User.Password,
+            }
+            Dispatch(EditUserByID({ id: User.Id, newUser, _func: _AfterUploaded }) as unknown as UnknownAction)
+        } else {
+            setIsShowAlert({ status: true, value: "Error" })
+            setIsShowPasswordGetter(prv => ({ ...prv, status: false }))
+            setIsShowLoading(false)
+        }
     }
 
     const _DateFormatter = (date: Date): string => {
@@ -127,11 +168,11 @@ const Profile = () => {
         if (isShowAlert) {
             Page_Ref.current?.scrollTo({ top: 0, behavior: "smooth" })
             const FiveSecondsTimeOut = setTimeout(() => {
-                setIsShowAlert(false)
+                setIsShowAlert(prv => ({ ...prv, status: false }))
             }, 5000)
             return () => clearTimeout(FiveSecondsTimeOut)
         }
-    }, [isShowAlert])
+    }, [isShowAlert.status])
     useEffect(() => {
         const state = Data
         if (state.Email && state.Id && state.Name) {
@@ -220,6 +261,7 @@ const Profile = () => {
                                 data-modal-hide='popup-modal'
                                 type='button'
                                 className='text-white bg-added-main/85 hover:bg-added-main transition-all duration-150  font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center hover:text-blue-700'
+                                onClick={_EditProfileHandler}
                             >
                                 برو
                             </button>
@@ -246,25 +288,40 @@ const Profile = () => {
                 </div>
 
                 <div className='bg-added-bg-secondary rounded-md shadow-sm p-2 md:p-4 lg:p-6 mt-16 border border-added-border relative'>
-                    {isShowAlert ? (
-                        <div className={`absolute -top-14 w-full left-0 addCustomerAlert ${isShowAlert ? "active" : ""}`}>
+                    {isShowAlert.status ? (
+                        <div className={`absolute -top-14 w-full left-0 addCustomerAlert ${isShowAlert.status ? "active" : ""}`}>
                             <div
-                                className='bg-green-100 border-green-400 text-green-700 border  px-4 py-3 rounded relative'
+                                className={`${
+                                    isShowAlert.value === "Error"
+                                        ? " bg-red-100 border-red-400 text-red-700 "
+                                        : " bg-green-100 border-green-400 text-green-700 "
+                                }  border  px-4 py-3 rounded relative`}
                                 role='alert'
                             >
-                                <div className='bell absolute top-0 bg-green-400 h-1 right-0'></div>
+                                <div
+                                    className={`bell absolute top-0 ${
+                                        isShowAlert.value === "Error" ? " bg-red-400 " : " bg-green-400 "
+                                    }  h-1 right-0`}
+                                ></div>
                                 <div className='flex items-center text-right dir-rtl text-sm sm:text-base'>
-                                    <strong className='font-bold'>موفق!</strong>
-                                    <span className='pr-1'>محصول مورد نظر با موفقیت اضافه شد .</span>
+                                    <strong className='font-bold'>{isShowAlert.value === "Error" ? "توجه" : "موفق"}!</strong>
+                                    <span className='pr-1'>
+                                        {isShowAlert.value === "Error"
+                                            ? "گذرواژه شما صحیح نمی باشد"
+                                            : "پروفایل شما با موفقیت بروزرسانی شد"}{" "}
+                                        .
+                                    </span>
                                 </div>
                                 <span className='absolute top-0 bottom-0 left-0 px-2 py-2.5 sm:px-4 sm:py-3'>
                                     <svg
-                                        className='fill-current h-6 w-6 text-green-500'
+                                        className={`fill-current h-6 w-6 ${
+                                            isShowAlert.value === "Error" ? " text-red-500 " : " text-green-500 "
+                                        }`}
                                         role='button'
                                         xmlns='http://www.w3.org/2000/svg'
                                         viewBox='0 0 20 20'
                                         onClick={() => {
-                                            setIsShowAlert(false)
+                                            setIsShowAlert(prv => ({ ...prv, status: false }))
                                         }}
                                     >
                                         <title>Close</title>
@@ -286,7 +343,7 @@ const Profile = () => {
                     ) : null}
 
                     <form
-                        onSubmit={_EditProfileHandler}
+                        onSubmit={_SubmitProfileHandler}
                         ref={Form_Ref}
                     >
                         <div className='h-32 relative'>
@@ -322,7 +379,9 @@ const Profile = () => {
                                         }}
                                     >
                                         <img
-                                            src={CurrentImage.link ? CurrentImage.link : DefaultAvatar}
+                                            src={
+                                                CurrentImage.link ? CurrentImage.link : User.ImgSrc ? User.ImgSrc : DefaultAvatar
+                                            }
                                             alt='avatar'
                                             className='aspect-square w-full h-full rounded-full object-cover'
                                         />
