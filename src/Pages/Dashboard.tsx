@@ -16,7 +16,7 @@ const Dashboard = () => {
             </div>
             <div className='flex relative'>
                 <div
-                    className={`w-sideBarWidth fixed md:sticky bg-added-bg-secondary transition-all duration-300 bottom-0 shadow-lg ${
+                    className={`w-sideBarWidth fixed md:sticky bg-added-bg-secondary transition-all duration-300 bottom-0 shadow-lg z-40 ${
                         sideBar ? "right-0" : `-right-sideBarWidth`
                     }`}
                 >
