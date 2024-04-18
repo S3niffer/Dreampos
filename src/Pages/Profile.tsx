@@ -22,7 +22,6 @@ const Profile = () => {
     })
     const [isShowLoading, setIsShowLoading] = useState<boolean>(false)
     const [isShowPasswordGetter, setIsShowPasswordGetter] = useState({ status: false, Value: "" })
-    const ImageProgress_Ref = useRef(0)
     const getAdminAvatarInput = useRef<HTMLInputElement>(null)
     const Page_Ref = useRef<HTMLDivElement>(null)
     const Form_Ref = useRef<HTMLFormElement>(null)
