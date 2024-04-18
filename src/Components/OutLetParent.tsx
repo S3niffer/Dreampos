@@ -7,7 +7,7 @@ const OutLetParent = (props: ComponentProps<"div"> & { children: ReactNode; DRef
                     `}
             ref={props.DRef}
         >
-            <div className='dir-rtl text-right'>{props.children}</div>
+            <div className='dir-rtl text-right relative'>{props.children}</div>
         </div>
     )
 }
