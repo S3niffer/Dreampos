@@ -19,7 +19,7 @@ const Avatar = ({ className }: { className?: string }) => {
                 <img
                     src={User.ImgSrc ? User.ImgSrc : DefaultAvatar}
                     alt='Avatar'
-                    className='h-full w-full'
+                    className='h-full w-full object-cover'
                 />
             </IconeBox>
             <span className='hidden sm:block text-[0.7rem] leading-[0.7rem] md:text-[0.75rem] md:leading-[0.8rem] lg:text-[0.85rem] lg:leading-4  xl:text-[0.9rem] xl:leading-[1.2rem] pl-2'>
