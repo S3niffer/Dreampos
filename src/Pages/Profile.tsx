@@ -119,11 +119,11 @@ const Profile = () => {
 
                 setTimeout(() => {
                     Dispatch(LogintUserByID({ id: User.Id }) as unknown as UnknownAction)
-                }, 1000)
+                }, 600)
 
                 setTimeout(() => {
                     Dispatch(PrugeExtraUsedImage({ basket: ImageData.kind, id: ImageData.id, nameOfImage: ImageData.name }))
-                }, 1500)
+                }, 900)
 
                 setTimeout(() => {
                     Dispatch(EditImage(ImageData))
@@ -131,7 +131,7 @@ const Profile = () => {
                     setIsShowPasswordGetter(prv => ({ ...prv, status: false }))
                     setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
                     setIsShowLoading(false)
-                }, 500)
+                }, 300)
             }
 
             const newUser: T_UserInDB = {
