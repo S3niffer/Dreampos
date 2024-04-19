@@ -5,7 +5,7 @@ import { useEffect, useReducer, useRef, useState } from "react"
 import OutLetParent from "../Components/OutLetParent"
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
 import { storage } from "../Firebase"
-import { AddImage, EditImage } from "../Apps/Slices/UploadedImage"
+import { AddImage, EditImage, PrugeExtraUsedImage } from "../Apps/Slices/UploadedImage"
 import { FiEye, FiEyeOff, FiLock } from "react-icons/fi"
 import { RiImageEditLine, RiDeleteBin2Line } from "react-icons/ri"
 import { UnknownAction } from "@reduxjs/toolkit"
@@ -120,6 +120,10 @@ const Profile = () => {
                 setTimeout(() => {
                     Dispatch(LogintUserByID({ id: User.Id }) as unknown as UnknownAction)
                 }, 1000)
+
+                setTimeout(() => {
+                    Dispatch(PrugeExtraUsedImage({ basket: ImageData.kind, id: ImageData.id, nameOfImage: ImageData.name }))
+                }, 1500)
 
                 setTimeout(() => {
                     Dispatch(EditImage(ImageData))
