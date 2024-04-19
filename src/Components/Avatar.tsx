@@ -28,8 +28,8 @@ const Avatar = ({ className }: { className?: string }) => {
                 </span>
                 {User.Name}
             </span>
-            <div className='absolute opacity-0 -left-1 top-4 -z-50 hidden group-hover:block transition-all duration-300 group-hover:opacity-100 group-hover:z-0 sm:top-6 md:top-8 md:left-12 md:w-full lg:top-10 xl:top-11 lg:left-9'>
-                <div className='bg-transparent w-20 pt-2 p-1 min-[450px]:w-24 sm:w-36 md:w-48 '>
+            <div className='absolute bg-transparent top-4 -left-60 -z-50 min-[400px]:top-5 sm:top-7 md:top-8 lg:top-10 group-hover:-left-1 transition-all duration-300 group-hover:z-50 '>
+                <div className='bg-transparent w-20 pt-2 p-1 min-[450px]:w-24 sm:w-36 xl:w-40'>
                     <div className='bg-added-bg-secondary rounded-sm shadow-md shadow-added-border flex flex-col overflow-hidden'>
                         <Link
                             to={"/profile"}
