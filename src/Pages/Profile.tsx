@@ -351,10 +351,10 @@ const Profile = () => {
                     >
                         <div className='h-32 relative'>
                             <div className='h-28 bg-gradient-to-r from-[#EA5455] to-[#FF9F43] rounded-md'></div>
-                            <div className='bg-added-bg-secondary rounded-full aspect-square border-[6px] border-added-bg-primary w-36 -bottom-1/3 left-1/2 -translate-x-1/2 absolute flex items-center justify-center overflow-hidden shadow-xl shadow-added-border cursor-pointer group'>
+                            <div className='bg-added-bg-secondary rounded-full aspect-square border-[6px] border-added-bg-primary w-36 -bottom-1/3 left-1/2 -translate-x-1/2 absolute flex items-center justify-center shadow-xl shadow-added-border cursor-pointer group hover:border-added-main/50 transition-all duration-150'>
                                 <div className='w-full h-full relative'>
                                     <label
-                                        className='w-full h-full cursor-pointer'
+                                        className='w-full h-full cursor-pointer overflow-hidden'
                                         htmlFor='getAdminAvatar'
                                         onDrop={e => {
                                             e.preventDefault()
@@ -390,22 +390,24 @@ const Profile = () => {
                                         />
                                     </label>
                                     <div
-                                        className='absolute z-10 -bottom-12 right-1/2 translate-x-1/2 flex items-center justify-center text-added-bg-primary bg-added-main p-1 cursor-pointer rounded-full hover:p-2 transition-all duration-300 hover:bottom-5 group-hover:bottom-6'
+                                        className='absolute z-10 bottom-1/2 translate-y-1/2 -right-[70px] flex items-center justify-center text-added-bg-primary bg-added-main py-1 w-20 cursor-pointer rounded-r-full transition-all duration-300 shaodw shadow-md border-2 border-added-main hover:text-added-main hover:bg-added-bg-primary rounded-tl-full gap-2'
                                         onClick={() => {
                                             if (getAdminAvatarInput.current) {
                                                 getAdminAvatarInput.current.click()
                                             }
                                         }}
                                     >
-                                        <RiImageEditLine className='text-inherit text-xl' />
+                                        تغییر
+                                        <RiImageEditLine className='text-inherit text-2xl' />
                                     </div>
                                     <div
-                                        className='absolute z-10 -top-12 right-1/2 translate-x-1/2 flex items-center justify-center text-added-bg-primary bg-added-border p-1 cursor-pointer rounded-full hover:p-2 transition-all duration-300 hover:top-5 group-hover:top-6'
+                                        className='absolute z-10 bottom-1/2 translate-y-1/2 -left-[70px] flex items-center justify-center text-added-bg-primary bg-added-main py-1 w-20 cursor-pointer rounded-l-full  transition-all duration-300 shaodw shadow-md border-2 border-added-main hover:text-added-main hover:bg-added-bg-primary rounded-tr-full gap-2'
                                         onClick={() => {
                                             setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
                                         }}
                                     >
-                                        <RiDeleteBin2Line className='text-inherit text-xl' />
+                                        <RiDeleteBin2Line className='text-inherit text-2xl' />
+                                        حذف
                                     </div>
                                     <input
                                         type='file'
