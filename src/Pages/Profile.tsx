@@ -121,12 +121,24 @@ const Profile = () => {
                     Dispatch(LogintUserByID({ id: User.Id }) as unknown as UnknownAction)
                 }, 600)
 
-                setTimeout(() => {
-                    Dispatch(PrugeExtraUsedImage({ basket: ImageData.kind, id: ImageData.id, nameOfImage: ImageData.name }))
-                }, 900)
+                if (CurrentImage.link && CurrentImage.name) {
+                    setTimeout(() => {
+                        Dispatch(PrugeExtraUsedImage({ basket: ImageData.kind, id: ImageData.id, nameOfImage: ImageData.name }))
+                    }, 900)
+                }
+                if (
+                    Data.ImgSrc ===
+                    "https://firebasestorage.googleapis.com/v0/b/dashboard-a5184.appspot.com/o/AdminAvatar%2FDefault%20Avatar.png?alt=media&token=f0295bd0-4768-45ee-9b6c-5df353df242d"
+                ) {
+                    setTimeout(() => {
+                        Dispatch(PrugeExtraUsedImage({ basket: ImageData.kind, id: ImageData.id, nameOfImage: "Default" }))
+                    }, 900)
+                }
 
                 setTimeout(() => {
-                    Dispatch(EditImage(ImageData))
+                    if (CurrentImage.link && CurrentImage.name) {
+                        Dispatch(EditImage(ImageData))
+                    }
                     setIsShowAlert({ status: true, value: "Success" })
                     setIsShowPasswordGetter(prv => ({ ...prv, status: false }))
                     setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
@@ -382,9 +394,7 @@ const Profile = () => {
                                         }}
                                     >
                                         <img
-                                            src={
-                                                CurrentImage.link ? CurrentImage.link : User.ImgSrc ? User.ImgSrc : DefaultAvatar
-                                            }
+                                            src={Data.ImgSrc ? Data.ImgSrc : User.ImgSrc ? User.ImgSrc : DefaultAvatar}
                                             alt='avatar'
                                             className='aspect-square w-full h-full rounded-full object-cover'
                                         />
@@ -404,6 +414,11 @@ const Profile = () => {
                                         className='absolute z-10 bottom-1/2 translate-y-1/2 -left-[70px] flex items-center justify-center text-added-bg-primary bg-added-main py-1 w-20 cursor-pointer rounded-l-full  transition-all duration-300 shaodw shadow-md border-2 border-added-main hover:text-added-main hover:bg-added-bg-primary rounded-tr-full gap-2'
                                         onClick={() => {
                                             setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
+                                            DataDipatcher({
+                                                type: "ImgSrc",
+                                                payload:
+                                                    "https://firebasestorage.googleapis.com/v0/b/dashboard-a5184.appspot.com/o/AdminAvatar%2FDefault%20Avatar.png?alt=media&token=f0295bd0-4768-45ee-9b6c-5df353df242d",
+                                            })
                                         }}
                                     >
                                         <RiDeleteBin2Line className='text-inherit text-2xl' />
