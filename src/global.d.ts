@@ -134,7 +134,9 @@ declare global {
 
     type T_ProductsInDBWithoutDate = Omit<T_ProductsInDB, "Date">
 
-    type T_Products = [string, T_ProductsInDB][]
+    type T_Product = [string, T_ProductsInDB]
+
+    type T_Products = T_Product[]
 
     type T_AddProductsAction =
         | {
@@ -151,6 +153,10 @@ declare global {
 
     type AddProductActionReducer = { data: T_ProductsInDB; func: (id: string) => void }
 
+    interface EditOrDeleteProduct {
+        target: T_Product | null
+        job: "DELETE" | "EDIT" | "IDLE"
+    }
     //   ADDcustomer
     interface I_CustomerInLocal {
         Id: string
