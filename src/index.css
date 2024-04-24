@@ -203,10 +203,10 @@
 
     @font-face {
         font-family: "irSans";
-        src: url("./Assets/Fonts/IRANSans.eot");
-        src: url("./Assets/Fonts/IRANSans.otf");
-        src: url("./Assets/Fonts/IRANSans.ttf");
-        src: url("./Assets/Fonts/IRANSans.woff");
+        src: url("./assets/Fonts/IRANSans.eot");
+        src: url("./assets/Fonts/IRANSans.otf");
+        src: url("./assets/Fonts/IRANSans.ttf");
+        src: url("./assets/Fonts/IRANSans.woff");
     }
 
     ::-webkit-scrollbar {

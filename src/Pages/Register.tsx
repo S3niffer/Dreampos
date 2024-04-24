@@ -1,4 +1,4 @@
-import loginPic from "../Assets/Pics/login.jpg"
+import loginPic from "./../assets/Pics/login.jpg"
 import { HiOutlineMail } from "react-icons/hi"
 import { FiEye, FiEyeOff, FiUser, FiLock } from "react-icons/fi"
 import { MdErrorOutline } from "react-icons/md"
