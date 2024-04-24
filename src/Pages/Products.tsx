@@ -5,6 +5,7 @@ import OutLetParent from "../Components/OutLetParent"
 import { IoRefresh } from "react-icons/io5"
 import { LuClock } from "react-icons/lu"
 import { formatDistanceToNow } from "date-fns-jalali"
+import { RiDeleteBin2Line, RiEdit2Line } from "react-icons/ri"
 
 function TimeAgo({ date }: { date: Date }) {
     const timeAgo = formatDistanceToNow(new Date(date))
@@ -66,7 +67,7 @@ const Products = () => {
                         className='outline-none bg-added-main text-added-bg-primary border border-added-main rounded-md px-2 py-1 flex items-center  flex-row-reverse gap-1 hover:text-added-main hover:bg-transparent transition-all duration-300'
                         onClick={_GetProducts_Handler}
                     >
-                        <IoRefresh className='text-inherit' />
+                        <IoRefresh className='text-inherit text-xl' />
                         بروزرسانی
                     </button>
                 </div>
@@ -103,13 +104,23 @@ const Products = () => {
                                                 <small>{PersianMonthWord}</small>
                                             </div>
                                         </div>
-                                        <div className='px-2 py-2 cursor-default'>
-                                            <div className='font-semibold text-lg inline-block hover:text-added-main transition duration-500 ease-in-out'>
-                                                {product[1].Name}
+                                        <div className='px-2 py-2 cursor-default flex items-center justify-between flex-col sm:flex-row'>
+                                            <div>
+                                                <div className='font-semibold text-lg block sm:inline-block hover:text-added-main transition duration-500 ease-in-out text-center'>
+                                                    {product[1].Name}
+                                                </div>
+                                                <p className='text-gray-500 text-sm'>
+                                                    {product[1].Price.toLocaleString("fa-IR") + " "}تـومان
+                                                </p>
                                             </div>
-                                            <p className='text-gray-500 text-sm'>
-                                                {product[1].Price.toLocaleString("fa-IR") + " "}تـومان
-                                            </p>
+                                            <div className='flex items-center gap-1 mt-3 sm:mt-0'>
+                                                <div className='p-1 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'>
+                                                    <RiEdit2Line className='text-inherit' />
+                                                </div>
+                                                <div className='p-1 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'>
+                                                    <RiDeleteBin2Line className='text-inherit' />
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className='flex items-center text-xs text-added-text-secondary gap-1.5 p-2 cursor-default'>
                                             <LuClock className='text-inherit' />
