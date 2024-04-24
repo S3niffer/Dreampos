@@ -99,10 +99,7 @@ const UImagesSlice = createSlice({
             state.CustomerAvatar = action.payload.CustomerAvatar
             state.Products = action.payload.Products
         },
-        PrugeExtraUsedImage: (
-            state: T_UploadedImages,
-            action: { type: string; payload: { basket: ImageBaskets; id: string; nameOfImage: string } }
-        ) => {
+        PrugeExtraUsedImage: (state: T_UploadedImages, action: T_PrugeExtraUsedImageAction) => {
             const Images = current(state)[action.payload.basket]
 
             const PurgedImages = Images.filter(image => {
@@ -122,9 +119,28 @@ const UImagesSlice = createSlice({
 
             localStorage.setItem("UploadedImages", JSON.stringify(current(state)))
         },
+        DeleteSingleImage: (state: T_UploadedImages, action: T_DeleteSingleImageAction) => {
+            const Images = current(state)[action.payload.basket]
+
+            const ImagesWithoutThatSingleImage = Images.filter(Image => {
+                if (Image.status === "unUsed") return true
+                if (Image.id !== action.payload.id) return true
+
+                const desertRef = ref(storage, `${action.payload.basket}/${Image.name}`)
+                deleteObject(desertRef)
+                    .then()
+                    .catch(e => console.log(e))
+                return false
+            })
+
+            // @ts-expect-error
+            state[action.payload.basket] = ImagesWithoutThatSingleImage
+
+            localStorage.setItem("UploadedImages", JSON.stringify(current(state)))
+        },
     },
 })
 
 export default UImagesSlice.reducer
 export const Get_Images = (state: T_StoreItems): T_UploadedImages => state.Images
-export const { AddImage, EditImage, WriteToRedux, PrugeExtraUsedImage } = UImagesSlice.actions
+export const { AddImage, EditImage, WriteToRedux, PrugeExtraUsedImage,DeleteSingleImage } = UImagesSlice.actions

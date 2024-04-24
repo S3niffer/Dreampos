@@ -13,6 +13,13 @@ export const AddProduct = createAsyncThunk("Products/AddProduct", async (arg: Ad
         .then(res => res.json())
         .then(res => res)
 })
+export const DeleteProduct = createAsyncThunk("Products/DeleteProduct", async ({ id }: DeleteProductActionReducer) => {
+    return await fetch(`https://dashboard-a5184-default-rtdb.firebaseio.com/Products/${id}.json`, {
+        method: "DELETE",
+    })
+        .then(res => res.json())
+        .then(res => res)
+})
 export const Get_Products = createAsyncThunk("Products/GetProducts", async () => {
     return await fetch(`https://dashboard-a5184-default-rtdb.firebaseio.com/Products.json`, {
         method: "GET",
@@ -38,6 +45,9 @@ const ProductsSlice = createSlice({
             .addCase(Get_Products.fulfilled, (state, action) => {
                 const Products = Object.entries(action.payload) as T_Products
                 return Products
+            })
+            .addCase(DeleteProduct.fulfilled, (state, action) => {
+                action.meta.arg.func(action.meta.arg.id)
             })
     },
 })

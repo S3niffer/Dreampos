@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux"
-import { Get_Products, GettAllProducts } from "../Apps/Slices/Products"
+import { DeleteProduct, Get_Products, GettAllProducts } from "../Apps/Slices/Products"
 import { UnknownAction } from "@reduxjs/toolkit"
 import OutLetParent from "../Components/OutLetParent"
 import { IoRefresh } from "react-icons/io5"
@@ -8,6 +8,7 @@ import { formatDistanceToNow } from "date-fns-jalali"
 import { RiDeleteBin2Line, RiEdit2Line } from "react-icons/ri"
 import { useState } from "react"
 import Portal from "../Components/Portal"
+import { DeleteSingleImage } from "../Apps/Slices/UploadedImage"
 
 function TimeAgo({ date }: { date: Date }) {
     const timeAgo = formatDistanceToNow(new Date(date))
@@ -59,7 +60,17 @@ const Products = () => {
         })
     }
 
-    const _DeleteProduct = () => {}
+    const _DeleteProduct = () => {
+        const _AfterDelete = (id: T_Product[0]) => {
+            setTimeout(() => {
+                Dispatch(DeleteSingleImage({ basket: "Products", id }))
+                setSelectedProduct({ target: null, job: "IDLE" })
+            }, 300)
+        }
+        if (!selectedProduct.target) return
+        Dispatch(DeleteProduct({ id: selectedProduct.target[0], func: _AfterDelete }) as unknown as UnknownAction)
+    }
+
     const _EditProduct = () => {}
 
     return (

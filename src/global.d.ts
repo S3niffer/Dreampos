@@ -119,6 +119,8 @@ declare global {
 
     type T_SingleImageChangeAction = { type: string; payload: T_UploadedImage<ImageBaskets> }
     type T_AllImageChangeAction = { type: string; payload: T_UploadedImages }
+    type T_PrugeExtraUsedImageAction = { type: string; payload: { basket: ImageBaskets; id: string; nameOfImage: string } }
+    type T_DeleteSingleImageAction = { type: string; payload: { basket: ImageBaskets; id: string } }
 
     // AddProducts Values
     interface I_ProductInlocal {
@@ -152,6 +154,8 @@ declare global {
           }
 
     type AddProductActionReducer = { data: T_ProductsInDB; func: (id: string) => void }
+
+    type DeleteProductActionReducer = { id: T_Product[0]; func: (id: T_Product[0]) => void }
 
     interface EditOrDeleteProduct {
         target: T_Product | null
