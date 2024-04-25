@@ -6,7 +6,7 @@ import { IoRefresh } from "react-icons/io5"
 import { LuClock } from "react-icons/lu"
 import { formatDistanceToNow } from "date-fns-jalali"
 import { RiDeleteBin2Line, RiEdit2Line } from "react-icons/ri"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Portal from "../Components/Portal"
 import { DeleteSingleImage } from "../Apps/Slices/UploadedImage"
 import Loading from "../Components/Loading"
@@ -33,6 +33,7 @@ const Products = () => {
     }
     const [isShowAlert, setIsShowAlert] = useState<{ status: boolean; job: "DELETE" | "EDIT" }>({ status: false, job: "DELETE" })
     const [isShowLoading, setIsShowLoading] = useState<boolean>(false)
+    const Page_Ref = useRef<HTMLDivElement>(null)
 
     const persianMonths = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
 
@@ -83,16 +84,17 @@ const Products = () => {
     const _EditProduct = () => {}
 
     useEffect(() => {
-        if (isShowAlert) {
+        if (isShowAlert.status) {
+            Page_Ref.current?.scrollTo({ top: 0, behavior: "smooth" })
             const FiveSecondsTimeOut = setTimeout(() => {
                 setIsShowAlert({ status: false, job: "DELETE" })
             }, 5000)
             return () => clearTimeout(FiveSecondsTimeOut)
         }
-    }, [isShowAlert])
+    }, [isShowAlert.status])
 
     return (
-        <OutLetParent>
+        <OutLetParent DRef={Page_Ref}>
             <div className='p-4 md:p-5 lg:p-7'>
                 <div className='flex items-center justify-between'>
                     <div className='text-sm md:text-base lg:text-lg'>
