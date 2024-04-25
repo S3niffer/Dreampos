@@ -43,9 +43,13 @@ const ProductsSlice = createSlice({
                 action.meta.arg.func(id)
             })
             .addCase(Get_Products.fulfilled, (state, action) => {
-                const Products = Object.entries(action.payload) as T_Products
+                if (action.payload) {
+                    const Products = Object.entries(action.payload) as T_Products
+                    action.meta.arg()
+                    return Products
+                }
                 action.meta.arg()
-                return Products
+                return []
             })
             .addCase(DeleteProduct.fulfilled, (state, action) => {
                 action.meta.arg.func(action.meta.arg.id)
