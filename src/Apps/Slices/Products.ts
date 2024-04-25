@@ -20,7 +20,7 @@ export const DeleteProduct = createAsyncThunk("Products/DeleteProduct", async ({
         .then(res => res.json())
         .then(res => res)
 })
-export const Get_Products = createAsyncThunk("Products/GetProducts", async () => {
+export const Get_Products = createAsyncThunk("Products/GetProducts", async (func: () => void) => {
     return await fetch(`https://dashboard-a5184-default-rtdb.firebaseio.com/Products.json`, {
         method: "GET",
         headers: {
@@ -44,6 +44,7 @@ const ProductsSlice = createSlice({
             })
             .addCase(Get_Products.fulfilled, (state, action) => {
                 const Products = Object.entries(action.payload) as T_Products
+                action.meta.arg()
                 return Products
             })
             .addCase(DeleteProduct.fulfilled, (state, action) => {

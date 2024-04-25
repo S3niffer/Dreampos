@@ -6,9 +6,10 @@ import { IoRefresh } from "react-icons/io5"
 import { LuClock } from "react-icons/lu"
 import { formatDistanceToNow } from "date-fns-jalali"
 import { RiDeleteBin2Line, RiEdit2Line } from "react-icons/ri"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Portal from "../Components/Portal"
 import { DeleteSingleImage } from "../Apps/Slices/UploadedImage"
+import Loading from "../Components/Loading"
 
 function TimeAgo({ date }: { date: Date }) {
     const timeAgo = formatDistanceToNow(new Date(date))
@@ -24,8 +25,14 @@ const Products = () => {
     const Dispatch = useDispatch()
     const Products = useSelector(GettAllProducts)
     const _GetProducts_Handler = () => {
-        Dispatch(Get_Products() as unknown as UnknownAction)
+        setIsShowLoading(true)
+        const removeLoading = () => {
+            setIsShowLoading(false)
+        }
+        Dispatch(Get_Products(removeLoading) as unknown as UnknownAction)
     }
+    const [isShowAlert, setIsShowAlert] = useState<{ status: boolean; job: "DELETE" | "EDIT" }>({ status: false, job: "DELETE" })
+    const [isShowLoading, setIsShowLoading] = useState<boolean>(false)
 
     const persianMonths = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
 
@@ -64,7 +71,9 @@ const Products = () => {
         const _AfterDelete = (id: T_Product[0]) => {
             setTimeout(() => {
                 Dispatch(DeleteSingleImage({ basket: "Products", id }))
-                setSelectedProduct({ target: null, job: "IDLE" })
+                setSelectedProduct(prv => ({ ...prv, job: "IDLE" }))
+                setIsShowAlert({ status: true, job: "DELETE" })
+                _GetProducts_Handler()
             }, 300)
         }
         if (!selectedProduct.target) return
@@ -72,6 +81,15 @@ const Products = () => {
     }
 
     const _EditProduct = () => {}
+
+    useEffect(() => {
+        if (isShowAlert) {
+            const FiveSecondsTimeOut = setTimeout(() => {
+                setIsShowAlert({ status: false, job: "DELETE" })
+            }, 5000)
+            return () => clearTimeout(FiveSecondsTimeOut)
+        }
+    }, [isShowAlert])
 
     return (
         <OutLetParent>
@@ -91,7 +109,48 @@ const Products = () => {
                         بروزرسانی
                     </button>
                 </div>
-                <div className='mt-8'>
+                <div className='mt-16 relative'>
+                    {isShowAlert.status ? (
+                        <div className={`absolute -top-14 w-full left-0 addCustomerAlert ${isShowAlert ? "active" : ""}`}>
+                            <div
+                                className='bg-green-100 border-green-400 text-green-700 border  px-4 py-3 rounded relative'
+                                role='alert'
+                            >
+                                <div className='bell absolute top-0 bg-green-400 h-1 right-0'></div>
+                                <div className='flex items-center text-right dir-rtl text-sm sm:text-base'>
+                                    <strong className='font-bold'>موفق!</strong>
+                                    <span className='pr-1'>
+                                        محصول مورد نظر با موفقیت {isShowAlert.job === "DELETE" ? "حذف" : "بروزرسانی"} شد .
+                                    </span>
+                                </div>
+                                <span className='absolute top-0 bottom-0 left-0 px-2 py-2.5 sm:px-4 sm:py-3'>
+                                    <svg
+                                        className='fill-current h-6 w-6 text-green-500'
+                                        role='button'
+                                        xmlns='http://www.w3.org/2000/svg'
+                                        viewBox='0 0 20 20'
+                                        onClick={() => {
+                                            setIsShowAlert({ status: false, job: "DELETE" })
+                                        }}
+                                    >
+                                        <title>Close</title>
+                                        <path d='M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z' />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    ) : null}
+
+                    {isShowLoading ? (
+                        <div className='absolute w-full h-full z-40 backdrop-blur-[2px] left-0 top-0 rounded overflow-hidden'>
+                            <div className='flex h-full items-center justify-center'>
+                                <div className='-translate-x-1/2 -translate-y-1/2'>
+                                    <Loading />
+                                </div>
+                            </div>
+                        </div>
+                    ) : null}
+
                     {Products.length !== 0 ? (
                         <div className='grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
                             {Products.map(product => {
@@ -163,7 +222,7 @@ const Products = () => {
                             })}
                         </div>
                     ) : (
-                        <div className='text-center'>
+                        <div className='text-center pb-10'>
                             <span className='border-b border-added-main inline-block mb-2 pb-1.5 md:text-lg lg:text-xl'>
                                 درحال حاضر محصولی موجود نمی باشد!
                             </span>
