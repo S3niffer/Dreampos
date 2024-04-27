@@ -161,6 +161,8 @@ declare global {
         target: T_Product | null
         job: "DELETE" | "EDIT" | "IDLE"
     }
+
+    type EditProductActionReducer = { id: T_Product[0]; newData: T_ProductsInDB; _func: () => void }
     //   ADDcustomer
     interface I_CustomerInLocal {
         Id: string

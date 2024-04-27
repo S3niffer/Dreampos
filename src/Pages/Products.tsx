@@ -1,15 +1,19 @@
 import { useDispatch, useSelector } from "react-redux"
-import { DeleteProduct, Get_Products, GettAllProducts } from "../Apps/Slices/Products"
+import { DeleteProduct, EditProduct, Get_Products, GettAllProducts } from "../Apps/Slices/Products"
 import { UnknownAction } from "@reduxjs/toolkit"
 import OutLetParent from "../Components/OutLetParent"
+import UploadSVG from "../assets/Pics/upload.svg"
 import { IoRefresh } from "react-icons/io5"
 import { LuClock } from "react-icons/lu"
 import { formatDistanceToNow } from "date-fns-jalali"
 import { RiDeleteBin2Line, RiEdit2Line } from "react-icons/ri"
 import { useEffect, useRef, useState } from "react"
 import Portal from "../Components/Portal"
-import { DeleteSingleImage } from "../Apps/Slices/UploadedImage"
+import { AddImage, DeleteSingleImage } from "../Apps/Slices/UploadedImage"
 import Loading from "../Components/Loading"
+import { getDownloadURL, uploadBytesResumable, ref } from "firebase/storage"
+import { storage } from "../Firebase"
+import { FiLock } from "react-icons/fi"
 
 function TimeAgo({ date }: { date: Date }) {
     const timeAgo = formatDistanceToNow(new Date(date))
@@ -33,7 +37,57 @@ const Products = () => {
     }
     const [isShowAlert, setIsShowAlert] = useState<{ status: boolean; job: "DELETE" | "EDIT" }>({ status: false, job: "DELETE" })
     const [isShowLoading, setIsShowLoading] = useState<boolean>(false)
+    const [formISvalid, setFormIsvalid] = useState<boolean>(false)
+    const [valuesForEdit, setValuesForEdit] = useState<{ Name: string; Price: number; ImgSrce: string }>({
+        Name: "",
+        ImgSrce: "",
+        Price: 0,
+    })
+    const _UploadImageHandler: T_UploadImageHandler = (date, file, setState, progressRef, basketName) => {
+        const storageRef = ref(storage, String(`${basketName}/(${date})${file.name}`))
+        const uploadTask = uploadBytesResumable(storageRef, file)
+
+        uploadTask.on(
+            "state_changed",
+            snapshot => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                progressRef = progress
+
+                switch (snapshot.state) {
+                    case "paused":
+                        setState(prv => ({ ...prv, status: "paused" }))
+                        break
+                    case "running":
+                        setState(prv => ({ ...prv, status: "running" }))
+                        break
+                    case "canceled":
+                    case "error":
+                        setState(prv => ({ ...prv, file: undefined, status: "failed" }))
+                        break
+                }
+            },
+            error => {
+                setState(prv => ({ ...prv, file: undefined, status: "failed" }))
+                console.log(error)
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
+                    const ImageData: T_UploadedImage<typeof basketName> = {
+                        status: "unUsed",
+                        link: downloadURL,
+                        name: `(${date})${file.name}`,
+                        kind: `${basketName}`,
+                    }
+                    Dispatch(AddImage(ImageData))
+                    setState({ link: downloadURL, name: ImageData.name, file: undefined, status: "idle" })
+                    progressRef = 0
+                })
+            }
+        )
+    }
+    const [CurrentImage, setCurrentImage] = useState<I_CurrentImage>({ link: "", name: "", file: undefined, status: "idle" })
     const Page_Ref = useRef<HTMLDivElement>(null)
+    const ImageProgress_Ref = useRef(0)
 
     const persianMonths = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
 
@@ -68,12 +122,65 @@ const Products = () => {
         })
     }
 
+    const _DateFormatter = (date: Date): string => {
+        return `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, "0")}${date
+            .getDate()
+            .toString()
+            .padStart(2, "0")}_${
+            date.getHours() === 0 ? "12am" : date.getHours() > 12 ? date.getHours() - 12 + "pm" : date.getHours() + "am"
+        }${date.getMinutes().toString().padStart(2, "0")}min`
+    }
+
+    const _ConvertValueToPersianFormat = (value: number): string => {
+        return (+value).toLocaleString("fa-IR")
+    }
+
+    const _HandleAddingPersianFormatToNormalAndSaveInState = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const removePersianDigitsAndSeparators = (str: string) => {
+            return str.replace(/[۰-۹٫]/g, match => {
+                switch (match) {
+                    case "۰":
+                        return "0"
+                    case "۱":
+                        return "1"
+                    case "۲":
+                        return "2"
+                    case "۳":
+                        return "3"
+                    case "۴":
+                        return "4"
+                    case "۵":
+                        return "5"
+                    case "۶":
+                        return "6"
+                    case "۷":
+                        return "7"
+                    case "۸":
+                        return "8"
+                    case "۹":
+                        return "9"
+                    case "٫":
+                        return "."
+                    default:
+                        return ""
+                }
+            })
+        }
+
+        const enteredValue = removePersianDigitsAndSeparators(event.target.value).toString().replace(/٬/g, "")
+
+        if (!isNaN(Number(enteredValue))) {
+            setValuesForEdit(prv => ({ ...prv, Price: Number(enteredValue) }))
+        }
+    }
+
     const _DeleteProduct = () => {
         const _AfterDelete = (id: T_Product[0]) => {
             setTimeout(() => {
                 Dispatch(DeleteSingleImage({ basket: "Products", id }))
                 setSelectedProduct(prv => ({ ...prv, job: "IDLE" }))
                 setIsShowAlert({ status: true, job: "DELETE" })
+                setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
                 _GetProducts_Handler()
             }, 300)
         }
@@ -81,7 +188,29 @@ const Products = () => {
         Dispatch(DeleteProduct({ id: selectedProduct.target[0], func: _AfterDelete }) as unknown as UnknownAction)
     }
 
-    const _EditProduct = () => {}
+    const _EditProduct = () => {
+        const { ImgSrce, Name, Price } = valuesForEdit
+        if (!ImgSrce || !Name || !Price || !selectedProduct.target) return
+
+        const newData: T_ProductsInDB = {
+            AdminId: selectedProduct.target[1].AdminId,
+            Date: selectedProduct.target[1].Date,
+            ImgSrce,
+            Name,
+            Price,
+        }
+
+        const _AfterEdit = () => {
+            setTimeout(() => {
+                setSelectedProduct(prv => ({ ...prv, job: "IDLE" }))
+                setIsShowAlert({ status: true, job: "EDIT" })
+                setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
+                _GetProducts_Handler()
+            }, 300)
+        }
+
+        Dispatch(EditProduct({ id: selectedProduct.target[0], _func: _AfterEdit, newData }) as unknown as UnknownAction)
+    }
 
     useEffect(() => {
         if (isShowAlert.status) {
@@ -92,6 +221,26 @@ const Products = () => {
             return () => clearTimeout(FiveSecondsTimeOut)
         }
     }, [isShowAlert.status])
+
+    useEffect(() => {
+        if (!CurrentImage.file) return
+
+        _UploadImageHandler(_DateFormatter(new Date()), CurrentImage.file, setCurrentImage, ImageProgress_Ref.current, "Products")
+    }, [CurrentImage.file])
+
+    useEffect(() => {
+        if (CurrentImage.link === "" || CurrentImage.name === "") return
+
+        setValuesForEdit(prv => ({ ...prv, ImgSrce: CurrentImage.link }))
+    }, [CurrentImage.link, CurrentImage.name])
+
+    useEffect(() => {
+        if (valuesForEdit.ImgSrce && valuesForEdit.Name && valuesForEdit.Price) {
+            setFormIsvalid(true)
+        } else {
+            setFormIsvalid(false)
+        }
+    }, [valuesForEdit])
 
     return (
         <OutLetParent DRef={Page_Ref}>
@@ -122,7 +271,11 @@ const Products = () => {
                                 <div className='flex items-center text-right dir-rtl text-sm sm:text-base'>
                                     <strong className='font-bold'>موفق!</strong>
                                     <span className='pr-1'>
-                                        محصول مورد نظر با موفقیت {isShowAlert.job === "DELETE" ? "حذف" : "بروزرسانی"} شد .
+                                        محصول مورد نظر با موفقیت{" "}
+                                        <strong className='font-bold underline underline-offset-8'>
+                                            {isShowAlert.job === "DELETE" ? "حذف" : "ویرایش"}
+                                        </strong>{" "}
+                                        شد .
                                     </span>
                                 </div>
                                 <span className='absolute top-0 bottom-0 left-0 px-2 py-2.5 sm:px-4 sm:py-3'>
@@ -199,6 +352,11 @@ const Products = () => {
                                                     className='p-1 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
                                                     onClick={() => {
                                                         setSelectedProduct({ target: product, job: "EDIT" })
+                                                        setValuesForEdit({
+                                                            ImgSrce: product[1].ImgSrce,
+                                                            Name: product[1].Name,
+                                                            Price: product[1].Price,
+                                                        })
                                                     }}
                                                 >
                                                     <RiEdit2Line className='text-inherit' />
@@ -275,6 +433,124 @@ const Products = () => {
                                         ? "آیا از حذف محصول مورد نظر  اطمینان دارید؟"
                                         : "محصول مورد نظر را ویرایش کنید"}
                                 </h3>
+                                {selectedProduct.job === "EDIT" ? (
+                                    <div className='mb-5 border rounded border-added-border p-2'>
+                                        <form className='text-added-text-primary text-right dir-rtl'>
+                                            <div className='flex flex-col gap-2.5 p-1'>
+                                                <label
+                                                    htmlFor='getProductName'
+                                                    className='cursor-pointer'
+                                                >
+                                                    عنوان
+                                                </label>
+                                                <input
+                                                    type='text'
+                                                    className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main'
+                                                    id='getProductName'
+                                                    placeholder='عنوان محصول را وارد کنید'
+                                                    value={valuesForEdit.Name}
+                                                    onChange={e => {
+                                                        setValuesForEdit(prv => ({ ...prv, Name: e.target.value }))
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className='flex flex-col gap-2.5 p-1'>
+                                                <label
+                                                    htmlFor='getProductPrice'
+                                                    className='cursor-pointer'
+                                                >
+                                                    قیمت
+                                                </label>
+                                                <input
+                                                    type='text'
+                                                    className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main dir-ltr font-irSans'
+                                                    id='getProductPrice'
+                                                    placeholder='قیمت محصول را وارد کنید'
+                                                    value={_ConvertValueToPersianFormat(valuesForEdit.Price)}
+                                                    onChange={_HandleAddingPersianFormatToNormalAndSaveInState}
+                                                />
+                                            </div>
+                                            <div className='flex'>
+                                                <div className='flex flex-col gap-2.5 p-1 w-3/6 sm:w-4/6'>
+                                                    <label
+                                                        htmlFor='getProductImage'
+                                                        className='cursor-pointer w-28'
+                                                    >
+                                                        تصویر محصول
+                                                    </label>
+                                                    <label
+                                                        htmlFor='getProductImage'
+                                                        className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 cursor-pointer flex justify-center items-center flex-col gap-2 bg-added-bg-secondary focus:border-added-main hover:bg-added-border'
+                                                        onDrop={e => {
+                                                            e.preventDefault()
+                                                            e.stopPropagation()
+                                                            ;(e.target as HTMLElement).classList.remove("hovered")
+
+                                                            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                                                                setCurrentImage(prv => ({
+                                                                    ...prv,
+                                                                    file: e.dataTransfer.files[0],
+                                                                }))
+                                                            }
+                                                        }}
+                                                        onDragEnter={e => {
+                                                            e.preventDefault()
+                                                            e.stopPropagation()
+                                                            ;(e.target as HTMLElement).classList.add("hovered")
+                                                        }}
+                                                        onDragOver={e => {
+                                                            e.preventDefault()
+                                                            e.stopPropagation()
+                                                            ;(e.target as HTMLElement).classList.add("hovered")
+                                                        }}
+                                                        onDragLeave={e => {
+                                                            e.preventDefault()
+                                                            e.stopPropagation()
+                                                            ;(e.target as HTMLElement).classList.remove("hovered")
+                                                        }}
+                                                    >
+                                                        <input
+                                                            type='file'
+                                                            className='hidden'
+                                                            id='getProductImage'
+                                                            accept='image/*'
+                                                            onChange={e => {
+                                                                const files = e.target.files
+                                                                if (!files) return
+                                                                setCurrentImage(prv => ({ ...prv, file: files[0] }))
+                                                            }}
+                                                            disabled={CurrentImage.status !== "idle"}
+                                                        />
+                                                        <img
+                                                            src={UploadSVG}
+                                                            alt='Icon'
+                                                            className='sm:w-12 lg:w-16'
+                                                        />
+                                                        <span className='text-added-text-secondary text-xs text-center md:text-sm lg:text-base'>
+                                                            بکشید و رها کنید برای انتخاب عکس <br /> یا کلیک کنید
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                                <div className='w-3/6 sm:w-2/6 p-1'>
+                                                    <div className='pb-2.5'>پیش نمایش</div>
+                                                    <div className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 flex justify-center items-center flex-col gap-2 bg-added-bg-secondary focus:border-added-main dir-rtl h-[131px] min-[303px]:h-[115px] sm:h-[106px] md:h-[115px] lg:h-[170px]'>
+                                                        {CurrentImage.status === "running" ? (
+                                                            "درحال بارگذاری " + ImageProgress_Ref.current + "%"
+                                                        ) : (
+                                                            <img
+                                                                src={
+                                                                    CurrentImage.link ? CurrentImage.link : valuesForEdit.ImgSrce
+                                                                }
+                                                                className='w-full h-full object-contain'
+                                                                alt='product'
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                ) : null}
                                 {selectedProduct.job === "DELETE" ? (
                                     <button
                                         data-modal-hide='popup-modal'
@@ -288,10 +564,12 @@ const Products = () => {
                                     <button
                                         data-modal-hide='popup-modal'
                                         type='button'
-                                        className='text-white bg-added-main/80 hover:bg-added-main focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center'
+                                        className='text-white bg-added-main/80 hover:bg-added-main focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center disabled:bg-added-border disabled:border-added-border disabled:text-added-text-primary'
                                         onClick={_EditProduct}
+                                        disabled={!formISvalid}
                                     >
                                         ارسال
+                                        {formISvalid ? null : <FiLock className='mb-1' />}
                                     </button>
                                 )}
                                 <button
