@@ -252,6 +252,10 @@
         border: 1px solid hsl(var(--main));
     }
 
+    .hasINput:has(input:focus) {
+        background: hsl(var(--bg-secondary)) !important;
+    }
+
     @media screen and (min-width: 450px) {
         :root {
             --topBarHeight: 40px;
