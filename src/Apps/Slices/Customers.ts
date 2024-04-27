@@ -13,7 +13,7 @@ export const AddCustomer = createAsyncThunk("Customers/AddCustomer", async (arg:
         .then(res => res.json())
         .then(res => res)
 })
-export const Get_Customers = createAsyncThunk("Customers/GetCustomers", async () => {
+export const Get_Customers = createAsyncThunk("Customers/GetCustomers", async (func: () => void) => {
     return await fetch(`https://dashboard-a5184-default-rtdb.firebaseio.com/Customers.json`, {
         method: "GET",
         headers: {
@@ -36,8 +36,13 @@ const CustomersSlice = createSlice({
                 action.meta.arg.func()
             })
             .addCase(Get_Customers.fulfilled, (state, action) => {
-                const Customers = Object.entries(action.payload) as T_Customers
-                return Customers
+                if (action.payload) {
+                    const Customers = Object.entries(action.payload) as T_Customers
+                    action.meta.arg()
+                    return Customers
+                }
+                action.meta.arg()
+                return []
             })
     },
 })
