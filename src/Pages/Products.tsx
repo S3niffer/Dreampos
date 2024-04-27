@@ -257,7 +257,11 @@ const Products = () => {
 
         const ordredProducts = [...Products].slice(startPoint, endPoint)
 
-        setPaginationValues(prv => ({ ...prv, Products: ordredProducts, totalPages }))
+        if (PaginationValues.Page > totalPages) {
+            setPaginationValues(prv => ({ ...prv, Products: ordredProducts, totalPages, Page: 1 }))
+        } else {
+            setPaginationValues(prv => ({ ...prv, Products: ordredProducts, totalPages }))
+        }
     }, [Products, PaginationValues.Page, PaginationValues.ProductsperPage])
 
     return (
