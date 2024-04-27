@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { UnknownAction } from "@reduxjs/toolkit"
 import { Get_Customers, GettAllCustomers } from "../Apps/Slices/Customers"
@@ -11,6 +11,8 @@ const Customers = () => {
     const Customers = useSelector(GettAllCustomers)
     const [isShowLoading, setIsShowLoading] = useState<boolean>(false)
     const [isShowAlert, setIsShowAlert] = useState<{ status: boolean; job: "DELETE" | "EDIT" }>({ status: false, job: "DELETE" })
+    const Page_Ref = useRef<HTMLDivElement>(null)
+
 
     const _GetProducts_Handler = () => {
         setIsShowLoading(true)
@@ -20,8 +22,18 @@ const Customers = () => {
         Dispatch(Get_Customers(removeLoading) as unknown as UnknownAction)
     }
 
+    useEffect(() => {
+        if (isShowAlert.status) {
+            Page_Ref.current?.scrollTo({ top: 0, behavior: "smooth" })
+            const FiveSecondsTimeOut = setTimeout(() => {
+                setIsShowAlert({ status: false, job: "DELETE" })
+            }, 5000)
+            return () => clearTimeout(FiveSecondsTimeOut)
+        }
+    }, [isShowAlert.status])
+
     return (
-        <OutLetParent>
+        <OutLetParent DRef={Page_Ref}>
             <div className='p-4 md:p-5 lg:p-7'>
                 <div className='flex items-center justify-between'>
                     <div className='text-sm md:text-base lg:text-lg'>
