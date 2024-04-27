@@ -5,7 +5,6 @@ import { useEffect, useReducer, useRef, useState } from "react"
 import { FiEye, FiEyeOff, FiLock } from "react-icons/fi"
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
 import { storage } from "../Firebase"
-import { AddImage, EditImage } from "../Apps/Slices/UploadedImage"
 import { UnknownAction } from "@reduxjs/toolkit"
 import { AddCustomer } from "../Apps/Slices/Customers"
 import Loading from "../Components/Loading"
@@ -82,26 +81,15 @@ const AddCustomers = () => {
         if (!FormIsvalid) return
         setIsShowLoading(true)
 
-        const _addUploadedImageStore = (id: string) => {
-            const ImageData: T_UploadedImage<"CustomerAvatar"> = {
-                id,
-                kind: "CustomerAvatar",
-                link: CurrentImage.link,
-                name: CurrentImage.name,
-                status: "Used",
-            }
+        const _AfterAdded = () => {
             _ResetValues()
             setIsShowLoading(false)
             setIsShowAlert({ status: true, type: "Success" })
-
-            setTimeout(() => {
-                Dispatch(EditImage(ImageData))
-            }, 500)
         }
 
         if (Data.Password === secondaryPassword) {
             Dispatch(
-                AddCustomer({ data: { ...Data, Date: new Date() }, func: _addUploadedImageStore }) as unknown as UnknownAction
+                AddCustomer({ data: { ...Data, Date: new Date() }, func: _AfterAdded }) as unknown as UnknownAction
             )
         } else {
             setIsShowAlert({ status: true, type: "Danger" })
@@ -144,7 +132,6 @@ const AddCustomers = () => {
                         name: `(${date})${file.name}`,
                         kind: `${basketName}`,
                     }
-                    Dispatch(AddImage(ImageData))
                     setState({ link: downloadURL, name: ImageData.name, file: undefined, status: "idle" })
                     progressRef = 0
                 })

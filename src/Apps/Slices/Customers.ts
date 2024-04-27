@@ -33,7 +33,7 @@ const CustomersSlice = createSlice({
             .addCase(AddCustomer.fulfilled, (state, action) => {
                 const id = action.payload.name
 
-                action.meta.arg.func(id)
+                action.meta.arg.func()
             })
             .addCase(Get_Customers.fulfilled, (state, action) => {
                 const Customers = Object.entries(action.payload) as T_Customers

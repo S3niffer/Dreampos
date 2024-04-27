@@ -5,7 +5,6 @@ import { useEffect, useReducer, useRef, useState } from "react"
 import OutLetParent from "../Components/OutLetParent"
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
 import { storage } from "../Firebase"
-import { AddImage, EditImage, PrugeExtraUsedImage } from "../Apps/Slices/UploadedImage"
 import { FiEye, FiEyeOff, FiLock } from "react-icons/fi"
 import { RiImageEditLine, RiDeleteBin2Line } from "react-icons/ri"
 import { UnknownAction } from "@reduxjs/toolkit"
@@ -85,7 +84,6 @@ const Profile = () => {
                         name: `(${date})${file.name}`,
                         kind: `${basketName}`,
                     }
-                    Dispatch(AddImage(ImageData))
                     setState({ link: downloadURL, name: ImageData.name, file: undefined, status: "idle" })
                 })
             }
@@ -109,36 +107,11 @@ const Profile = () => {
                 setIsShowAlert({ status: true, value: "Success" })
                 setIsShowPasswordGetter(prv => ({ ...prv, status: false }))
 
-                const ImageData: T_UploadedImage<"AdminAvatar"> = {
-                    id: User.Id,
-                    kind: "AdminAvatar",
-                    link: CurrentImage.link,
-                    name: CurrentImage.name,
-                    status: "Used",
-                }
-
                 setTimeout(() => {
                     Dispatch(LogintUserByID({ id: User.Id }) as unknown as UnknownAction)
                 }, 600)
 
-                if (CurrentImage.link && CurrentImage.name) {
-                    setTimeout(() => {
-                        Dispatch(PrugeExtraUsedImage({ basket: ImageData.kind, id: ImageData.id, nameOfImage: ImageData.name }))
-                    }, 900)
-                }
-                if (
-                    Data.ImgSrc ===
-                    "https://firebasestorage.googleapis.com/v0/b/dashboard-a5184.appspot.com/o/AdminAvatar%2FDefault%20Avatar.png?alt=media&token=f0295bd0-4768-45ee-9b6c-5df353df242d"
-                ) {
-                    setTimeout(() => {
-                        Dispatch(PrugeExtraUsedImage({ basket: ImageData.kind, id: ImageData.id, nameOfImage: "Default" }))
-                    }, 900)
-                }
-
                 setTimeout(() => {
-                    if (CurrentImage.link && CurrentImage.name) {
-                        Dispatch(EditImage(ImageData))
-                    }
                     setIsShowAlert({ status: true, value: "Success" })
                     setIsShowPasswordGetter(prv => ({ ...prv, status: false }))
                     setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })

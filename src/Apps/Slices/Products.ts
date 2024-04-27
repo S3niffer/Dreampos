@@ -49,9 +49,7 @@ const ProductsSlice = createSlice({
     extraReducers: builder => {
         builder
             .addCase(AddProduct.fulfilled, (state, action) => {
-                const id = action.payload.name
-
-                action.meta.arg.func(id)
+                action.meta.arg.func()
             })
             .addCase(Get_Products.fulfilled, (state, action) => {
                 if (action.payload) {
@@ -63,8 +61,9 @@ const ProductsSlice = createSlice({
                 return []
             })
             .addCase(DeleteProduct.fulfilled, (state, action) => {
-                action.meta.arg.func(action.meta.arg.id)
-            }).addCase(EditProduct.fulfilled, (state,action) => {
+                action.meta.arg.func()
+            })
+            .addCase(EditProduct.fulfilled, (state, action) => {
                 action.meta.arg._func()
             })
     },

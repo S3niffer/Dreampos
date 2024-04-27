@@ -108,20 +108,6 @@ declare global {
           }
     )
 
-    type T_UploadedImages = {
-        [k in ImageBaskets]: T_UploadedImage<k>[]
-    }
-
-    // RemoveFIlesFromFBStorage
-    type T_RemoveFromArray = <T extends ImageBaskets>(a: T_UploadedImage<T>[], fn: string) => T_UploadedImage<T>[]
-
-    //imagesReducerActions
-
-    type T_SingleImageChangeAction = { type: string; payload: T_UploadedImage<ImageBaskets> }
-    type T_AllImageChangeAction = { type: string; payload: T_UploadedImages }
-    type T_PrugeExtraUsedImageAction = { type: string; payload: { basket: ImageBaskets; id: string; nameOfImage: string } }
-    type T_DeleteSingleImageAction = { type: string; payload: { basket: ImageBaskets; id: string } }
-
     // AddProducts Values
     interface I_ProductInlocal {
         Id: string
@@ -153,9 +139,9 @@ declare global {
               type: "REST"
           }
 
-    type AddProductActionReducer = { data: T_ProductsInDB; func: (id: string) => void }
+    type AddProductActionReducer = { data: T_ProductsInDB; func: () => void }
 
-    type DeleteProductActionReducer = { id: T_Product[0]; func: (id: T_Product[0]) => void }
+    type DeleteProductActionReducer = { id: T_Product[0]; func: () => void }
 
     interface EditOrDeleteProduct {
         target: T_Product | null
@@ -187,7 +173,7 @@ declare global {
               type: "REST"
           }
 
-    type AddCustomerActionReducer = { data: T_CustomerInDB; func: (id: string) => void }
+    type AddCustomerActionReducer = { data: T_CustomerInDB; func: () => void }
 }
 
 export {}

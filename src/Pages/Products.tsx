@@ -9,7 +9,6 @@ import { formatDistanceToNow } from "date-fns-jalali"
 import { RiDeleteBin2Line, RiEdit2Line } from "react-icons/ri"
 import { useEffect, useRef, useState } from "react"
 import Portal from "../Components/Portal"
-import { AddImage, DeleteSingleImage } from "../Apps/Slices/UploadedImage"
 import Loading from "../Components/Loading"
 import { getDownloadURL, uploadBytesResumable, ref } from "firebase/storage"
 import { storage } from "../Firebase"
@@ -78,7 +77,6 @@ const Products = () => {
                         name: `(${date})${file.name}`,
                         kind: `${basketName}`,
                     }
-                    Dispatch(AddImage(ImageData))
                     setState({ link: downloadURL, name: ImageData.name, file: undefined, status: "idle" })
                     progressRef = 0
                 })
@@ -175,9 +173,8 @@ const Products = () => {
     }
 
     const _DeleteProduct = () => {
-        const _AfterDelete = (id: T_Product[0]) => {
+        const _AfterDelete = () => {
             setTimeout(() => {
-                Dispatch(DeleteSingleImage({ basket: "Products", id }))
                 setSelectedProduct(prv => ({ ...prv, job: "IDLE" }))
                 setIsShowAlert({ status: true, job: "DELETE" })
                 setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })

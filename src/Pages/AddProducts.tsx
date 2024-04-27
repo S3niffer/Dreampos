@@ -4,7 +4,6 @@ import UploadSVG from "../assets/Pics/upload.svg"
 import { useEffect, useReducer, useRef, useState } from "react"
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
 import { storage } from "../Firebase"
-import { AddImage, EditImage } from "../Apps/Slices/UploadedImage"
 import { FiLock } from "react-icons/fi"
 import { AddProduct } from "../Apps/Slices/Products"
 import { UnknownAction } from "@reduxjs/toolkit"
@@ -71,25 +70,14 @@ const AddProducts = () => {
         if (!FormIsvalid) return
         setIsShowLoading(true)
 
-        const _addUploadedImageStore = (id: string) => {
-            const ImageData: T_UploadedImage<"Products"> = {
-                id,
-                kind: "Products",
-                link: CurrentImage.link,
-                name: CurrentImage.name,
-                status: "Used",
-            }
+        const _AfterAdded = () => {
             _ResetValues()
             setIsShowLoading(false)
             setIsShowAlert(true)
-
-            setTimeout(() => {
-                Dispatch(EditImage(ImageData))
-            }, 500)
         }
 
         Dispatch(
-            AddProduct({ data: { ...ProductsData, Date: new Date() }, func: _addUploadedImageStore }) as unknown as UnknownAction
+            AddProduct({ data: { ...ProductsData, Date: new Date() }, func: _AfterAdded }) as unknown as UnknownAction
         )
     }
 
@@ -171,7 +159,6 @@ const AddProducts = () => {
                         name: `(${date})${file.name}`,
                         kind: `${basketName}`,
                     }
-                    Dispatch(AddImage(ImageData))
                     setState({ link: downloadURL, name: ImageData.name, file: undefined, status: "idle" })
                     progressRef = 0
                 })
