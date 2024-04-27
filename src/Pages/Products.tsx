@@ -246,7 +246,7 @@ const Products = () => {
                     <div className='text-sm md:text-base lg:text-lg'>
                         صفحه محصولات {""}
                         <br />
-                        <span className='text-added-text-secondary text-xs md:text-sm lg:text-base'>محصولات رو مشاهده کنید</span>
+                        <span className='text-added-text-secondary text-xs md:text-sm lg:text-base'>محصولات را مشاهده کنید</span>
                     </div>
 
                     <button
