@@ -6,7 +6,7 @@ import UploadSVG from "../assets/Pics/upload.svg"
 import { IoRefresh } from "react-icons/io5"
 import { LuClock } from "react-icons/lu"
 import { formatDistanceToNow } from "date-fns-jalali"
-import { RiDeleteBin2Line, RiEdit2Line } from "react-icons/ri"
+import { RiArrowLeftDoubleFill, RiArrowRightDoubleFill, RiDeleteBin2Line, RiEdit2Line } from "react-icons/ri"
 import { useEffect, useRef, useState } from "react"
 import Portal from "../Components/Portal"
 import Loading from "../Components/Loading"
@@ -41,6 +41,17 @@ const Products = () => {
         Name: "",
         ImgSrce: "",
         Price: 0,
+    })
+    const [PaginationValues, setPaginationValues] = useState<{
+        ProductsperPage: number
+        Page: number
+        Products: T_Products
+        totalPages: number
+    }>({
+        ProductsperPage: 6,
+        Page: 1,
+        Products: [],
+        totalPages: 1,
     })
     const _UploadImageHandler: T_UploadImageHandler = (date, file, setState, progressRef, basketName) => {
         const storageRef = ref(storage, String(`${basketName}/(${date})${file.name}`))
@@ -239,6 +250,16 @@ const Products = () => {
         }
     }, [valuesForEdit])
 
+    useEffect(() => {
+        const endPoint = PaginationValues.Page * PaginationValues.ProductsperPage
+        const startPoint = endPoint - PaginationValues.ProductsperPage
+        const totalPages = Math.ceil(Products.length / PaginationValues.ProductsperPage)
+
+        const ordredProducts = [...Products].slice(startPoint, endPoint)
+
+        setPaginationValues(prv => ({ ...prv, Products: ordredProducts, totalPages }))
+    }, [Products, PaginationValues.Page, PaginationValues.ProductsperPage])
+
     return (
         <OutLetParent DRef={Page_Ref}>
             <div className='p-4 md:p-5 lg:p-7'>
@@ -304,80 +325,126 @@ const Products = () => {
                     ) : null}
 
                     {Products.length !== 0 ? (
-                        <div className='grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
-                            {Products.map(product => {
-                                const productDate = product[1].Date
-                                const PersianDateParts = new Intl.DateTimeFormat("fa-IR").formatToParts(new Date(productDate))
-                                const PersianMonthWord =
-                                    persianMonths[Number(_removePersianDigitsAndSeparators(PersianDateParts[2].value)) - 1]
+                        <>
+                            <div className='grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
+                                {PaginationValues.Products.map(product => {
+                                    const productDate = product[1].Date
+                                    const PersianDateParts = new Intl.DateTimeFormat("fa-IR").formatToParts(new Date(productDate))
+                                    const PersianMonthWord =
+                                        persianMonths[Number(_removePersianDigitsAndSeparators(PersianDateParts[2].value)) - 1]
 
-                                return (
-                                    <div
-                                        className='rounded overflow-hidden shadow-lg shadow-added-border bg-added-bg-secondary'
-                                        key={product[0]}
-                                    >
-                                        <div className='relative'>
-                                            <div className='h-44'>
-                                                <img
-                                                    className='w-full h-full'
-                                                    src={product[1].ImgSrce}
-                                                    alt='Sunset in the mountains'
-                                                />
-                                                <div className='hover:bg-transparent transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-gray-900 opacity-25'></div>
-                                            </div>
-
-                                            <div className='absolute bottom-0 left-0 bg-added-main px-4 py-2 text-added-bg-primary text-sm hover:bg-added-bg-primary hover:text-added-main transition duration-500 ease-in-out cursor-pointer'>
-                                                عکس
-                                            </div>
-
-                                            <div className='absolute top-0 right-0 bg-added-main px-4 text-added-bg-primary rounded-full h-12 w-12 flex flex-col items-center justify-center mt-3 mr-3 hover:bg-added-bg-primary hover:text-added-main transition duration-500 ease-in-out cursor-default text-xs'>
-                                                <span className='font-bold'>{PersianDateParts[4].value}</span>
-                                                <small>{PersianMonthWord}</small>
-                                            </div>
-                                        </div>
-                                        <div className='px-2 py-2 cursor-default flex items-center justify-between flex-col sm:flex-row'>
-                                            <div>
-                                                <div className='font-semibold text-lg block sm:inline-block hover:text-added-main transition duration-500 ease-in-out text-center'>
-                                                    {product[1].Name}
+                                    return (
+                                        <div
+                                            className='rounded overflow-hidden shadow-lg shadow-added-border bg-added-bg-secondary'
+                                            key={product[0]}
+                                        >
+                                            <div className='relative'>
+                                                <div className='h-44'>
+                                                    <img
+                                                        className='w-full h-full'
+                                                        src={product[1].ImgSrce}
+                                                        alt='Sunset in the mountains'
+                                                    />
+                                                    <div className='hover:bg-transparent transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-gray-900 opacity-25'></div>
                                                 </div>
-                                                <p className='text-gray-500 text-sm'>
-                                                    {product[1].Price.toLocaleString("fa-IR") + " "}تـومان
-                                                </p>
-                                            </div>
-                                            <div className='flex items-center gap-1 mt-3 sm:mt-0'>
-                                                <div
-                                                    className='p-1 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
-                                                    onClick={() => {
-                                                        setSelectedProduct({ target: product, job: "EDIT" })
-                                                        setValuesForEdit({
-                                                            ImgSrce: product[1].ImgSrce,
-                                                            Name: product[1].Name,
-                                                            Price: product[1].Price,
-                                                        })
-                                                    }}
-                                                >
-                                                    <RiEdit2Line className='text-inherit' />
+
+                                                <div className='absolute bottom-0 left-0 bg-added-main px-4 py-2 text-added-bg-primary text-sm hover:bg-added-bg-primary hover:text-added-main transition duration-500 ease-in-out cursor-pointer'>
+                                                    عکس
                                                 </div>
-                                                <div
-                                                    className='p-1 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
-                                                    onClick={() => {
-                                                        setSelectedProduct({ target: product, job: "DELETE" })
-                                                    }}
-                                                >
-                                                    <RiDeleteBin2Line className='text-inherit' />
+
+                                                <div className='absolute top-0 right-0 bg-added-main px-4 text-added-bg-primary rounded-full h-12 w-12 flex flex-col items-center justify-center mt-3 mr-3 hover:bg-added-bg-primary hover:text-added-main transition duration-500 ease-in-out cursor-default text-xs'>
+                                                    <span className='font-bold'>{PersianDateParts[4].value}</span>
+                                                    <small>{PersianMonthWord}</small>
                                                 </div>
                                             </div>
+                                            <div className='px-2 py-2 cursor-default flex items-center justify-between flex-col sm:flex-row'>
+                                                <div>
+                                                    <div className='font-semibold text-lg block sm:inline-block hover:text-added-main transition duration-500 ease-in-out text-center'>
+                                                        {product[1].Name}
+                                                    </div>
+                                                    <p className='text-gray-500 text-sm'>
+                                                        {product[1].Price.toLocaleString("fa-IR") + " "}تـومان
+                                                    </p>
+                                                </div>
+                                                <div className='flex items-center gap-1 mt-3 sm:mt-0'>
+                                                    <div
+                                                        className='p-1 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
+                                                        onClick={() => {
+                                                            setSelectedProduct({ target: product, job: "EDIT" })
+                                                            setValuesForEdit({
+                                                                ImgSrce: product[1].ImgSrce,
+                                                                Name: product[1].Name,
+                                                                Price: product[1].Price,
+                                                            })
+                                                        }}
+                                                    >
+                                                        <RiEdit2Line className='text-inherit' />
+                                                    </div>
+                                                    <div
+                                                        className='p-1 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
+                                                        onClick={() => {
+                                                            setSelectedProduct({ target: product, job: "DELETE" })
+                                                        }}
+                                                    >
+                                                        <RiDeleteBin2Line className='text-inherit' />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className='flex items-center text-xs text-added-text-secondary gap-1.5 p-2 cursor-default'>
+                                                <LuClock className='text-inherit' />
+                                                <span className='mt-0.5'>
+                                                    <TimeAgo date={product[1].Date} />
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className='flex items-center text-xs text-added-text-secondary gap-1.5 p-2 cursor-default'>
-                                            <LuClock className='text-inherit' />
-                                            <span className='mt-0.5'>
-                                                <TimeAgo date={product[1].Date} />
-                                            </span>
-                                        </div>
+                                    )
+                                })}
+                            </div>
+                            {PaginationValues.totalPages > 1 ? (
+                                <div className='mt-6 text-center xl:text-lg'>
+                                    <div className='flex items-center justify-center gap-1'>
+                                        {[...Array.from({ length: PaginationValues.totalPages }, (v, k) => k + 1)].map(button => (
+                                            <button
+                                                className={`${
+                                                    button === PaginationValues.Page ? "bg-added-main" : "bg-[#585858]"
+                                                } text-[#fff] aspect-square w-8 rounded-md leading-8 hover:bg-added-main transition-all duration-300 p-0.5 pb-0 cursor-pointer xl:text-xl xl:w-10 xl:leading-10`}
+                                                onClick={() => {
+                                                    setPaginationValues(prv => ({ ...prv, Page: button }))
+                                                }}
+                                                key={button}
+                                            >
+                                                {(+button).toLocaleString("fa-IR")}
+                                            </button>
+                                        ))}
                                     </div>
-                                )
-                            })}
-                        </div>
+                                    <div className='flex items-center gap-2 mt-2 justify-center'>
+                                        <button
+                                            className='flex items-center bg-[#585858] hover:bg-added-main p-1.5 rounded text-white cursor-pointer disabled:bg-added-border disabled:text-added-text-primary'
+                                            onClick={() => {
+                                                setPaginationValues(prv => ({ ...prv, Page: prv.Page - 1 }))
+                                            }}
+                                            disabled={PaginationValues.Page === 1}
+                                        >
+                                            {PaginationValues.Page === 1 ? <FiLock className='text-inherit' /> : null}
+                                            <RiArrowRightDoubleFill className='text-inherit' />
+                                            صفحه قبلی
+                                        </button>
+                                        <button
+                                            className='flex items-center bg-[#585858] hover:bg-added-main p-1.5 rounded text-white cursor-pointer disabled:bg-added-border disabled:text-added-text-primary'
+                                            onClick={() => {
+                                                setPaginationValues(prv => ({ ...prv, Page: prv.Page + 1 }))
+                                            }}
+                                            disabled={PaginationValues.Page === PaginationValues.totalPages}
+                                        >
+                                            صفحه بعدی <RiArrowLeftDoubleFill className='text-inherit' />
+                                            {PaginationValues.Page === PaginationValues.totalPages ? (
+                                                <FiLock className='text-inherit' />
+                                            ) : null}
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : null}
+                        </>
                     ) : (
                         <div className='text-center pb-10'>
                             <span className='border-b border-added-main inline-block mb-2 pb-1.5 md:text-lg lg:text-xl'>
