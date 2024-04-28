@@ -5,6 +5,7 @@ import { Get_Customers, GettAllCustomers } from "../Apps/Slices/Customers"
 import OutLetParent from "../Components/OutLetParent"
 import { IoRefresh } from "react-icons/io5"
 import Loading from "../Components/Loading"
+import { RiDeleteBin2Line, RiEdit2Line } from "react-icons/ri"
 
 const Customers = () => {
     const Dispatch = useDispatch()
@@ -12,6 +13,7 @@ const Customers = () => {
     const [isShowLoading, setIsShowLoading] = useState<boolean>(false)
     const [isShowAlert, setIsShowAlert] = useState<{ status: boolean; job: "DELETE" | "EDIT" }>({ status: false, job: "DELETE" })
     const Page_Ref = useRef<HTMLDivElement>(null)
+    const persianMonths = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
 
     const _GetProducts_Handler = () => {
         setIsShowLoading(true)
@@ -19,6 +21,37 @@ const Customers = () => {
             setIsShowLoading(false)
         }
         Dispatch(Get_Customers(removeLoading) as unknown as UnknownAction)
+    }
+
+    const _removePersianDigitsAndSeparators = (str: string) => {
+        return str.replace(/[۰-۹٫]/g, match => {
+            switch (match) {
+                case "۰":
+                    return "0"
+                case "۱":
+                    return "1"
+                case "۲":
+                    return "2"
+                case "۳":
+                    return "3"
+                case "۴":
+                    return "4"
+                case "۵":
+                    return "5"
+                case "۶":
+                    return "6"
+                case "۷":
+                    return "7"
+                case "۸":
+                    return "8"
+                case "۹":
+                    return "9"
+                case "٫":
+                    return "."
+                default:
+                    return ""
+            }
+        })
     }
 
     useEffect(() => {
@@ -177,61 +210,84 @@ const Customers = () => {
                                 </div>
                             </div>
 
-                            <table className='text-sm w-[95%] m-auto text-left text-added-text-secondary outline outline-added-border rounded-md overflow-hidden'>
-                                <thead className='text-xs text-added-text-primary uppercase bg-added-border'>
+                            <table className='min-w-[550px] md:min-w-[600px] w-full m-auto text-left text-added-text-secondary outline outline-added-border rounded-md overflow-hidden text-sm md:text-base lg:text-lg xl:text-xl'>
+                                <thead className='text-added-text-primary uppercase bg-added-border'>
                                     <tr>
                                         <th
                                             scope='col'
-                                            className='px-6 py-3'
+                                            className='p-2.5 text-center'
                                         >
-                                            Product name
+                                            تصویر
                                         </th>
                                         <th
                                             scope='col'
-                                            className='px-6 py-3'
+                                            className='p-2.5 text-center'
                                         >
-                                            Color
+                                            عنوان
                                         </th>
                                         <th
                                             scope='col'
-                                            className='px-6 py-3'
+                                            className='p-2.5 text-center'
                                         >
-                                            Category
+                                            ایمیل
                                         </th>
                                         <th
                                             scope='col'
-                                            className='px-6 py-3'
+                                            className='p-2.5 text-center'
                                         >
-                                            Price
+                                            تاریخ افزودن
                                         </th>
                                         <th
                                             scope='col'
-                                            className='px-6 py-3'
+                                            className='p-2.5 text-center'
                                         >
-                                            Action
+                                            ویرایش/حذف
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr className='bg-added-bg-secondary hover:bg-added-bg-primary'>
-                                        <th
-                                            scope='row'
-                                            className='px-6 py-4 font-medium text-added-text-primary/75 whitespace-nowrap '
-                                        >
-                                            Apple MacBook Pro 17"
-                                        </th>
-                                        <td className='px-6 py-4'>Silver</td>
-                                        <td className='px-6 py-4'>Laptop</td>
-                                        <td className='px-6 py-4'>$2999</td>
-                                        <td className='px-6 py-4'>
-                                            <a
-                                                href='#'
-                                                className='font-medium text-blue-600 hover:underline'
-                                            >
-                                                Edit
-                                            </a>
-                                        </td>
-                                    </tr>
+                                    {Customers.map(customer => {
+                                        const productDate = customer[1].Date
+                                        const PersianDateParts = new Intl.DateTimeFormat("fa-IR").formatToParts(
+                                            new Date(productDate)
+                                        )
+                                        const PersianMonthWord =
+                                            persianMonths[
+                                                Number(_removePersianDigitsAndSeparators(PersianDateParts[2].value)) - 1
+                                            ]
+                                        return (
+                                            <tr className='bg-added-bg-secondary hover:bg-added-bg-primary'>
+                                                <td className='text-center p-2.5'>
+                                                    <img
+                                                        src={customer[1].ImgSrce}
+                                                        alt='product'
+                                                        className='aspect-square w-10'
+                                                    />
+                                                </td>
+                                                <th
+                                                    scope='row'
+                                                    className='text-center p-2.5 font-medium text-added-text-primary/75 whitespace-nowrap '
+                                                >
+                                                    {customer[1].Name}
+                                                </th>
+                                                <td className='text-center p-2.5 dir-ltr'>{customer[1].Email}</td>
+                                                <td className='text-center p-2.5'>
+                                                    <small>{PersianDateParts[4].value.padStart(2, "۰")}</small>/
+                                                    <small>{PersianMonthWord}</small>/<small>{PersianDateParts[0].value}</small>
+                                                </td>
+                                                <td className='text-center p-2.5'>
+                                                    <div className='flex items-center gap-1 justify-center'>
+                                                        <div className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 pr-[5px] rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'>
+                                                            <RiEdit2Line className='text-inherit lg:text-xl' />
+                                                        </div>
+                                                        <div className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'>
+                                                            <RiDeleteBin2Line className='text-inherit lg:text-xl' />
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
                                 </tbody>
                             </table>
                         </div>
