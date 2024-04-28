@@ -258,7 +258,7 @@ const Products = () => {
         const ordredProducts = [...Products].slice(startPoint, endPoint)
 
         if (PaginationValues.Page > totalPages) {
-            setPaginationValues(prv => ({ ...prv, Products: ordredProducts, totalPages, Page: 1 }))
+            setPaginationValues(prv => ({ ...prv, Products: ordredProducts, totalPages, Page: totalPages }))
         } else {
             setPaginationValues(prv => ({ ...prv, Products: ordredProducts, totalPages }))
         }
