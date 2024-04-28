@@ -162,7 +162,8 @@ declare global {
 
     type T_CustomerInDB = Omit<I_CustomerInLocal, "Id">
     type T_CustomerInDBWithoutDate = Omit<T_CustomerInDB, "Date">
-    type T_Customers = [string, T_CustomerInDB][]
+    type T_Customers = T_Customer[]
+    type T_Customer = [string, T_CustomerInDB]
 
     type T_AddCustomerAction =
         | {
@@ -174,6 +175,17 @@ declare global {
           }
 
     type AddCustomerActionReducer = { data: T_CustomerInDB; func: () => void }
+
+
+    interface EditOrDeleteCustomer {
+        target: T_Customer | null
+        job: "DELETE" | "EDIT" | "IDLE"
+    }
+
+    type DeleteCustomerActionReducer = {
+        id: T_Customer[0],
+        func: () => void
+    }
 }
 
 export {}

@@ -16,9 +16,13 @@ export const AddCustomer = createAsyncThunk("Customers/AddCustomer", async (arg:
 export const Get_Customers = createAsyncThunk("Customers/GetCustomers", async (func: () => void) => {
     return await fetch(`https://dashboard-a5184-default-rtdb.firebaseio.com/Customers.json`, {
         method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
+    })
+        .then(res => res.json())
+        .then(res => res)
+})
+export const DeleteCustomer = createAsyncThunk("Customers/DeleteCustomer", async ({ id, func }: DeleteCustomerActionReducer) => {
+    return await fetch(`https://dashboard-a5184-default-rtdb.firebaseio.com/Customers/${id}.json`, {
+        method: "DELETE",
     })
         .then(res => res.json())
         .then(res => res)
@@ -43,6 +47,9 @@ const CustomersSlice = createSlice({
                 }
                 action.meta.arg()
                 return []
+            })
+            .addCase(DeleteCustomer.fulfilled, (state, action) => {
+                action.meta.arg.func()
             })
     },
 })

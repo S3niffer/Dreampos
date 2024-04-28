@@ -1,21 +1,29 @@
 import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { UnknownAction } from "@reduxjs/toolkit"
-import { Get_Customers, GettAllCustomers } from "../Apps/Slices/Customers"
+import { DeleteCustomer, Get_Customers, GettAllCustomers } from "../Apps/Slices/Customers"
 import OutLetParent from "../Components/OutLetParent"
 import { IoRefresh } from "react-icons/io5"
 import Loading from "../Components/Loading"
 import { RiDeleteBin2Line, RiEdit2Line } from "react-icons/ri"
+import Portal from "../Components/Portal"
+import { FiLock } from "react-icons/fi"
 
 const Customers = () => {
+    const [selectedCustomer, setSelectedCustomer] = useState<EditOrDeleteCustomer>({
+        target: null,
+        job: "IDLE",
+    })
     const Dispatch = useDispatch()
     const Customers = useSelector(GettAllCustomers)
     const [isShowLoading, setIsShowLoading] = useState<boolean>(false)
     const [isShowAlert, setIsShowAlert] = useState<{ status: boolean; job: "DELETE" | "EDIT" }>({ status: false, job: "DELETE" })
     const Page_Ref = useRef<HTMLDivElement>(null)
+    const [formISvalid, setFormIsvalid] = useState<boolean>(false)
     const persianMonths = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
+    const [CurrentImage, setCurrentImage] = useState<I_CurrentImage>({ link: "", name: "", file: undefined, status: "idle" })
 
-    const _GetProducts_Handler = () => {
+    const _GetCustomers_Handler = () => {
         setIsShowLoading(true)
         const removeLoading = () => {
             setIsShowLoading(false)
@@ -54,6 +62,20 @@ const Customers = () => {
         })
     }
 
+    const _DeleteProduct = () => {
+        const _AfterDelete = () => {
+            setTimeout(() => {
+                setSelectedCustomer(prv => ({ ...prv, job: "IDLE" }))
+                setIsShowAlert({ status: true, job: "DELETE" })
+                setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
+                _GetCustomers_Handler()
+            }, 300)
+        }
+        if (!selectedCustomer.target) return
+        Dispatch(DeleteCustomer({ id: selectedCustomer.target[0], func: _AfterDelete }) as unknown as UnknownAction)
+    }
+    const _EditProduct = () => {}
+
     useEffect(() => {
         if (isShowAlert.status) {
             Page_Ref.current?.scrollTo({ top: 0, behavior: "smooth" })
@@ -76,7 +98,7 @@ const Customers = () => {
 
                     <button
                         className='outline-none bg-added-main text-added-bg-primary border border-added-main rounded-md px-2 py-1 flex items-center  flex-row-reverse gap-1 hover:text-added-main hover:bg-transparent transition-all duration-300'
-                        onClick={_GetProducts_Handler}
+                        onClick={_GetCustomers_Handler}
                     >
                         <IoRefresh className='text-inherit text-xl' />
                         بروزرسانی
@@ -93,7 +115,7 @@ const Customers = () => {
                                 <div className='flex items-center text-right dir-rtl text-sm sm:text-base'>
                                     <strong className='font-bold'>موفق!</strong>
                                     <span className='pr-1'>
-                                        محصول مورد نظر با موفقیت{" "}
+                                        کاربر مورد نظر با موفقیت{" "}
                                         <strong className='font-bold underline underline-offset-8'>
                                             {isShowAlert.job === "DELETE" ? "حذف" : "ویرایش"}
                                         </strong>{" "}
@@ -155,9 +177,9 @@ const Customers = () => {
                                         >
                                             <path
                                                 stroke='currentColor'
-                                                stroke-linecap='round'
-                                                stroke-linejoin='round'
-                                                stroke-width='2'
+                                                strokeLinecap='round'
+                                                strokeLinejoin='round'
+                                                strokeWidth='2'
                                                 d='m1 1 4 4 4-4'
                                             />
                                         </svg>
@@ -195,9 +217,9 @@ const Customers = () => {
                                             xmlns='http://www.w3.org/2000/svg'
                                         >
                                             <path
-                                                fill-rule='evenodd'
+                                                fillRule='evenodd'
                                                 d='M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z'
-                                                clip-rule='evenodd'
+                                                clipRule='evenodd'
                                             ></path>
                                         </svg>
                                     </div>
@@ -256,7 +278,10 @@ const Customers = () => {
                                                 Number(_removePersianDigitsAndSeparators(PersianDateParts[2].value)) - 1
                                             ]
                                         return (
-                                            <tr className='bg-added-bg-secondary hover:bg-added-bg-primary'>
+                                            <tr
+                                                key={customer[0]}
+                                                className='bg-added-bg-secondary hover:bg-added-bg-primary'
+                                            >
                                                 <td className='text-center p-2.5'>
                                                     <img
                                                         src={customer[1].ImgSrce}
@@ -277,10 +302,20 @@ const Customers = () => {
                                                 </td>
                                                 <td className='text-center p-2.5'>
                                                     <div className='flex items-center gap-1 justify-center'>
-                                                        <div className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 pr-[5px] rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'>
+                                                        <div
+                                                            onClick={() => {
+                                                                setSelectedCustomer({ job: "EDIT", target: customer })
+                                                            }}
+                                                            className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 pr-[5px] rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
+                                                        >
                                                             <RiEdit2Line className='text-inherit lg:text-xl' />
                                                         </div>
-                                                        <div className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'>
+                                                        <div
+                                                            onClick={() => {
+                                                                setSelectedCustomer({ job: "DELETE", target: customer })
+                                                            }}
+                                                            className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
+                                                        >
                                                             <RiDeleteBin2Line className='text-inherit lg:text-xl' />
                                                         </div>
                                                     </div>
@@ -304,6 +339,82 @@ const Customers = () => {
                     )}
                 </div>
             </div>
+            {selectedCustomer.job !== "IDLE" ? (
+                <Portal>
+                    <div className='relative p-4 w-full max-w-md max-h-full'>
+                        <div className='relative bg-added-bg-primary rounded-lg shadow-md shadow-added-border'>
+                            <button
+                                type='button'
+                                className='absolute top-3 end-2.5 bg-transparent hover:bg-added-border rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center group'
+                                data-modal-hide='popup-modal'
+                                onClick={() => setSelectedCustomer(prv => ({ ...prv, job: "IDLE" }))}
+                            >
+                                <svg
+                                    className='w-3 h-3 text-added-text-secondary group-hover:text-added-main'
+                                    aria-hidden='true'
+                                    xmlns='http://www.w3.org/2000/svg'
+                                    viewBox='0 0 14 14'
+                                >
+                                    <path
+                                        stroke='currentColor'
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                        strokeWidth='2'
+                                        d='m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6'
+                                    />
+                                </svg>
+                                <span className='sr-only'>Close modal</span>
+                            </button>
+                            <div className='p-4 md:p-5 text-center'>
+                                <div className='h-12 flex items-center justify-center text-added-main'>
+                                    {selectedCustomer.job === "DELETE" ? (
+                                        <RiDeleteBin2Line className='text-4xl text-inherit' />
+                                    ) : (
+                                        <RiEdit2Line className='text-4xl text-inherit' />
+                                    )}
+                                </div>
+                                <h3 className='mb-5 text-lg font-normal text-added-text-primary'>
+                                    {selectedCustomer.job === "DELETE"
+                                        ? "آیا از حذف کاربر مورد نظر  اطمینان دارید؟"
+                                        : "کاربر مورد نظر را ویرایش کنید"}
+                                </h3>
+                                {selectedCustomer.job === "EDIT" ? (
+                                    <div className='mb-5 border rounded border-added-border p-2'></div>
+                                ) : null}
+                                {selectedCustomer.job === "DELETE" ? (
+                                    <button
+                                        data-modal-hide='popup-modal'
+                                        type='button'
+                                        className='text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center'
+                                        onClick={_DeleteProduct}
+                                    >
+                                        بله کاملا
+                                    </button>
+                                ) : (
+                                    <button
+                                        data-modal-hide='popup-modal'
+                                        type='button'
+                                        className='text-white bg-added-main/80 hover:bg-added-main focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center disabled:bg-added-border disabled:border-added-border disabled:text-added-text-primary'
+                                        onClick={_EditProduct}
+                                        disabled={!formISvalid}
+                                    >
+                                        ارسال
+                                        {formISvalid ? null : <FiLock className='mb-1' />}
+                                    </button>
+                                )}
+                                <button
+                                    data-modal-hide='popup-modal'
+                                    type='button'
+                                    className='py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700'
+                                    onClick={() => setSelectedCustomer(prv => ({ ...prv, job: "IDLE" }))}
+                                >
+                                    {selectedCustomer.job === "DELETE" ? "نه، پشیمون شدم" : "نه، بیخیال"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </Portal>
+            ) : null}
         </OutLetParent>
     )
 }
