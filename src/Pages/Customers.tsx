@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { UnknownAction } from "@reduxjs/toolkit"
-import { DeleteCustomer, Get_Customers, GettAllCustomers } from "../Apps/Slices/Customers"
+import { DeleteCustomer, EditCustomer, Get_Customers, GettAllCustomers } from "../Apps/Slices/Customers"
 import OutLetParent from "../Components/OutLetParent"
 import { IoRefresh } from "react-icons/io5"
 import Loading from "../Components/Loading"
@@ -11,6 +11,7 @@ import Portal from "../Components/Portal"
 import { FiEye, FiEyeOff, FiLock } from "react-icons/fi"
 import { getDownloadURL, uploadBytesResumable, ref } from "firebase/storage"
 import { storage } from "../Firebase"
+import IconeBox from "../Components/IconeBox"
 
 const Customers = () => {
     const [selectedCustomer, setSelectedCustomer] = useState<EditOrDeleteCustomer>({
@@ -132,7 +133,30 @@ const Customers = () => {
         Dispatch(DeleteCustomer({ id: selectedCustomer.target[0], func: _AfterDelete }) as unknown as UnknownAction)
     }
 
-    const _EditProduct = () => {}
+    const _EditProduct = () => {
+        const { ImgSrce, Name, Email, Password } = valuesForEdit
+        if (!ImgSrce || !Name || !Email || !Password || !selectedCustomer.target) return
+
+        const newData: T_CustomerInDB = {
+            AdminId: selectedCustomer.target[1].AdminId,
+            Date: selectedCustomer.target[1].Date,
+            Email,
+            ImgSrce,
+            Name,
+            Password,
+        }
+
+        const _AfterEdit = () => {
+            setTimeout(() => {
+                setSelectedCustomer(prv => ({ ...prv, job: "IDLE" }))
+                setIsShowAlert({ status: true, job: "EDIT" })
+                setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
+                _GetCustomers_Handler()
+            }, 300)
+        }
+
+        Dispatch(EditCustomer({ id: selectedCustomer.target[0], _func: _AfterEdit, newData }) as unknown as UnknownAction)
+    }
 
     useEffect(() => {
         if (isShowAlert.status) {
@@ -155,6 +179,14 @@ const Customers = () => {
 
         setValuesForEdit(prv => ({ ...prv, ImgSrce: CurrentImage.link }))
     }, [CurrentImage.link, CurrentImage.name])
+
+    useEffect(() => {
+        if (valuesForEdit.ImgSrce && valuesForEdit.Name && valuesForEdit.Email && valuesForEdit.Password) {
+            setFormIsvalid(true)
+        } else {
+            setFormIsvalid(false)
+        }
+    }, [valuesForEdit])
 
     return (
         <OutLetParent DRef={Page_Ref}>
@@ -353,11 +385,13 @@ const Customers = () => {
                                                 className='bg-added-bg-secondary hover:bg-added-bg-primary'
                                             >
                                                 <td className='text-center p-2.5'>
-                                                    <img
-                                                        src={customer[1].ImgSrce}
-                                                        alt='product'
-                                                        className='aspect-square w-10'
-                                                    />
+                                                    <IconeBox className='w-5 min-[450px]:w-6 sm:w-7 md:w-9 lg:w-10 xl:w-13 mx-auto rounded-lg overflow-hidden'>
+                                                        <img
+                                                            src={customer[1].ImgSrce}
+                                                            alt='Avatar'
+                                                            className='h-full w-full object-cover'
+                                                        />
+                                                    </IconeBox>
                                                 </td>
                                                 <th
                                                     scope='row'
@@ -513,7 +547,12 @@ const Customers = () => {
                                                                 id='getCustomerPassword'
                                                                 placeholder='گذرواژه کاربر را وارد کنید'
                                                                 value={valuesForEdit.Password}
-                                                                onChange={e => {}}
+                                                                onChange={e => {
+                                                                    setValuesForEdit(prv => ({
+                                                                        ...prv,
+                                                                        Password: e.target.value,
+                                                                    }))
+                                                                }}
                                                             />
                                                             <div
                                                                 onClick={() => setPasswordVisibility(prv => !prv)}

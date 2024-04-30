@@ -187,6 +187,8 @@ declare global {
     }
 
     type EditCustomer = Pick<T_CustomerInDB, "Email" | "ImgSrce" | "Name" | "Password">
+
+    type EditCustomerActionReducer = { id: T_Customer[0]; newData: T_CustomerInDB; _func: () => void }
 }
 
 export {}
