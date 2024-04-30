@@ -465,8 +465,8 @@ const Products = () => {
             </div>
             {selectedProduct.job !== "IDLE" ? (
                 <Portal>
-                    <div className='relative p-4'>
-                        <div className='relative bg-added-bg-primary rounded-lg shadow-md shadow-added-border max-w-full max-h-[calc(100vh-16px)] my-auto overflow-y-auto'>
+                    <div className='relative'>
+                        <div className='relative bg-added-bg-primary rounded-lg shadow-md shadow-added-border max-w-full max-h-[calc(100vh-16px)] my-auto overflow-y-auto px-4'>
                             <button
                                 type='button'
                                 className='absolute top-3 end-2.5 bg-transparent hover:bg-added-border rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center group'
