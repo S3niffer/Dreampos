@@ -471,7 +471,11 @@ const Products = () => {
                                 type='button'
                                 className='absolute top-3 end-2.5 bg-transparent hover:bg-added-border rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center group'
                                 data-modal-hide='popup-modal'
-                                onClick={() => setSelectedProduct(prv => ({ ...prv, job: "IDLE" }))}
+                                onClick={() => {
+                                    setSelectedProduct(prv => ({ ...prv, job: "IDLE" }))
+                                    setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
+                                    setValuesForEdit({ Name: "", ImgSrce: "", Price: 0 })
+                                }}
                             >
                                 <svg
                                     className='w-3 h-3 text-added-text-secondary group-hover:text-added-main'
@@ -651,7 +655,11 @@ const Products = () => {
                                     data-modal-hide='popup-modal'
                                     type='button'
                                     className='py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700'
-                                    onClick={() => setSelectedProduct(prv => ({ ...prv, job: "IDLE" }))}
+                                    onClick={() => {
+                                        setSelectedProduct(prv => ({ ...prv, job: "IDLE" }))
+                                        setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
+                                        setValuesForEdit({ Name: "", ImgSrce: "", Price: 0 })
+                                    }}
                                 >
                                     {selectedProduct.job === "DELETE" ? "نه، پشیمون شدم" : "نه، بیخیال"}
                                 </button>
