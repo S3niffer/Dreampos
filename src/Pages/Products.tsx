@@ -251,6 +251,7 @@ const Products = () => {
     }, [valuesForEdit])
 
     useEffect(() => {
+        if (!Products.length) return
         const endPoint = PaginationValues.Page * PaginationValues.ProductsperPage
         const startPoint = endPoint - PaginationValues.ProductsperPage
         const totalPages = Math.ceil(Products.length / PaginationValues.ProductsperPage)
