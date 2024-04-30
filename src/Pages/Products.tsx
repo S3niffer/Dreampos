@@ -505,115 +505,121 @@ const Products = () => {
                                 {selectedProduct.job === "EDIT" ? (
                                     <div className='mb-5 border rounded border-added-border p-2'>
                                         <form className='text-added-text-primary text-right dir-rtl'>
-                                            <div className='flex flex-col gap-2.5 p-1'>
-                                                <label
-                                                    htmlFor='getProductName'
-                                                    className='cursor-pointer'
-                                                >
-                                                    عنوان
-                                                </label>
-                                                <input
-                                                    type='text'
-                                                    className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main'
-                                                    id='getProductName'
-                                                    placeholder='عنوان محصول را وارد کنید'
-                                                    value={valuesForEdit.Name}
-                                                    onChange={e => {
-                                                        setValuesForEdit(prv => ({ ...prv, Name: e.target.value }))
-                                                    }}
-                                                />
-                                            </div>
-                                            <div className='flex flex-col gap-2.5 p-1'>
-                                                <label
-                                                    htmlFor='getProductPrice'
-                                                    className='cursor-pointer'
-                                                >
-                                                    قیمت
-                                                </label>
-                                                <input
-                                                    type='text'
-                                                    className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main dir-ltr font-irSans'
-                                                    id='getProductPrice'
-                                                    placeholder='قیمت محصول را وارد کنید'
-                                                    value={_ConvertValueToPersianFormat(valuesForEdit.Price)}
-                                                    onChange={_HandleAddingPersianFormatToNormalAndSaveInState}
-                                                />
-                                            </div>
-                                            <div className='flex'>
-                                                <div className='flex flex-col gap-2.5 p-1 w-3/6 sm:w-4/6'>
-                                                    <label
-                                                        htmlFor='getProductImage'
-                                                        className='cursor-pointer w-28'
-                                                    >
-                                                        تصویر محصول
-                                                    </label>
-                                                    <label
-                                                        htmlFor='getProductImage'
-                                                        className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 cursor-pointer flex justify-center items-center flex-col gap-2 bg-added-bg-secondary focus:border-added-main hover:bg-added-border'
-                                                        onDrop={e => {
-                                                            e.preventDefault()
-                                                            e.stopPropagation()
-                                                            ;(e.target as HTMLElement).classList.remove("hovered")
-
-                                                            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                                                                setCurrentImage(prv => ({
-                                                                    ...prv,
-                                                                    file: e.dataTransfer.files[0],
-                                                                }))
-                                                            }
-                                                        }}
-                                                        onDragEnter={e => {
-                                                            e.preventDefault()
-                                                            e.stopPropagation()
-                                                            ;(e.target as HTMLElement).classList.add("hovered")
-                                                        }}
-                                                        onDragOver={e => {
-                                                            e.preventDefault()
-                                                            e.stopPropagation()
-                                                            ;(e.target as HTMLElement).classList.add("hovered")
-                                                        }}
-                                                        onDragLeave={e => {
-                                                            e.preventDefault()
-                                                            e.stopPropagation()
-                                                            ;(e.target as HTMLElement).classList.remove("hovered")
-                                                        }}
-                                                    >
+                                            <div className='flex flex-col gap-1'>
+                                                <div className='flex flex-col md:flex-row md:flex-wrap'>
+                                                    <div className='flex flex-col gap-2.5 p-1 md:w-1/2'>
+                                                        <label
+                                                            htmlFor='getProductName'
+                                                            className='cursor-pointer'
+                                                        >
+                                                            عنوان
+                                                        </label>
                                                         <input
-                                                            type='file'
-                                                            className='hidden'
-                                                            id='getProductImage'
-                                                            accept='image/*'
+                                                            type='text'
+                                                            className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main'
+                                                            id='getProductName'
+                                                            placeholder='عنوان محصول را وارد کنید'
+                                                            value={valuesForEdit.Name}
                                                             onChange={e => {
-                                                                const files = e.target.files
-                                                                if (!files) return
-                                                                setCurrentImage(prv => ({ ...prv, file: files[0] }))
+                                                                setValuesForEdit(prv => ({ ...prv, Name: e.target.value }))
                                                             }}
-                                                            disabled={CurrentImage.status !== "idle"}
                                                         />
-                                                        <img
-                                                            src={UploadSVG}
-                                                            alt='Icon'
-                                                            className='sm:w-12 lg:w-16'
+                                                    </div>
+                                                    <div className='flex flex-col gap-2.5 p-1 md:w-1/2'>
+                                                        <label
+                                                            htmlFor='getProductPrice'
+                                                            className='cursor-pointer'
+                                                        >
+                                                            قیمت
+                                                        </label>
+                                                        <input
+                                                            type='text'
+                                                            className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main dir-ltr font-irSans'
+                                                            id='getProductPrice'
+                                                            placeholder='قیمت محصول را وارد کنید'
+                                                            value={_ConvertValueToPersianFormat(valuesForEdit.Price)}
+                                                            onChange={_HandleAddingPersianFormatToNormalAndSaveInState}
                                                         />
-                                                        <span className='text-added-text-secondary text-xs text-center md:text-sm lg:text-base'>
-                                                            بکشید و رها کنید برای انتخاب عکس <br /> یا کلیک کنید
-                                                        </span>
-                                                    </label>
+                                                    </div>
                                                 </div>
-                                                <div className='w-3/6 sm:w-2/6 p-1'>
-                                                    <div className='pb-2.5'>پیش نمایش</div>
-                                                    <div className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 flex justify-center items-center flex-col gap-2 bg-added-bg-secondary focus:border-added-main dir-rtl h-[131px] min-[303px]:h-[115px] sm:h-[106px] md:h-[115px] lg:h-[170px]'>
-                                                        {CurrentImage.status === "running" ? (
-                                                            "درحال بارگذاری " + ImageProgress_Ref.current + "%"
-                                                        ) : (
-                                                            <img
-                                                                src={
-                                                                    CurrentImage.link ? CurrentImage.link : valuesForEdit.ImgSrce
+                                                <div className='flex'>
+                                                    <div className='flex flex-col gap-2.5 p-1 w-3/6 sm:w-4/6'>
+                                                        <label
+                                                            htmlFor='getProductImage'
+                                                            className='cursor-pointer w-28'
+                                                        >
+                                                            تصویر محصول
+                                                        </label>
+                                                        <label
+                                                            htmlFor='getProductImage'
+                                                            className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 cursor-pointer flex justify-center items-center flex-col gap-2 bg-added-bg-secondary focus:border-added-main hover:bg-added-border'
+                                                            onDrop={e => {
+                                                                e.preventDefault()
+                                                                e.stopPropagation()
+                                                                ;(e.target as HTMLElement).classList.remove("hovered")
+
+                                                                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                                                                    setCurrentImage(prv => ({
+                                                                        ...prv,
+                                                                        file: e.dataTransfer.files[0],
+                                                                    }))
                                                                 }
-                                                                className='w-full h-full object-contain'
-                                                                alt='product'
+                                                            }}
+                                                            onDragEnter={e => {
+                                                                e.preventDefault()
+                                                                e.stopPropagation()
+                                                                ;(e.target as HTMLElement).classList.add("hovered")
+                                                            }}
+                                                            onDragOver={e => {
+                                                                e.preventDefault()
+                                                                e.stopPropagation()
+                                                                ;(e.target as HTMLElement).classList.add("hovered")
+                                                            }}
+                                                            onDragLeave={e => {
+                                                                e.preventDefault()
+                                                                e.stopPropagation()
+                                                                ;(e.target as HTMLElement).classList.remove("hovered")
+                                                            }}
+                                                        >
+                                                            <input
+                                                                type='file'
+                                                                className='hidden'
+                                                                id='getProductImage'
+                                                                accept='image/*'
+                                                                onChange={e => {
+                                                                    const files = e.target.files
+                                                                    if (!files) return
+                                                                    setCurrentImage(prv => ({ ...prv, file: files[0] }))
+                                                                }}
+                                                                disabled={CurrentImage.status !== "idle"}
                                                             />
-                                                        )}
+                                                            <img
+                                                                src={UploadSVG}
+                                                                alt='Icon'
+                                                                className='sm:w-12 lg:w-16'
+                                                            />
+                                                            <span className='text-added-text-secondary text-xs text-center md:text-sm lg:text-base'>
+                                                                بکشید و رها کنید برای انتخاب عکس <br /> یا کلیک کنید
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                    <div className='w-3/6 sm:w-2/6 p-1'>
+                                                        <div className='pb-2.5'>پیش نمایش</div>
+                                                        <div className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 flex justify-center items-center flex-col gap-2 bg-added-bg-secondary focus:border-added-main dir-rtl h-[131px] min-[303px]:h-[115px] sm:h-[106px] md:h-[115px] lg:h-[146px]'>
+                                                            {CurrentImage.status === "running" ? (
+                                                                "درحال بارگذاری " + ImageProgress_Ref.current + "%"
+                                                            ) : (
+                                                                <img
+                                                                    src={
+                                                                        CurrentImage.link
+                                                                            ? CurrentImage.link
+                                                                            : valuesForEdit.ImgSrce
+                                                                    }
+                                                                    className='w-full h-full object-contain'
+                                                                    alt='product'
+                                                                />
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
