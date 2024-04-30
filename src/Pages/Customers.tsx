@@ -5,9 +5,12 @@ import { DeleteCustomer, Get_Customers, GettAllCustomers } from "../Apps/Slices/
 import OutLetParent from "../Components/OutLetParent"
 import { IoRefresh } from "react-icons/io5"
 import Loading from "../Components/Loading"
+import UploadSVG from "../assets/Pics/upload.svg"
 import { RiDeleteBin2Line, RiEdit2Line } from "react-icons/ri"
 import Portal from "../Components/Portal"
-import { FiLock } from "react-icons/fi"
+import { FiEye, FiEyeOff, FiLock } from "react-icons/fi"
+import { getDownloadURL, uploadBytesResumable, ref } from "firebase/storage"
+import { storage } from "../Firebase"
 
 const Customers = () => {
     const [selectedCustomer, setSelectedCustomer] = useState<EditOrDeleteCustomer>({
@@ -19,9 +22,54 @@ const Customers = () => {
     const [isShowLoading, setIsShowLoading] = useState<boolean>(false)
     const [isShowAlert, setIsShowAlert] = useState<{ status: boolean; job: "DELETE" | "EDIT" }>({ status: false, job: "DELETE" })
     const Page_Ref = useRef<HTMLDivElement>(null)
+    const ImageProgress_Ref = useRef(0)
     const [formISvalid, setFormIsvalid] = useState<boolean>(false)
+    const [passwordVisibility, setPasswordVisibility] = useState(false)
     const persianMonths = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
     const [CurrentImage, setCurrentImage] = useState<I_CurrentImage>({ link: "", name: "", file: undefined, status: "idle" })
+    const [valuesForEdit, setValuesForEdit] = useState<EditCustomer>({ Email: "", ImgSrce: "", Name: "", Password: "" })
+
+    const _UploadImageHandler: T_UploadImageHandler = (date, file, setState, progressRef, basketName) => {
+        const storageRef = ref(storage, String(`${basketName}/(${date})${file.name}`))
+        const uploadTask = uploadBytesResumable(storageRef, file)
+
+        uploadTask.on(
+            "state_changed",
+            snapshot => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                progressRef = progress
+
+                switch (snapshot.state) {
+                    case "paused":
+                        setState(prv => ({ ...prv, status: "paused" }))
+                        break
+                    case "running":
+                        setState(prv => ({ ...prv, status: "running" }))
+                        break
+                    case "canceled":
+                    case "error":
+                        setState(prv => ({ ...prv, file: undefined, status: "failed" }))
+                        break
+                }
+            },
+            error => {
+                setState(prv => ({ ...prv, file: undefined, status: "failed" }))
+                console.log(error)
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
+                    const ImageData: T_UploadedImage<typeof basketName> = {
+                        status: "unUsed",
+                        link: downloadURL,
+                        name: `(${date})${file.name}`,
+                        kind: `${basketName}`,
+                    }
+                    setState({ link: downloadURL, name: ImageData.name, file: undefined, status: "idle" })
+                    progressRef = 0
+                })
+            }
+        )
+    }
 
     const _GetCustomers_Handler = () => {
         setIsShowLoading(true)
@@ -62,6 +110,15 @@ const Customers = () => {
         })
     }
 
+    const _DateFormatter = (date: Date): string => {
+        return `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, "0")}${date
+            .getDate()
+            .toString()
+            .padStart(2, "0")}_${
+            date.getHours() === 0 ? "12am" : date.getHours() > 12 ? date.getHours() - 12 + "pm" : date.getHours() + "am"
+        }${date.getMinutes().toString().padStart(2, "0")}min`
+    }
+
     const _DeleteProduct = () => {
         const _AfterDelete = () => {
             setTimeout(() => {
@@ -74,6 +131,7 @@ const Customers = () => {
         if (!selectedCustomer.target) return
         Dispatch(DeleteCustomer({ id: selectedCustomer.target[0], func: _AfterDelete }) as unknown as UnknownAction)
     }
+
     const _EditProduct = () => {}
 
     useEffect(() => {
@@ -85,6 +143,18 @@ const Customers = () => {
             return () => clearTimeout(FiveSecondsTimeOut)
         }
     }, [isShowAlert.status])
+
+    useEffect(() => {
+        if (!CurrentImage.file) return
+
+        _UploadImageHandler(_DateFormatter(new Date()), CurrentImage.file, setCurrentImage, ImageProgress_Ref.current, "Products")
+    }, [CurrentImage.file])
+
+    useEffect(() => {
+        if (CurrentImage.link === "" || CurrentImage.name === "") return
+
+        setValuesForEdit(prv => ({ ...prv, ImgSrce: CurrentImage.link }))
+    }, [CurrentImage.link, CurrentImage.name])
 
     return (
         <OutLetParent DRef={Page_Ref}>
@@ -305,6 +375,12 @@ const Customers = () => {
                                                         <div
                                                             onClick={() => {
                                                                 setSelectedCustomer({ job: "EDIT", target: customer })
+                                                                setValuesForEdit({
+                                                                    Email: customer[1].Email,
+                                                                    ImgSrce: customer[1].ImgSrce,
+                                                                    Name: customer[1].Name,
+                                                                    Password: customer[1].Password,
+                                                                })
                                                             }}
                                                             className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 pr-[5px] rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
                                                         >
@@ -341,13 +417,17 @@ const Customers = () => {
             </div>
             {selectedCustomer.job !== "IDLE" ? (
                 <Portal>
-                    <div className='relative p-4 w-full max-w-md max-h-full'>
-                        <div className='relative bg-added-bg-primary rounded-lg shadow-md shadow-added-border'>
+                    <div className='relative'>
+                        <div className='relative bg-added-bg-primary rounded-lg shadow-md shadow-added-border max-w-full max-h-[calc(100vh-16px)] my-auto overflow-y-auto px-4'>
                             <button
                                 type='button'
                                 className='absolute top-3 end-2.5 bg-transparent hover:bg-added-border rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center group'
                                 data-modal-hide='popup-modal'
-                                onClick={() => setSelectedCustomer(prv => ({ ...prv, job: "IDLE" }))}
+                                onClick={() => {
+                                    setSelectedCustomer(prv => ({ ...prv, job: "IDLE" }))
+                                    setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
+                                    setValuesForEdit({ Email: "", ImgSrce: "", Name: "", Password: "" })
+                                }}
                             >
                                 <svg
                                     className='w-3 h-3 text-added-text-secondary group-hover:text-added-main'
@@ -379,7 +459,158 @@ const Customers = () => {
                                         : "کاربر مورد نظر را ویرایش کنید"}
                                 </h3>
                                 {selectedCustomer.job === "EDIT" ? (
-                                    <div className='mb-5 border rounded border-added-border p-2'></div>
+                                    <div className='mb-5 border rounded border-added-border p-2'>
+                                        <form className='text-added-text-primary text-right dir-rtl'>
+                                            <div className='flex flex-col gap-1'>
+                                                <div className='flex flex-col md:flex-row md:flex-wrap'>
+                                                    <div className='flex flex-col gap-2.5 p-1 md:w-1/2'>
+                                                        <label
+                                                            htmlFor='getCustomerName'
+                                                            className='cursor-pointer'
+                                                        >
+                                                            نام
+                                                        </label>
+                                                        <input
+                                                            type='text'
+                                                            className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main'
+                                                            id='getCustomerName'
+                                                            placeholder='عنوان محصول را وارد کنید'
+                                                            value={valuesForEdit.Name}
+                                                            onChange={e => {
+                                                                setValuesForEdit(prv => ({ ...prv, Name: e.target.value }))
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <div className='flex flex-col gap-2.5 p-1 md:w-1/2'>
+                                                        <label
+                                                            htmlFor='getCustomerEmail'
+                                                            className='cursor-pointer'
+                                                        >
+                                                            ایمیل
+                                                        </label>
+                                                        <input
+                                                            type='email'
+                                                            className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main'
+                                                            id='getCustomerEmail'
+                                                            placeholder='ایمیل کاربر را وارد کنید'
+                                                            value={valuesForEdit.Email}
+                                                            onChange={e => {
+                                                                setValuesForEdit(prv => ({ ...prv, Email: e.target.value }))
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <div className='flex flex-col gap-2.5 p-1 md:w-1/2'>
+                                                        <label
+                                                            htmlFor='getCustomerPassword'
+                                                            className='cursor-pointer'
+                                                        >
+                                                            گذرواژه
+                                                        </label>
+                                                        <div className='logininputContainer border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 bg-added-bg-secondary focus:border-added-main relative'>
+                                                            <input
+                                                                type={passwordVisibility ? "text" : "password"}
+                                                                className='outline-none w-[90%] h-full bg-transparent'
+                                                                id='getCustomerPassword'
+                                                                placeholder='گذرواژه کاربر را وارد کنید'
+                                                                value={valuesForEdit.Password}
+                                                                onChange={e => {}}
+                                                            />
+                                                            <div
+                                                                onClick={() => setPasswordVisibility(prv => !prv)}
+                                                                className='absolute left-2 top-1/2 -translate-y-1/2 cursor-pointer'
+                                                            >
+                                                                {passwordVisibility ? (
+                                                                    <FiEyeOff className='md:text-lg lg:text-xl' />
+                                                                ) : (
+                                                                    <FiEye className='md:text-lg lg:text-xl' />
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='flex'>
+                                                    <div className='flex flex-col gap-2.5 p-1 w-3/6 sm:w-4/6'>
+                                                        <label
+                                                            htmlFor='getCustomerImage'
+                                                            className='cursor-pointer w-28'
+                                                        >
+                                                            تصویر کاربر
+                                                        </label>
+                                                        <label
+                                                            htmlFor='getCustomerImage'
+                                                            className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 cursor-pointer flex justify-center items-center flex-col gap-2 bg-added-bg-secondary focus:border-added-main hover:bg-added-border'
+                                                            onDrop={e => {
+                                                                e.preventDefault()
+                                                                e.stopPropagation()
+                                                                ;(e.target as HTMLElement).classList.remove("hovered")
+
+                                                                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                                                                    setCurrentImage(prv => ({
+                                                                        ...prv,
+                                                                        file: e.dataTransfer.files[0],
+                                                                    }))
+                                                                }
+                                                            }}
+                                                            onDragEnter={e => {
+                                                                e.preventDefault()
+                                                                e.stopPropagation()
+                                                                ;(e.target as HTMLElement).classList.add("hovered")
+                                                            }}
+                                                            onDragOver={e => {
+                                                                e.preventDefault()
+                                                                e.stopPropagation()
+                                                                ;(e.target as HTMLElement).classList.add("hovered")
+                                                            }}
+                                                            onDragLeave={e => {
+                                                                e.preventDefault()
+                                                                e.stopPropagation()
+                                                                ;(e.target as HTMLElement).classList.remove("hovered")
+                                                            }}
+                                                        >
+                                                            <input
+                                                                type='file'
+                                                                className='hidden'
+                                                                id='getCustomerImage'
+                                                                accept='image/*'
+                                                                onChange={e => {
+                                                                    const files = e.target.files
+                                                                    if (!files) return
+                                                                    setCurrentImage(prv => ({ ...prv, file: files[0] }))
+                                                                }}
+                                                                disabled={CurrentImage.status !== "idle"}
+                                                            />
+                                                            <img
+                                                                src={UploadSVG}
+                                                                alt='Icon'
+                                                                className='sm:w-12 lg:w-16'
+                                                            />
+                                                            <span className='text-added-text-secondary text-xs text-center md:text-sm lg:text-base'>
+                                                                بکشید و رها کنید برای انتخاب عکس <br /> یا کلیک کنید
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                    <div className='w-3/6 sm:w-2/6 p-1'>
+                                                        <div className='pb-2.5'>پیش نمایش</div>
+                                                        <div className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 flex justify-center items-center flex-col gap-2 bg-added-bg-secondary focus:border-added-main dir-rtl h-[131px] min-[303px]:h-[115px] sm:h-[106px] md:h-[115px] lg:h-[146px]'>
+                                                            {CurrentImage.status === "running" ? (
+                                                                "درحال بارگذاری " + ImageProgress_Ref.current + "%"
+                                                            ) : (
+                                                                <img
+                                                                    src={
+                                                                        CurrentImage.link
+                                                                            ? CurrentImage.link
+                                                                            : valuesForEdit.ImgSrce
+                                                                    }
+                                                                    className='w-full h-full object-contain'
+                                                                    alt='CustomerAvatar'
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
                                 ) : null}
                                 {selectedCustomer.job === "DELETE" ? (
                                     <button
@@ -406,7 +637,11 @@ const Customers = () => {
                                     data-modal-hide='popup-modal'
                                     type='button'
                                     className='py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700'
-                                    onClick={() => setSelectedCustomer(prv => ({ ...prv, job: "IDLE" }))}
+                                    onClick={() => {
+                                        setSelectedCustomer(prv => ({ ...prv, job: "IDLE" }))
+                                        setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
+                                        setValuesForEdit({ Email: "", ImgSrce: "", Name: "", Password: "" })
+                                    }}
                                 >
                                     {selectedCustomer.job === "DELETE" ? "نه، پشیمون شدم" : "نه، بیخیال"}
                                 </button>

@@ -176,16 +176,17 @@ declare global {
 
     type AddCustomerActionReducer = { data: T_CustomerInDB; func: () => void }
 
-
     interface EditOrDeleteCustomer {
         target: T_Customer | null
         job: "DELETE" | "EDIT" | "IDLE"
     }
 
     type DeleteCustomerActionReducer = {
-        id: T_Customer[0],
+        id: T_Customer[0]
         func: () => void
     }
+
+    type EditCustomer = Pick<T_CustomerInDB, "Email" | "ImgSrce" | "Name" | "Password">
 }
 
 export {}
