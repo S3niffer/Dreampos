@@ -12,6 +12,7 @@ import { FiEye, FiEyeOff, FiLock } from "react-icons/fi"
 import { getDownloadURL, uploadBytesResumable, ref } from "firebase/storage"
 import { storage } from "../Firebase"
 import IconeBox from "../Components/IconeBox"
+import ImagePortal from "../Components/ImagePortal"
 
 const Customers = () => {
     const [selectedCustomer, setSelectedCustomer] = useState<EditOrDeleteCustomer>({
@@ -26,6 +27,7 @@ const Customers = () => {
     const ImageProgress_Ref = useRef(0)
     const [formISvalid, setFormIsvalid] = useState<boolean>(false)
     const [passwordVisibility, setPasswordVisibility] = useState(false)
+    const [ImgSrc4ImagePOrtal, setImgSrc4ImagePOrtal] = useState("")
     const persianMonths = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
     const [CurrentImage, setCurrentImage] = useState<I_CurrentImage>({ link: "", name: "", file: undefined, status: "idle" })
     const [valuesForEdit, setValuesForEdit] = useState<EditCustomer>({ Email: "", ImgSrce: "", Name: "", Password: "" })
@@ -407,7 +409,12 @@ const Customers = () => {
                                                     className='bg-added-bg-secondary hover:bg-added-bg-primary'
                                                 >
                                                     <td className='text-center p-2.5'>
-                                                        <IconeBox className='w-5 min-[450px]:w-6 sm:w-7 md:w-9 lg:w-10 xl:w-13 mx-auto rounded-lg overflow-hidden'>
+                                                        <IconeBox
+                                                            className='w-5 min-[450px]:w-6 sm:w-7 md:w-9 lg:w-10 xl:w-13 mx-auto rounded-lg overflow-hidden'
+                                                            onClick={() => {
+                                                                setImgSrc4ImagePOrtal(customer[1].ImgSrce)
+                                                            }}
+                                                        >
                                                             <img
                                                                 src={customer[1].ImgSrce}
                                                                 alt='Avatar'
@@ -756,6 +763,12 @@ const Customers = () => {
                         </div>
                     </div>
                 </Portal>
+            ) : null}
+            {ImgSrc4ImagePOrtal ? (
+                <ImagePortal
+                    imageSrc={ImgSrc4ImagePOrtal}
+                    _CloseHandler={() => setImgSrc4ImagePOrtal("")}
+                />
             ) : null}
         </OutLetParent>
     )

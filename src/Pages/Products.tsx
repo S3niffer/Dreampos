@@ -13,6 +13,7 @@ import Loading from "../Components/Loading"
 import { getDownloadURL, uploadBytesResumable, ref } from "firebase/storage"
 import { storage } from "../Firebase"
 import { FiLock } from "react-icons/fi"
+import ImagePortal from "../Components/ImagePortal"
 
 function TimeAgo({ date }: { date: Date }) {
     const timeAgo = formatDistanceToNow(new Date(date))
@@ -37,6 +38,7 @@ const Products = () => {
     const [isShowAlert, setIsShowAlert] = useState<{ status: boolean; job: "DELETE" | "EDIT" }>({ status: false, job: "DELETE" })
     const [isShowLoading, setIsShowLoading] = useState<boolean>(false)
     const [formISvalid, setFormIsvalid] = useState<boolean>(false)
+    const [ImgSrc4ImagePOrtal, setImgSrc4ImagePOrtal] = useState("")
     const [valuesForEdit, setValuesForEdit] = useState<{ Name: string; Price: number; ImgSrce: string }>({
         Name: "",
         ImgSrce: "",
@@ -348,7 +350,12 @@ const Products = () => {
                                                     <div className='hover:bg-transparent transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-gray-900 opacity-25'></div>
                                                 </div>
 
-                                                <div className='absolute bottom-0 left-0 bg-added-main px-4 py-2 text-added-bg-primary text-sm hover:bg-added-bg-primary hover:text-added-main transition duration-500 ease-in-out cursor-pointer'>
+                                                <div
+                                                    className='absolute bottom-0 left-0 bg-added-main px-4 py-2 text-added-bg-primary text-sm hover:bg-added-bg-primary hover:text-added-main transition duration-500 ease-in-out cursor-pointer'
+                                                    onClick={() => {
+                                                        setImgSrc4ImagePOrtal(product[1].ImgSrce)
+                                                    }}
+                                                >
                                                     عکس
                                                 </div>
 
@@ -662,6 +669,12 @@ const Products = () => {
                         </div>
                     </div>
                 </Portal>
+            ) : null}
+            {ImgSrc4ImagePOrtal ? (
+                <ImagePortal
+                    imageSrc={ImgSrc4ImagePOrtal}
+                    _CloseHandler={() => setImgSrc4ImagePOrtal("")}
+                />
             ) : null}
         </OutLetParent>
     )
