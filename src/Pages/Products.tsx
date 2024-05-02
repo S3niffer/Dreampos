@@ -556,7 +556,7 @@ const Products = () => {
                                                         </label>
                                                         <label
                                                             htmlFor='getProductImage'
-                                                            className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 cursor-pointer flex justify-center items-center flex-col gap-2 bg-added-bg-secondary focus:border-added-main hover:bg-added-border'
+                                                            className='border border-added-border rounded-md p-1.5 py-2 outline-none lg:py-3 lg:p-2.5 cursor-pointer flex justify-center items-center flex-col gap-2 bg-added-bg-secondary focus:border-added-main hover:bg-added-border h-[131px] min-[303px]:h-[115px] sm:h-[106px] md:h-[115px] lg:h-[146px]'
                                                             onDrop={e => {
                                                                 e.preventDefault()
                                                                 e.stopPropagation()
