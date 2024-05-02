@@ -6,7 +6,7 @@ import OutLetParent from "../Components/OutLetParent"
 import { IoRefresh } from "react-icons/io5"
 import Loading from "../Components/Loading"
 import UploadSVG from "../assets/Pics/upload.svg"
-import { RiDeleteBin2Line, RiEdit2Line } from "react-icons/ri"
+import { RiArrowLeftDoubleFill, RiArrowRightDoubleFill, RiDeleteBin2Line, RiEdit2Line } from "react-icons/ri"
 import Portal from "../Components/Portal"
 import { FiEye, FiEyeOff, FiLock } from "react-icons/fi"
 import { getDownloadURL, uploadBytesResumable, ref } from "firebase/storage"
@@ -29,6 +29,12 @@ const Customers = () => {
     const persianMonths = ["فروردین", "اردیبهشت", "خرداد", "تیر", "مرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"]
     const [CurrentImage, setCurrentImage] = useState<I_CurrentImage>({ link: "", name: "", file: undefined, status: "idle" })
     const [valuesForEdit, setValuesForEdit] = useState<EditCustomer>({ Email: "", ImgSrce: "", Name: "", Password: "" })
+    const [PaginationValues, setPaginationValues] = useState<T_PaginationStuff<T_Customers>>({
+        ItemsPerPage: 6,
+        Page: 1,
+        Items: [],
+        totalPages: 1,
+    })
 
     const _UploadImageHandler: T_UploadImageHandler = (date, file, setState, progressRef, basketName) => {
         const storageRef = ref(storage, String(`${basketName}/(${date})${file.name}`))
@@ -120,7 +126,7 @@ const Customers = () => {
         }${date.getMinutes().toString().padStart(2, "0")}min`
     }
 
-    const _DeleteProduct = () => {
+    const _DeleteCustomer = () => {
         const _AfterDelete = () => {
             setTimeout(() => {
                 setSelectedCustomer(prv => ({ ...prv, job: "IDLE" }))
@@ -133,7 +139,7 @@ const Customers = () => {
         Dispatch(DeleteCustomer({ id: selectedCustomer.target[0], func: _AfterDelete }) as unknown as UnknownAction)
     }
 
-    const _EditProduct = () => {
+    const _EditCustomer = () => {
         const { ImgSrce, Name, Email, Password } = valuesForEdit
         if (!ImgSrce || !Name || !Email || !Password || !selectedCustomer.target) return
 
@@ -187,6 +193,21 @@ const Customers = () => {
             setFormIsvalid(false)
         }
     }, [valuesForEdit])
+
+    useEffect(() => {
+        if (!Customers.length) return
+        const endPoint = PaginationValues.Page * PaginationValues.ItemsPerPage
+        const startPoint = endPoint - PaginationValues.ItemsPerPage
+        const totalPages = Math.ceil(Customers.length / PaginationValues.ItemsPerPage)
+
+        const ordredItems = [...Customers].slice(startPoint, endPoint)
+
+        if (PaginationValues.Page > totalPages) {
+            setPaginationValues(prv => ({ ...prv, Items: ordredItems, totalPages, Page: totalPages }))
+        } else {
+            setPaginationValues(prv => ({ ...prv, Items: ordredItems, totalPages }))
+        }
+    }, [Customers, PaginationValues.Page, PaginationValues.ItemsPerPage])
 
     return (
         <OutLetParent DRef={Page_Ref}>
@@ -253,189 +274,236 @@ const Customers = () => {
                     ) : null}
 
                     {Customers.length !== 0 ? (
-                        <div className='relative overflow-x-auto sm:rounded-lg p-1'>
-                            <div className='flex flex-column sm:flex-row flex-wrap items-center justify-between gap-2.5 pb-2.5 p-1'>
-                                <div className=''>
-                                    <button
-                                        className='items-center text-added-text-secondary bg-transparent border border-added-border hover:bg-added-bg-secondary font-medium rounded-md text-sm flex h-7 px-1.5'
-                                        type='button'
-                                    >
-                                        <svg
-                                            className='w-3 h-3 text-added-text-secondary me-3'
-                                            aria-hidden='true'
-                                            xmlns='http://www.w3.org/2000/svg'
-                                            fill='currentColor'
-                                            viewBox='0 0 20 20'
+                        <>
+                            <div className='relative overflow-x-auto sm:rounded-lg p-1'>
+                                <div className='flex flex-column sm:flex-row flex-wrap items-center justify-between gap-2.5 pb-2.5 p-1'>
+                                    <div className=''>
+                                        <button
+                                            className='items-center text-added-text-secondary bg-transparent border border-added-border hover:bg-added-bg-secondary font-medium rounded-md text-sm flex h-7 px-1.5'
+                                            type='button'
                                         >
-                                            <path d='M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z' />
-                                        </svg>
-                                        Last 30 days
-                                        <svg
-                                            className='w-2.5 h-2.5 ms-2.5'
-                                            aria-hidden='true'
-                                            xmlns='http://www.w3.org/2000/svg'
-                                            fill='none'
-                                            viewBox='0 0 10 6'
-                                        >
-                                            <path
-                                                stroke='currentColor'
-                                                strokeLinecap='round'
-                                                strokeLinejoin='round'
-                                                strokeWidth='2'
-                                                d='m1 1 4 4 4-4'
-                                            />
-                                        </svg>
-                                    </button>
-
-                                    <div className='z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow'>
-                                        <ul className='p-3 space-y-1 text-sm text-gray-700'>
-                                            <li>
-                                                <div className='flex items-center p-2 rounded hover:bg-gray-100'>
-                                                    <input
-                                                        id='filter-radio-example-1'
-                                                        type='radio'
-                                                        value=''
-                                                        name='filter-radio'
-                                                        className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300'
-                                                    />
-                                                    <label
-                                                        htmlFor='filter-radio-example-1'
-                                                        className='w-full ms-2 text-sm font-medium text-gray-900 rounded'
-                                                    >
-                                                        Last day
-                                                    </label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div className='relative w-48 border  rounded-md h-7 border-added-border hover:bg-added-bg-secondary hasINput'>
-                                    <div className='absolute left-0.5 flex items-center top-1/2 -translate-y-1/2 overflow-hidden'>
-                                        <svg
-                                            className='w-5 h-5 text-added-text-secondary cursor-pointer'
-                                            aria-hidden='true'
-                                            fill='currentColor'
-                                            viewBox='0 0 20 20'
-                                            xmlns='http://www.w3.org/2000/svg'
-                                        >
-                                            <path
-                                                fillRule='evenodd'
-                                                d='M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z'
-                                                clipRule='evenodd'
-                                            ></path>
-                                        </svg>
-                                    </div>
-                                    <input
-                                        type='text'
-                                        id='table-search'
-                                        className='w-10/12 h-full outline-none p-1 bg-transparent text-added-text-secondary'
-                                        placeholder='جستجو'
-                                    />
-                                </div>
-                            </div>
-
-                            <table className='min-w-[550px] md:min-w-[600px] w-full m-auto text-left text-added-text-secondary outline outline-added-border rounded-md overflow-hidden text-sm md:text-base lg:text-lg xl:text-xl'>
-                                <thead className='text-added-text-primary uppercase bg-added-border'>
-                                    <tr>
-                                        <th
-                                            scope='col'
-                                            className='p-2.5 text-center'
-                                        >
-                                            تصویر
-                                        </th>
-                                        <th
-                                            scope='col'
-                                            className='p-2.5 text-center'
-                                        >
-                                            عنوان
-                                        </th>
-                                        <th
-                                            scope='col'
-                                            className='p-2.5 text-center'
-                                        >
-                                            ایمیل
-                                        </th>
-                                        <th
-                                            scope='col'
-                                            className='p-2.5 text-center'
-                                        >
-                                            تاریخ افزودن
-                                        </th>
-                                        <th
-                                            scope='col'
-                                            className='p-2.5 text-center'
-                                        >
-                                            ویرایش/حذف
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {Customers.map(customer => {
-                                        const productDate = customer[1].Date
-                                        const PersianDateParts = new Intl.DateTimeFormat("fa-IR").formatToParts(
-                                            new Date(productDate)
-                                        )
-                                        const PersianMonthWord =
-                                            persianMonths[
-                                                Number(_removePersianDigitsAndSeparators(PersianDateParts[2].value)) - 1
-                                            ]
-                                        return (
-                                            <tr
-                                                key={customer[0]}
-                                                className='bg-added-bg-secondary hover:bg-added-bg-primary'
+                                            <svg
+                                                className='w-3 h-3 text-added-text-secondary me-3'
+                                                aria-hidden='true'
+                                                xmlns='http://www.w3.org/2000/svg'
+                                                fill='currentColor'
+                                                viewBox='0 0 20 20'
                                             >
-                                                <td className='text-center p-2.5'>
-                                                    <IconeBox className='w-5 min-[450px]:w-6 sm:w-7 md:w-9 lg:w-10 xl:w-13 mx-auto rounded-lg overflow-hidden'>
-                                                        <img
-                                                            src={customer[1].ImgSrce}
-                                                            alt='Avatar'
-                                                            className='h-full w-full object-cover'
+                                                <path d='M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z' />
+                                            </svg>
+                                            Last 30 days
+                                            <svg
+                                                className='w-2.5 h-2.5 ms-2.5'
+                                                aria-hidden='true'
+                                                xmlns='http://www.w3.org/2000/svg'
+                                                fill='none'
+                                                viewBox='0 0 10 6'
+                                            >
+                                                <path
+                                                    stroke='currentColor'
+                                                    strokeLinecap='round'
+                                                    strokeLinejoin='round'
+                                                    strokeWidth='2'
+                                                    d='m1 1 4 4 4-4'
+                                                />
+                                            </svg>
+                                        </button>
+
+                                        <div className='z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow'>
+                                            <ul className='p-3 space-y-1 text-sm text-gray-700'>
+                                                <li>
+                                                    <div className='flex items-center p-2 rounded hover:bg-gray-100'>
+                                                        <input
+                                                            id='filter-radio-example-1'
+                                                            type='radio'
+                                                            value=''
+                                                            name='filter-radio'
+                                                            className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300'
                                                         />
-                                                    </IconeBox>
-                                                </td>
-                                                <th
-                                                    scope='row'
-                                                    className='text-center p-2.5 font-medium text-added-text-primary/75 whitespace-nowrap '
-                                                >
-                                                    {customer[1].Name}
-                                                </th>
-                                                <td className='text-center p-2.5 dir-ltr'>{customer[1].Email}</td>
-                                                <td className='text-center p-2.5'>
-                                                    <small>{PersianDateParts[4].value.padStart(2, "۰")}</small>/
-                                                    <small>{PersianMonthWord}</small>/<small>{PersianDateParts[0].value}</small>
-                                                </td>
-                                                <td className='text-center p-2.5'>
-                                                    <div className='flex items-center gap-1 justify-center'>
-                                                        <div
-                                                            onClick={() => {
-                                                                setSelectedCustomer({ job: "EDIT", target: customer })
-                                                                setValuesForEdit({
-                                                                    Email: customer[1].Email,
-                                                                    ImgSrce: customer[1].ImgSrce,
-                                                                    Name: customer[1].Name,
-                                                                    Password: customer[1].Password,
-                                                                })
-                                                            }}
-                                                            className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 pr-[5px] rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
+                                                        <label
+                                                            htmlFor='filter-radio-example-1'
+                                                            className='w-full ms-2 text-sm font-medium text-gray-900 rounded'
                                                         >
-                                                            <RiEdit2Line className='text-inherit lg:text-xl' />
-                                                        </div>
-                                                        <div
-                                                            onClick={() => {
-                                                                setSelectedCustomer({ job: "DELETE", target: customer })
-                                                            }}
-                                                            className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
-                                                        >
-                                                            <RiDeleteBin2Line className='text-inherit lg:text-xl' />
-                                                        </div>
+                                                            Last day
+                                                        </label>
                                                     </div>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div className='relative w-48 border  rounded-md h-7 border-added-border hover:bg-added-bg-secondary hasINput'>
+                                        <div className='absolute left-0.5 flex items-center top-1/2 -translate-y-1/2 overflow-hidden'>
+                                            <svg
+                                                className='w-5 h-5 text-added-text-secondary cursor-pointer'
+                                                aria-hidden='true'
+                                                fill='currentColor'
+                                                viewBox='0 0 20 20'
+                                                xmlns='http://www.w3.org/2000/svg'
+                                            >
+                                                <path
+                                                    fillRule='evenodd'
+                                                    d='M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z'
+                                                    clipRule='evenodd'
+                                                ></path>
+                                            </svg>
+                                        </div>
+                                        <input
+                                            type='text'
+                                            id='table-search'
+                                            className='w-10/12 h-full outline-none p-1 bg-transparent text-added-text-secondary'
+                                            placeholder='جستجو'
+                                        />
+                                    </div>
+                                </div>
+
+                                <table className='min-w-[550px] md:min-w-[600px] w-full m-auto text-left text-added-text-secondary outline outline-added-border rounded-md overflow-hidden text-sm md:text-base lg:text-lg xl:text-xl'>
+                                    <thead className='text-added-text-primary uppercase bg-added-border'>
+                                        <tr>
+                                            <th
+                                                scope='col'
+                                                className='p-2.5 text-center'
+                                            >
+                                                تصویر
+                                            </th>
+                                            <th
+                                                scope='col'
+                                                className='p-2.5 text-center'
+                                            >
+                                                عنوان
+                                            </th>
+                                            <th
+                                                scope='col'
+                                                className='p-2.5 text-center'
+                                            >
+                                                ایمیل
+                                            </th>
+                                            <th
+                                                scope='col'
+                                                className='p-2.5 text-center'
+                                            >
+                                                تاریخ افزودن
+                                            </th>
+                                            <th
+                                                scope='col'
+                                                className='p-2.5 text-center'
+                                            >
+                                                ویرایش/حذف
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {PaginationValues.Items.map(customer => {
+                                            const customerDate = customer[1].Date
+                                            const PersianDateParts = new Intl.DateTimeFormat("fa-IR").formatToParts(
+                                                new Date(customerDate)
+                                            )
+                                            const PersianMonthWord =
+                                                persianMonths[
+                                                    Number(_removePersianDigitsAndSeparators(PersianDateParts[2].value)) - 1
+                                                ]
+                                            return (
+                                                <tr
+                                                    key={customer[0]}
+                                                    className='bg-added-bg-secondary hover:bg-added-bg-primary'
+                                                >
+                                                    <td className='text-center p-2.5'>
+                                                        <IconeBox className='w-5 min-[450px]:w-6 sm:w-7 md:w-9 lg:w-10 xl:w-13 mx-auto rounded-lg overflow-hidden'>
+                                                            <img
+                                                                src={customer[1].ImgSrce}
+                                                                alt='Avatar'
+                                                                className='h-full w-full object-cover'
+                                                            />
+                                                        </IconeBox>
+                                                    </td>
+                                                    <th
+                                                        scope='row'
+                                                        className='text-center p-2.5 font-medium text-added-text-primary/75 whitespace-nowrap '
+                                                    >
+                                                        {customer[1].Name}
+                                                    </th>
+                                                    <td className='text-center p-2.5 dir-ltr'>{customer[1].Email}</td>
+                                                    <td className='text-center p-2.5'>
+                                                        <small>{PersianDateParts[4].value.padStart(2, "۰")}</small>/
+                                                        <small>{PersianMonthWord}</small>/
+                                                        <small>{PersianDateParts[0].value}</small>
+                                                    </td>
+                                                    <td className='text-center p-2.5'>
+                                                        <div className='flex items-center gap-1 justify-center'>
+                                                            <div
+                                                                onClick={() => {
+                                                                    setSelectedCustomer({ job: "EDIT", target: customer })
+                                                                    setValuesForEdit({
+                                                                        Email: customer[1].Email,
+                                                                        ImgSrce: customer[1].ImgSrce,
+                                                                        Name: customer[1].Name,
+                                                                        Password: customer[1].Password,
+                                                                    })
+                                                                }}
+                                                                className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 pr-[5px] rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
+                                                            >
+                                                                <RiEdit2Line className='text-inherit lg:text-xl' />
+                                                            </div>
+                                                            <div
+                                                                onClick={() => {
+                                                                    setSelectedCustomer({ job: "DELETE", target: customer })
+                                                                }}
+                                                                className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
+                                                            >
+                                                                <RiDeleteBin2Line className='text-inherit lg:text-xl' />
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {PaginationValues.totalPages > 1 ? (
+                                <div className='mt-6 text-center xl:text-lg'>
+                                    <div className='flex items-center justify-center gap-1'>
+                                        {[...Array.from({ length: PaginationValues.totalPages }, (v, k) => k + 1)].map(button => (
+                                            <button
+                                                className={`${
+                                                    button === PaginationValues.Page ? "bg-added-main" : "bg-[#585858]"
+                                                } text-[#fff] aspect-square w-8 rounded-md leading-8 hover:bg-added-main transition-all duration-300 p-0.5 pb-0 cursor-pointer xl:text-xl xl:w-10 xl:leading-10`}
+                                                onClick={() => {
+                                                    setPaginationValues(prv => ({ ...prv, Page: button }))
+                                                }}
+                                                key={button}
+                                            >
+                                                {(+button).toLocaleString("fa-IR")}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <div className='flex items-center gap-2 mt-2 justify-center'>
+                                        <button
+                                            className='flex items-center bg-[#585858] hover:bg-added-main p-1.5 rounded text-white cursor-pointer disabled:bg-added-border disabled:text-added-text-primary'
+                                            onClick={() => {
+                                                setPaginationValues(prv => ({ ...prv, Page: prv.Page - 1 }))
+                                            }}
+                                            disabled={PaginationValues.Page === 1}
+                                        >
+                                            {PaginationValues.Page === 1 ? <FiLock className='text-inherit' /> : null}
+                                            <RiArrowRightDoubleFill className='text-inherit' />
+                                            صفحه قبلی
+                                        </button>
+                                        <button
+                                            className='flex items-center bg-[#585858] hover:bg-added-main p-1.5 rounded text-white cursor-pointer disabled:bg-added-border disabled:text-added-text-primary'
+                                            onClick={() => {
+                                                setPaginationValues(prv => ({ ...prv, Page: prv.Page + 1 }))
+                                            }}
+                                            disabled={PaginationValues.Page === PaginationValues.totalPages}
+                                        >
+                                            صفحه بعدی <RiArrowLeftDoubleFill className='text-inherit' />
+                                            {PaginationValues.Page === PaginationValues.totalPages ? (
+                                                <FiLock className='text-inherit' />
+                                            ) : null}
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : null}
+                        </>
                     ) : (
                         <div className='text-center pb-10'>
                             <span className='border-b border-added-main inline-block mb-2 pb-1.5 md:text-lg lg:text-xl'>
@@ -656,7 +724,7 @@ const Customers = () => {
                                         data-modal-hide='popup-modal'
                                         type='button'
                                         className='text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center'
-                                        onClick={_DeleteProduct}
+                                        onClick={_DeleteCustomer}
                                     >
                                         بله کاملا
                                     </button>
@@ -665,7 +733,7 @@ const Customers = () => {
                                         data-modal-hide='popup-modal'
                                         type='button'
                                         className='text-white bg-added-main/80 hover:bg-added-main focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center disabled:bg-added-border disabled:border-added-border disabled:text-added-text-primary'
-                                        onClick={_EditProduct}
+                                        onClick={_EditCustomer}
                                         disabled={!formISvalid}
                                     >
                                         ارسال
