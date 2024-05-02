@@ -42,15 +42,10 @@ const Products = () => {
         ImgSrce: "",
         Price: 0,
     })
-    const [PaginationValues, setPaginationValues] = useState<{
-        ProductsperPage: number
-        Page: number
-        Products: T_Products
-        totalPages: number
-    }>({
-        ProductsperPage: 6,
+    const [PaginationValues, setPaginationValues] = useState<T_PaginationStuff<T_Products>>({
+        ItemsPerPage: 6,
         Page: 1,
-        Products: [],
+        Items: [],
         totalPages: 1,
     })
     const _UploadImageHandler: T_UploadImageHandler = (date, file, setState, progressRef, basketName) => {
@@ -252,18 +247,18 @@ const Products = () => {
 
     useEffect(() => {
         if (!Products.length) return
-        const endPoint = PaginationValues.Page * PaginationValues.ProductsperPage
-        const startPoint = endPoint - PaginationValues.ProductsperPage
-        const totalPages = Math.ceil(Products.length / PaginationValues.ProductsperPage)
+        const endPoint = PaginationValues.Page * PaginationValues.ItemsPerPage
+        const startPoint = endPoint - PaginationValues.ItemsPerPage
+        const totalPages = Math.ceil(Products.length / PaginationValues.ItemsPerPage)
 
         const ordredProducts = [...Products].slice(startPoint, endPoint)
 
         if (PaginationValues.Page > totalPages) {
-            setPaginationValues(prv => ({ ...prv, Products: ordredProducts, totalPages, Page: totalPages }))
+            setPaginationValues(prv => ({ ...prv, Items: ordredProducts, totalPages, Page: totalPages }))
         } else {
-            setPaginationValues(prv => ({ ...prv, Products: ordredProducts, totalPages }))
+            setPaginationValues(prv => ({ ...prv, Items: ordredProducts, totalPages }))
         }
-    }, [Products, PaginationValues.Page, PaginationValues.ProductsperPage])
+    }, [Products, PaginationValues.Page, PaginationValues.ItemsPerPage])
 
     return (
         <OutLetParent DRef={Page_Ref}>
@@ -332,7 +327,7 @@ const Products = () => {
                     {Products.length !== 0 ? (
                         <>
                             <div className='grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
-                                {PaginationValues.Products.map(product => {
+                                {PaginationValues.Items.map(product => {
                                     const productDate = product[1].Date
                                     const PersianDateParts = new Intl.DateTimeFormat("fa-IR").formatToParts(new Date(productDate))
                                     const PersianMonthWord =
