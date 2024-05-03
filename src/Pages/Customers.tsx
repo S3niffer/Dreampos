@@ -294,7 +294,11 @@ const Customers = () => {
                                             className='items-center text-added-text-secondary bg-transparent border border-added-border hover:bg-added-bg-secondary font-medium rounded-md text-sm flex h-7 px-1.5 w-32 justify-between'
                                             type='button'
                                             onClick={() => {
-                                                setFilterOption(prv => ({ ...prv, status: "OPEN" }))
+                                                if (filterOptions.status === "CLOSE") {
+                                                    setFilterOption(prv => ({ ...prv, status: "OPEN" }))
+                                                } else {
+                                                    setFilterOption(prv => ({ ...prv, status: "CLOSE" }))
+                                                }
                                             }}
                                             onBlur={() => {
                                                 setTimeout(() => {
