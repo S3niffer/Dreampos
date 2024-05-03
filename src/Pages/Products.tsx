@@ -317,7 +317,7 @@ const Products = () => {
                     ) : null}
 
                     {isShowLoading ? (
-                        <div className='absolute w-full h-full z-40 backdrop-blur-[2px] left-0 top-0 rounded overflow-hidden'>
+                        <div className='absolute w-full h-full z-30 backdrop-blur-[2px] left-0 top-0 rounded overflow-hidden'>
                             <div className='flex h-full items-center justify-center'>
                                 <div className='-translate-x-1/2 -translate-y-1/2'>
                                     <Loading />
