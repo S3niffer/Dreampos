@@ -240,7 +240,7 @@ const Products = () => {
     }, [CurrentImage.link, CurrentImage.name])
 
     useEffect(() => {
-        if (valuesForEdit.ImgSrce && valuesForEdit.Name && valuesForEdit.Price) {
+        if (valuesForEdit.ImgSrce && valuesForEdit.Name && typeof valuesForEdit.Price === 'number') {
             setFormIsvalid(true)
         } else {
             setFormIsvalid(false)
