@@ -31,7 +31,7 @@ const ImagePortal = ({ imageSrc, _CloseHandler }: { imageSrc: string; _CloseHand
                         <img
                             src={imageSrc}
                             alt='pic'
-                            className='h-60 mb-4 aspect-square object-fill border-2 border-added-main rounded-md'
+                            className='h-60 md:h-96 mb-4 aspect-square object-fill border-2 border-added-main rounded-md'
                         />
                     </div>
                 </div>
