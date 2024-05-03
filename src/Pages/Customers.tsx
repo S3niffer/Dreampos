@@ -37,6 +37,16 @@ const Customers = () => {
         Items: [],
         totalPages: 1,
     })
+    const [filterOptions, setFilterOption] = useState<filterByTimeOption>({
+        options: [
+            { id: 0, text: "روز گذشته", countDay: 1 },
+            { id: 1, text: "روز گذشته", countDay: 7 },
+            { id: 2, text: "روز گذشته", countDay: 30 },
+            { id: 3, text: "فرقی نمیکنه", countDay: null },
+        ],
+        selectedOptionIndex: 3,
+        status: "CLOSE",
+    })
 
     const _UploadImageHandler: T_UploadImageHandler = (date, file, setState, progressRef, basketName) => {
         const storageRef = ref(storage, String(`${basketName}/(${date})${file.name}`))
@@ -279,21 +289,29 @@ const Customers = () => {
                         <>
                             <div className='relative overflow-x-auto sm:rounded-lg p-1'>
                                 <div className='flex flex-column sm:flex-row flex-wrap items-center justify-between gap-2.5 pb-2.5 p-1'>
-                                    <div className=''>
+                                    <div className='relative'>
                                         <button
-                                            className='items-center text-added-text-secondary bg-transparent border border-added-border hover:bg-added-bg-secondary font-medium rounded-md text-sm flex h-7 px-1.5'
+                                            className='items-center text-added-text-secondary bg-transparent border border-added-border hover:bg-added-bg-secondary font-medium rounded-md text-sm flex h-7 px-1.5 w-32 justify-between'
                                             type='button'
+                                            onClick={() => {
+                                                setFilterOption(prv => ({ ...prv, status: "OPEN" }))
+                                            }}
                                         >
-                                            <svg
-                                                className='w-3 h-3 text-added-text-secondary me-3'
-                                                aria-hidden='true'
-                                                xmlns='http://www.w3.org/2000/svg'
-                                                fill='currentColor'
-                                                viewBox='0 0 20 20'
-                                            >
-                                                <path d='M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z' />
-                                            </svg>
-                                            Last 30 days
+                                            <div className='flex items-center gap-1.5'>
+                                                <svg
+                                                    className='w-3 h-3 text-added-text-secondary'
+                                                    aria-hidden='true'
+                                                    xmlns='http://www.w3.org/2000/svg'
+                                                    fill='currentColor'
+                                                    viewBox='0 0 20 20'
+                                                >
+                                                    <path d='M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z' />
+                                                </svg>
+                                                {filterOptions.options[
+                                                    filterOptions.selectedOptionIndex
+                                                ].countDay?.toLocaleString("fa-IR")}
+                                                {" " + filterOptions.options[filterOptions.selectedOptionIndex].text}
+                                            </div>
                                             <svg
                                                 className='w-2.5 h-2.5 ms-2.5'
                                                 aria-hidden='true'
@@ -311,25 +329,44 @@ const Customers = () => {
                                             </svg>
                                         </button>
 
-                                        <div className='z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow'>
-                                            <ul className='p-3 space-y-1 text-sm text-gray-700'>
-                                                <li>
-                                                    <div className='flex items-center p-2 rounded hover:bg-gray-100'>
-                                                        <input
-                                                            id='filter-radio-example-1'
-                                                            type='radio'
-                                                            value=''
-                                                            name='filter-radio'
-                                                            className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300'
-                                                        />
-                                                        <label
-                                                            htmlFor='filter-radio-example-1'
-                                                            className='w-full ms-2 text-sm font-medium text-gray-900 rounded'
+                                        <div
+                                            className={`z-10 absolute w-full bg-added-bg-primary border border-added-border rounded-lg shadow overflow-hidden ${
+                                                filterOptions.status === "CLOSE" ? "hidden" : ""
+                                            }`}
+                                        >
+                                            <ul className='text-sm text-added-text-primary'>
+                                                {filterOptions.options.map(option => {
+                                                    return (
+                                                        <li
+                                                            className='cursor-pointer'
+                                                            key={option.id}
+                                                            onClick={() => {
+                                                                setFilterOption(prv => ({
+                                                                    ...prv,
+                                                                    selectedOptionIndex: option.id,
+                                                                    status: "CLOSE",
+                                                                }))
+                                                            }}
                                                         >
-                                                            Last day
-                                                        </label>
-                                                    </div>
-                                                </li>
+                                                            <div className='flex items-center p-1 rounded hover:bg-added-bg-secondary cursor-pointer'>
+                                                                <input
+                                                                    id={`filterByTimeOption${option.id}`}
+                                                                    type='radio'
+                                                                    value=''
+                                                                    name='filter-radio'
+                                                                    className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 cursor-pointer'
+                                                                />
+                                                                <label
+                                                                    htmlFor={`filterByTimeOption${option.id}`}
+                                                                    className='w-full ms-2 text-sm font-medium text-added-text-secondary rounded cursor-pointer'
+                                                                >
+                                                                    {option.countDay?.toLocaleString("fa-IR")}
+                                                                    {" " + option.text}
+                                                                </label>
+                                                            </div>
+                                                        </li>
+                                                    )
+                                                })}
                                             </ul>
                                         </div>
                                     </div>

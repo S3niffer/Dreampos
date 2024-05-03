@@ -197,6 +197,13 @@ declare global {
         Items: T
         totalPages: number
     }
+
+    // filterByTimeOption
+    interface filterByTimeOption {
+        options: { id: number; text: string; countDay: null | number }[]
+        selectedOptionIndex: number
+        status: "OPEN" | "CLOSE"
+    }
 }
 
 export {}
