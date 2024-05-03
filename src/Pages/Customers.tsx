@@ -24,6 +24,7 @@ const Customers = () => {
     const [isShowLoading, setIsShowLoading] = useState<boolean>(false)
     const [isShowAlert, setIsShowAlert] = useState<{ status: boolean; job: "DELETE" | "EDIT" }>({ status: false, job: "DELETE" })
     const Page_Ref = useRef<HTMLDivElement>(null)
+    const isTableHovered = useRef(false)
     const ImageProgress_Ref = useRef(0)
     const [formISvalid, setFormIsvalid] = useState<boolean>(false)
     const [passwordVisibility, setPasswordVisibility] = useState(false)
@@ -320,6 +321,23 @@ const Customers = () => {
         }
     }, [filterByDateOptions.selectedOptionIndex, filterByText])
 
+    useEffect(() => {
+        const Page = Page_Ref.current
+        if (!Page) return
+
+        const wheelHandler = (event: WheelEvent) => {
+            if (isTableHovered.current) {
+                event.preventDefault()
+            }
+        }
+
+        Page.addEventListener("wheel", wheelHandler)
+
+        return () => {
+            Page.removeEventListener("wheel", wheelHandler)
+        }
+    }, [])
+
     return (
         <OutLetParent DRef={Page_Ref}>
             <div className='p-4 md:p-5 lg:p-7'>
@@ -386,7 +404,19 @@ const Customers = () => {
 
                     {Customers.length !== 0 ? (
                         <>
-                            <div className='relative overflow-x-auto sm:rounded-lg p-1 min-h-40'>
+                            <div
+                                className='relative overflow-x-auto sm:rounded-lg p-1 min-h-40 cursor-col-resize'
+                                onWheel={e => {
+                                    let itsNegative = e.deltaY < 0 ? true : false
+                                    e.currentTarget.scrollBy({ behavior: "instant", left: itsNegative ? -80 : 80 })
+                                }}
+                                onMouseEnter={() => {
+                                    isTableHovered.current = true
+                                }}
+                                onMouseLeave={() => {
+                                    isTableHovered.current = false
+                                }}
+                            >
                                 <div className='flex flex-column sm:flex-row flex-wrap items-center justify-between gap-2.5 pb-2.5 p-1'>
                                     <div className='relative'>
                                         <button
