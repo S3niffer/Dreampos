@@ -2,18 +2,30 @@ import { RiDashboard2Line } from "react-icons/ri"
 import { LuLogOut, LuPackage, LuPackagePlus, LuShirt, LuUser, LuUserPlus } from "react-icons/lu"
 import SideBarLink from "./SideBarLink"
 import Portal from "./Portal"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useDispatch } from "react-redux"
 import { LogOut } from "../Apps/Slices/User"
 
 const SideBar = () => {
     const [isPortalActive, setIsPortalActive] = useState(false)
     const Dispatch = useDispatch()
+    const isMobile = useMemo(() => {
+        let status: boolean = false
+
+        if ("maxTouchPoints" in navigator) {
+            navigator.maxTouchPoints > 0 && (status = true)
+        }
+        if (/Mobile|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            status = true
+        }
+
+        return status
+    }, [])
     return (
         <>
             <div className={`h-[calc(100vh-var(--topBarHeight))] text-added-text-secondary sideBarContainer`}>
                 <div className='dir-ltr overflow-y-auto h-[calc(100%-60px)]'>
-                    <div className='dir-rtl flex flex-col gap-1.5 py-1.5 sm:pt-2'>
+                    <div className={`dir-rtl flex flex-col gap-1.5  ${isMobile ? " pt-16 " : " py-1.5 sm:pt-2 "}`}>
                         <SideBarLink
                             Icon={RiDashboard2Line}
                             title='صفحه اصلی'
