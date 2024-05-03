@@ -383,7 +383,7 @@ const Customers = () => {
 
                     {Customers.length !== 0 ? (
                         <>
-                            <div className='relative overflow-x-auto sm:rounded-lg p-1'>
+                            <div className='relative overflow-x-auto sm:rounded-lg p-1 min-h-40'>
                                 <div className='flex flex-column sm:flex-row flex-wrap items-center justify-between gap-2.5 pb-2.5 p-1'>
                                     <div className='relative'>
                                         <button
