@@ -37,7 +37,7 @@ const Customers = () => {
         Items: [],
         totalPages: 1,
     })
-    const [filterOptions, setFilterOption] = useState<filterByTimeOption>({
+    const [filterByDateOptions, setFilterByDateOption] = useState<filterByTimeOption>({
         options: [
             { id: 0, text: "روز گذشته", countDay: 1 },
             { id: 1, text: "روز گذشته", countDay: 7 },
@@ -294,15 +294,15 @@ const Customers = () => {
                                             className='items-center text-added-text-secondary bg-transparent border border-added-border hover:bg-added-bg-secondary font-medium rounded-md text-sm flex h-7 px-1.5 w-32 justify-between'
                                             type='button'
                                             onClick={() => {
-                                                if (filterOptions.status === "CLOSE") {
-                                                    setFilterOption(prv => ({ ...prv, status: "OPEN" }))
+                                                if (filterByDateOptions.status === "CLOSE") {
+                                                    setFilterByDateOption(prv => ({ ...prv, status: "OPEN" }))
                                                 } else {
-                                                    setFilterOption(prv => ({ ...prv, status: "CLOSE" }))
+                                                    setFilterByDateOption(prv => ({ ...prv, status: "CLOSE" }))
                                                 }
                                             }}
                                             onBlur={() => {
                                                 setTimeout(() => {
-                                                    setFilterOption(prv => ({ ...prv, status: "CLOSE" }))
+                                                    setFilterByDateOption(prv => ({ ...prv, status: "CLOSE" }))
                                                 }, 100)
                                             }}
                                         >
@@ -316,10 +316,10 @@ const Customers = () => {
                                                 >
                                                     <path d='M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z' />
                                                 </svg>
-                                                {filterOptions.options[
-                                                    filterOptions.selectedOptionIndex
+                                                {filterByDateOptions.options[
+                                                    filterByDateOptions.selectedOptionIndex
                                                 ].countDay?.toLocaleString("fa-IR")}
-                                                {" " + filterOptions.options[filterOptions.selectedOptionIndex].text}
+                                                {" " + filterByDateOptions.options[filterByDateOptions.selectedOptionIndex].text}
                                             </div>
                                             <svg
                                                 className='w-2.5 h-2.5 ms-2.5'
@@ -340,17 +340,17 @@ const Customers = () => {
 
                                         <div
                                             className={`z-10 absolute w-full bg-added-bg-primary border border-added-border rounded-lg shadow overflow-hidden ${
-                                                filterOptions.status === "CLOSE" ? "hidden" : ""
+                                                filterByDateOptions.status === "CLOSE" ? "hidden" : ""
                                             }`}
                                         >
                                             <ul className='text-sm text-added-text-primary'>
-                                                {filterOptions.options.map(option => {
+                                                {filterByDateOptions.options.map(option => {
                                                     return (
                                                         <li
                                                             className='cursor-pointer'
                                                             key={option.id}
                                                             onClick={() => {
-                                                                setFilterOption(prv => ({
+                                                                setFilterByDateOption(prv => ({
                                                                     ...prv,
                                                                     selectedOptionIndex: option.id,
                                                                     status: "CLOSE",
@@ -364,6 +364,9 @@ const Customers = () => {
                                                                     value=''
                                                                     name='filter-radio'
                                                                     className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 cursor-pointer'
+                                                                    checked={
+                                                                        option.id === filterByDateOptions.selectedOptionIndex
+                                                                    }
                                                                 />
                                                                 <label
                                                                     htmlFor={`filterByTimeOption${option.id}`}
