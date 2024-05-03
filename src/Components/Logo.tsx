@@ -18,7 +18,7 @@ const Logo = ({ className, small }: { className?: string; small?: boolean }) => 
             <img
                 src={Theme === "dark" ? darkLogoAddress : lightLogoAddress}
                 alt='logo'
-                className={className + " cursor-pointer hover:scale-105 transition-all duration-300"}
+                className={className + ` cursor-pointer transition-all duration-300 ${small ? 'hover:scale-[1.75] scale-150' : 'hover:scale-105'}`}
             />
         </Link>
     )

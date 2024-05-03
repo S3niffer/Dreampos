@@ -19,7 +19,7 @@
         --text-secondary: 208deg, 13%, 45%;
         --border: 210deg, 13%, 62%, 0.32;
         --sideBarWidth: 256px;
-        --topBarHeight: 30px;
+        --topBarHeight: 60px;
         overflow-x: hidden;
     }
 
@@ -246,26 +246,5 @@
 
     .hasINput:has(input:focus) {
         background: hsl(var(--bg-secondary)) !important;
-    }
-
-    @media screen and (min-width: 450px) {
-        :root {
-            --topBarHeight: 40px;
-        }
-    }
-    @media screen and (min-width: 640px) {
-        :root {
-            --topBarHeight: 50px;
-        }
-    }
-    @media screen and (min-width: 976px) {
-        :root {
-            --topBarHeight: 55px;
-        }
-    }
-    @media screen and (min-width: 1200px) {
-        :root {
-            --topBarHeight: 60px;
-        }
     }
 }

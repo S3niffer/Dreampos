@@ -22,28 +22,29 @@ const Avatar = ({ className }: { className?: string }) => {
                     className='h-full w-full object-cover'
                 />
             </IconeBox>
-            <span className='hidden sm:block text-[0.7rem] leading-[0.7rem] md:text-[0.75rem] md:leading-[0.8rem] lg:text-[0.85rem] lg:leading-4  xl:text-[0.9rem] xl:leading-[1.2rem] pl-2'>
-                <span className='text-[0.6rem] md:text-[0.7rem] lg:text-[0.75rem] xl:text-[0.78rem] text-added-text-secondary block pb-1.5'>
+            <span className='hidden sm:block text-[0.75rem] leading-[0.8rem] lg:text-[0.85rem] lg:leading-4  xl:text-[0.9rem] xl:leading-[1.2rem] pl-2'>
+                <span className='text-[0.7rem] lg:text-[0.75rem] xl:text-[0.78rem] text-added-text-secondary block pb-1.5'>
                     خوش آمدید
                 </span>
                 {User.Name}
             </span>
-            <div className='absolute bg-transparent top-4 -left-60 -z-50 min-[400px]:top-5 sm:top-7 md:top-8 lg:top-10 group-hover:-left-1 transition-all duration-300 group-hover:z-50 '>
-                <div className='bg-transparent w-20 pt-2 p-1 min-[450px]:w-24 sm:w-36 xl:w-40'>
-                    <div className='bg-added-bg-secondary rounded-sm shadow-md shadow-added-border flex flex-col overflow-hidden'>
+            <div className='absolute bg-transparent -left-60 -z-50 top-8 lg:top-10 group-hover:-left-1 transition-all duration-300 group-hover:z-50 '>
+                <div className='bg-transparent pt-2 p-1 w-32 lg:w-36 xl:w-40'>
+                    <div className='bg-added-bg-secondary rounded-md shadow-md shadow-added-border flex flex-col overflow-hidden border-2 border-added-border'>
                         <Link
                             to={"/profile"}
-                            className='flex items-center gap-1.5 hover:bg-added-border p-1.5 md:p-2 lg:p-2.5'
+                            className='flex items-center gap-1.5 hover:bg-added-border p-2 lg:p-2.5'
                         >
-                            <LuShirt className='text-xs sm:text-lg md:text-xl lg:text-2xl xl:text-3xl' />
-                            <span className='text-[0.5rem] sm:text-xs md:text-sm lg:text-base xl:text-lg'>پروفایل من</span>
+                            <LuShirt className='text-xl lg:text-2xl xl:text-3xl' />
+                            <span className='text-sm lg:text-base xl:text-lg'>پروفایل من</span>
                         </Link>
+                        <div className='bg-added-border h-0.5 w-11/12 mx-auto'></div>
                         <div
                             onClick={() => setIsPortalActive(true)}
-                            className='flex items-center gap-1.5 text-red-600 hover:bg-added-border p-1.5 md:p-2 lg:p-2.5'
+                            className='flex items-center gap-1.5 text-red-600 hover:bg-added-border p-2 lg:p-2.5'
                         >
-                            <LuLogOut className='text-xs text-inherit sm:text-lg md:text-xl lg:text-2xl xl:text-3xl' />
-                            <span className='text-[0.5rem] sm:text-xs md:text-sm lg:text-base xl:text-lg'>خروج</span>
+                            <LuLogOut className='text-inherit text-xl lg:text-2xl xl:text-3xl' />
+                            <span className='text-sm lg:text-base xl:text-lg'>خروج</span>
                         </div>
                     </div>
                 </div>

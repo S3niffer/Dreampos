@@ -10,12 +10,12 @@ const TopBar = ({ sideBar, setSideBar }: { sideBar: boolean; setSideBar: (value:
                 {sideBar ? (
                     <RiCloseFill
                         onClick={() => setSideBar(prv => !prv)}
-                        className='aspect-square text-xl min-[450px]:text-2xl text-added-main cursor-pointer'
+                        className='aspect-square text-4xl text-added-main cursor-pointer'
                     />
                 ) : (
                     <RiMenuFoldLine
                         onClick={() => setSideBar(prv => !prv)}
-                        className='aspect-square text-xl min-[450px]:text-2xl text-added-main cursor-pointer'
+                        className='aspect-square text-4xl text-added-main cursor-pointer'
                     />
                 )}
             </div>
@@ -29,10 +29,10 @@ const TopBar = ({ sideBar, setSideBar }: { sideBar: boolean; setSideBar: (value:
             </div>
             <div className='flex items-center justify-end gap-2 w-1/3'>
                 <ThemeChanger
-                    className='w-5 min-[450px]:w-6 sm:w-7 md:w-9 lg:w-10 xl:w-13'
-                    IconClass='sm:text-lg md:text-xl'
+                    className='w-9 lg:w-10 xl:w-13'
+                    IconClass='text-xl'
                 />
-                <Avatar className='w-5 min-[450px]:w-6 sm:w-7 md:w-9 lg:w-10 xl:w-13 overflow-hidden' />
+                <Avatar className='w-9 lg:w-10 xl:w-13 overflow-hidden' />
             </div>
         </div>
     )
