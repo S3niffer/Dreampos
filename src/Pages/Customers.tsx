@@ -296,6 +296,11 @@ const Customers = () => {
                                             onClick={() => {
                                                 setFilterOption(prv => ({ ...prv, status: "OPEN" }))
                                             }}
+                                            onBlur={() => {
+                                                setTimeout(() => {
+                                                    setFilterOption(prv => ({ ...prv, status: "CLOSE" }))
+                                                }, 100)
+                                            }}
                                         >
                                             <div className='flex items-center gap-1.5'>
                                                 <svg
