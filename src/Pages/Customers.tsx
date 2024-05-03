@@ -57,7 +57,7 @@ const Customers = () => {
     }
     const FilterOptionHandler: Reducer<
         typeof initialFilterOption,
-        { type: `filterBy_${typeof initialFilterOption.filterBy}`; payload?: any }
+        { type: `filterBy_${typeof initialFilterOption.filterBy}` }
     > = (state, action) => {
         const filterDateCount = filterByDateOptions.options[filterByDateOptions.selectedOptionIndex].countDay
         switch (action.type) {
@@ -173,6 +173,9 @@ const Customers = () => {
             setIsShowLoading(false)
         }
         Dispatch(Get_Customers(removeLoading) as unknown as UnknownAction)
+        FilterOptionDispatcher({ type: "filterBy_none" })
+        setFilterByDateOption(prv => ({ ...prv, status: "CLOSE", selectedOptionIndex: 3 }))
+        setFilterByText("")
     }
 
     const _removePersianDigitsAndSeparators = (str: string) => {
