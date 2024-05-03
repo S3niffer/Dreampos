@@ -23,14 +23,6 @@
         overflow-x: hidden;
     }
 
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --bg: 240deg, 43%, 14%;
-            --bg-secondary: 240deg, 39%, 19%;
-            --text: 230deg, 45%, 73%;
-            --text-secondary: 207deg, 17%, 62%;
-        }
-    }
     :root[dark] {
         --bg: 240deg, 43%, 14%;
         --bg-secondary: 240deg, 39%, 19%;
