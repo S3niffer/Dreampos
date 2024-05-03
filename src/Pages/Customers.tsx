@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { Reducer, useEffect, useReducer, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { UnknownAction } from "@reduxjs/toolkit"
 import { DeleteCustomer, EditCustomer, Get_Customers, GettAllCustomers } from "../Apps/Slices/Customers"
@@ -47,6 +47,83 @@ const Customers = () => {
         selectedOptionIndex: 3,
         status: "CLOSE",
     })
+    const [filterByText, setFilterByText] = useState("")
+    const initialFilterOption: {
+        items: T_Customers
+        filterBy: "text" | "date" | "both" | "none"
+    } = {
+        items: [],
+        filterBy: "none",
+    }
+    const FilterOptionHandler: Reducer<
+        typeof initialFilterOption,
+        { type: `filterBy_${typeof initialFilterOption.filterBy}`; payload?: any }
+    > = (state, action) => {
+        const filterDateCount = filterByDateOptions.options[filterByDateOptions.selectedOptionIndex].countDay
+        switch (action.type) {
+            case "filterBy_text":
+                return {
+                    filterBy: "text",
+                    items: [...Customers].filter(item => item[1].Name.includes(filterByText)),
+                }
+            case "filterBy_date":
+                if (filterDateCount === null) {
+                    return state
+                } else {
+                    return {
+                        filterBy: "date",
+                        items: [...Customers].filter(item => {
+                            const ItemDate = new Date(item[1].Date)
+                            const TodayDate = new Date()
+                            const Diff = Math.abs(ItemDate.getTime() - TodayDate.getTime())
+                            const DiffConveredToDayFormat = Math.ceil(Diff / (1000 * 3600 * 24))
+
+                            if (DiffConveredToDayFormat > filterDateCount) {
+                                return false
+                            } else {
+                                return true
+                            }
+                        }),
+                    }
+                }
+            case "filterBy_both":
+                if (filterDateCount === null) {
+                    return {
+                        filterBy: "text",
+                        items: [...Customers].filter(item => item[1].Name.includes(filterByText)),
+                    }
+                } else {
+                    return {
+                        filterBy: "both",
+                        items: [...Customers]
+                            .filter(item => item[1].Name.includes(filterByText))
+                            .filter(item => {
+                                const ItemDate = new Date(item[1].Date)
+                                const TodayDate = new Date()
+                                const Diff = Math.abs(ItemDate.getTime() - TodayDate.getTime())
+                                const DiffConveredToDayFormat = Math.ceil(Diff / (1000 * 3600 * 24))
+
+                                if (DiffConveredToDayFormat > filterDateCount) {
+                                    return false
+                                } else {
+                                    return true
+                                }
+                            }),
+                    }
+                }
+            case "filterBy_none":
+                return {
+                    filterBy: "none",
+                    items: [...Customers],
+                }
+            default:
+                return {
+                    filterBy: "none",
+                    items: [...Customers],
+                }
+        }
+    }
+    const [FilterOption, FilterOptionDispatcher] = useReducer(FilterOptionHandler, initialFilterOption)
 
     const _UploadImageHandler: T_UploadImageHandler = (date, file, setState, progressRef, basketName) => {
         const storageRef = ref(storage, String(`${basketName}/(${date})${file.name}`))
@@ -207,19 +284,38 @@ const Customers = () => {
     }, [valuesForEdit])
 
     useEffect(() => {
-        if (!Customers.length) return
+        if (!FilterOption.items.length) return
         const endPoint = PaginationValues.Page * PaginationValues.ItemsPerPage
         const startPoint = endPoint - PaginationValues.ItemsPerPage
-        const totalPages = Math.ceil(Customers.length / PaginationValues.ItemsPerPage)
+        const totalPages = Math.ceil(FilterOption.items.length / PaginationValues.ItemsPerPage)
 
-        const ordredItems = [...Customers].slice(startPoint, endPoint)
+        const ordredItems = [...FilterOption.items].slice(startPoint, endPoint)
 
         if (PaginationValues.Page > totalPages) {
             setPaginationValues(prv => ({ ...prv, Items: ordredItems, totalPages, Page: totalPages }))
         } else {
             setPaginationValues(prv => ({ ...prv, Items: ordredItems, totalPages }))
         }
-    }, [Customers, PaginationValues.Page, PaginationValues.ItemsPerPage])
+    }, [FilterOption.items, PaginationValues.Page, PaginationValues.ItemsPerPage])
+
+    useEffect(() => {
+        FilterOptionDispatcher({ type: "filterBy_none" })
+    }, [Customers])
+
+    useEffect(() => {
+        let DateStatus = filterByDateOptions.selectedOptionIndex !== 3 ? true : false
+        let TextStatus = filterByText ? true : false
+
+        if (TextStatus && DateStatus) {
+            FilterOptionDispatcher({ type: "filterBy_both" })
+        } else if (TextStatus) {
+            FilterOptionDispatcher({ type: "filterBy_text" })
+        } else if (DateStatus) {
+            FilterOptionDispatcher({ type: "filterBy_date" })
+        } else {
+            FilterOptionDispatcher({ type: "filterBy_none" })
+        }
+    }, [filterByDateOptions.selectedOptionIndex, filterByText])
 
     return (
         <OutLetParent DRef={Page_Ref}>
@@ -403,6 +499,10 @@ const Customers = () => {
                                             id='table-search'
                                             className='w-10/12 h-full outline-none p-1 bg-transparent text-added-text-secondary'
                                             placeholder='جستجو'
+                                            value={filterByText}
+                                            onChange={e => {
+                                                setFilterByText(e.target.value)
+                                            }}
                                         />
                                     </div>
                                 </div>
@@ -443,75 +543,86 @@ const Customers = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {PaginationValues.Items.map(customer => {
-                                            const customerDate = customer[1].Date
-                                            const PersianDateParts = new Intl.DateTimeFormat("fa-IR").formatToParts(
-                                                new Date(customerDate)
-                                            )
-                                            const PersianMonthWord =
-                                                persianMonths[
-                                                    Number(_removePersianDigitsAndSeparators(PersianDateParts[2].value)) - 1
-                                                ]
-                                            return (
-                                                <tr
-                                                    key={customer[0]}
-                                                    className='bg-added-bg-secondary hover:bg-added-bg-primary'
+                                        {FilterOption.items.length === 0 ? (
+                                            <tr>
+                                                <td
+                                                    colSpan={4}
+                                                    className='py-4'
                                                 >
-                                                    <td className='text-center p-2.5'>
-                                                        <IconeBox
-                                                            className='w-5 min-[450px]:w-6 sm:w-7 md:w-9 lg:w-10 xl:w-13 mx-auto rounded-lg overflow-hidden'
-                                                            onClick={() => {
-                                                                setImgSrc4ImagePOrtal(customer[1].ImgSrce)
-                                                            }}
-                                                        >
-                                                            <img
-                                                                src={customer[1].ImgSrce}
-                                                                alt='Avatar'
-                                                                className='h-full w-full object-cover'
-                                                            />
-                                                        </IconeBox>
-                                                    </td>
-                                                    <th
-                                                        scope='row'
-                                                        className='text-center p-2.5 font-medium text-added-text-primary/75 whitespace-nowrap '
+                                                    با این مشخصات کاربری موجود نمیباشد
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            PaginationValues.Items.map(customer => {
+                                                const customerDate = customer[1].Date
+                                                const PersianDateParts = new Intl.DateTimeFormat("fa-IR").formatToParts(
+                                                    new Date(customerDate)
+                                                )
+                                                const PersianMonthWord =
+                                                    persianMonths[
+                                                        Number(_removePersianDigitsAndSeparators(PersianDateParts[2].value)) - 1
+                                                    ]
+                                                return (
+                                                    <tr
+                                                        key={customer[0]}
+                                                        className='bg-added-bg-secondary hover:bg-added-bg-primary'
                                                     >
-                                                        {customer[1].Name}
-                                                    </th>
-                                                    <td className='text-center p-2.5 dir-ltr'>{customer[1].Email}</td>
-                                                    <td className='text-center p-2.5'>
-                                                        <small>{PersianDateParts[4].value.padStart(2, "۰")}</small>/
-                                                        <small>{PersianMonthWord}</small>/
-                                                        <small>{PersianDateParts[0].value}</small>
-                                                    </td>
-                                                    <td className='text-center p-2.5'>
-                                                        <div className='flex items-center gap-1 justify-center'>
-                                                            <div
+                                                        <td className='text-center p-2.5'>
+                                                            <IconeBox
+                                                                className='w-5 min-[450px]:w-6 sm:w-7 md:w-9 lg:w-10 xl:w-13 mx-auto rounded-lg overflow-hidden'
                                                                 onClick={() => {
-                                                                    setSelectedCustomer({ job: "EDIT", target: customer })
-                                                                    setValuesForEdit({
-                                                                        Email: customer[1].Email,
-                                                                        ImgSrce: customer[1].ImgSrce,
-                                                                        Name: customer[1].Name,
-                                                                        Password: customer[1].Password,
-                                                                    })
+                                                                    setImgSrc4ImagePOrtal(customer[1].ImgSrce)
                                                                 }}
-                                                                className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 pr-[5px] rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
                                                             >
-                                                                <RiEdit2Line className='text-inherit lg:text-xl' />
+                                                                <img
+                                                                    src={customer[1].ImgSrce}
+                                                                    alt='Avatar'
+                                                                    className='h-full w-full object-cover'
+                                                                />
+                                                            </IconeBox>
+                                                        </td>
+                                                        <th
+                                                            scope='row'
+                                                            className='text-center p-2.5 font-medium text-added-text-primary/75 whitespace-nowrap '
+                                                        >
+                                                            {customer[1].Name}
+                                                        </th>
+                                                        <td className='text-center p-2.5 dir-ltr'>{customer[1].Email}</td>
+                                                        <td className='text-center p-2.5'>
+                                                            <small>{PersianDateParts[4].value.padStart(2, "۰")}</small>/
+                                                            <small>{PersianMonthWord}</small>/
+                                                            <small>{PersianDateParts[0].value}</small>
+                                                        </td>
+                                                        <td className='text-center p-2.5'>
+                                                            <div className='flex items-center gap-1 justify-center'>
+                                                                <div
+                                                                    onClick={() => {
+                                                                        setSelectedCustomer({ job: "EDIT", target: customer })
+                                                                        setValuesForEdit({
+                                                                            Email: customer[1].Email,
+                                                                            ImgSrce: customer[1].ImgSrce,
+                                                                            Name: customer[1].Name,
+                                                                            Password: customer[1].Password,
+                                                                        })
+                                                                    }}
+                                                                    className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 pr-[5px] rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
+                                                                >
+                                                                    <RiEdit2Line className='text-inherit lg:text-xl' />
+                                                                </div>
+                                                                <div
+                                                                    onClick={() => {
+                                                                        setSelectedCustomer({ job: "DELETE", target: customer })
+                                                                    }}
+                                                                    className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
+                                                                >
+                                                                    <RiDeleteBin2Line className='text-inherit lg:text-xl' />
+                                                                </div>
                                                             </div>
-                                                            <div
-                                                                onClick={() => {
-                                                                    setSelectedCustomer({ job: "DELETE", target: customer })
-                                                                }}
-                                                                className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
-                                                            >
-                                                                <RiDeleteBin2Line className='text-inherit lg:text-xl' />
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            )
-                                        })}
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
