@@ -569,7 +569,7 @@ const Customers = () => {
                                                     >
                                                         <td className='text-center p-2.5'>
                                                             <IconeBox
-                                                                className='w-5 min-[450px]:w-6 sm:w-7 md:w-9 lg:w-10 xl:w-13 mx-auto rounded-lg overflow-hidden'
+                                                                className='w-9 lg:w-10 xl:w-13 mx-auto rounded-lg overflow-hidden'
                                                                 onClick={() => {
                                                                     setImgSrc4ImagePOrtal(customer[1].ImgSrce)
                                                                 }}
