@@ -8,7 +8,14 @@ const Dashboard = () => {
 
     return (
         <div className='relative'>
-            <div className={`sticky top-0 w-full bg-added-bg-secondary z-50 h-topBarHeight shadow`}>
+            <div
+                className={`sticky top-0 w-full bg-added-bg-secondary z-50 h-topBarHeight shadow`}
+                onClick={() => {
+                    if (sideBar) {
+                        setSideBar(false)
+                    }
+                }}
+            >
                 <TopBar
                     setSideBar={setSideBar}
                     sideBar={sideBar}
@@ -22,8 +29,16 @@ const Dashboard = () => {
                 >
                     <SideBar />
                 </div>
-
-                <Outlet />
+                <div
+                    className='w-full h-full'
+                    onClick={() => {
+                        if (sideBar) {
+                            setSideBar(false)
+                        }
+                    }}
+                >
+                    <Outlet />
+                </div>
             </div>
         </div>
     )
