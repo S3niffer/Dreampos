@@ -262,6 +262,25 @@ const Products = () => {
         }
     }, [Products, PaginationValues.Page, PaginationValues.ItemsPerPage])
 
+    useEffect(() => {
+        const keyDownHandler = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                setSelectedProduct(prv => ({ ...prv, job: "IDLE" }))
+                setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
+                setValuesForEdit({ Name: "", ImgSrce: "", Price: 0 })
+            }
+        }
+        if (selectedProduct.job === "DELETE") {
+            window.addEventListener("keydown", keyDownHandler)
+        } else {
+            window.removeEventListener("keydown", keyDownHandler)
+        }
+
+        return () => {
+            window.removeEventListener("keydown", keyDownHandler)
+        }
+    }, [selectedProduct.job])
+
     return (
         <OutLetParent DRef={Page_Ref}>
             <div className='p-4 md:p-5 lg:p-7'>

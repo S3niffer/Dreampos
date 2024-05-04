@@ -323,6 +323,25 @@ const Customers = () => {
     }, [filterByDateOptions.selectedOptionIndex, filterByText])
 
     useEffect(() => {
+        const keyDownHandler = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                setSelectedCustomer(prv => ({ ...prv, job: "IDLE" }))
+                setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
+                setValuesForEdit({ Email: "", ImgSrce: "", Name: "", Password: "" })
+            }
+        }
+        if (selectedCustomer.job === "DELETE") {
+            window.addEventListener("keydown", keyDownHandler)
+        } else {
+            window.removeEventListener("keydown", keyDownHandler)
+        }
+
+        return () => {
+            window.removeEventListener("keydown", keyDownHandler)
+        }
+    }, [selectedCustomer.job])
+
+    useEffect(() => {
         const Page = Page_Ref.current
         if (!Page) return
 
