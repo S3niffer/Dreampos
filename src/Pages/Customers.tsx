@@ -678,7 +678,7 @@ const Customers = () => {
                                                                     onClick={() => {
                                                                         setSelectedCustomer({ job: "DELETE", target: customer })
                                                                     }}
-                                                                    className='lg:w-9 lg:pt-1.5 lg:pr-2 aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
+                                                                    className='lg:w-9 lg:pt-1.5 lg:pr-[7px] aspect-square md:pt-[5px] md:w-7 md:pr-[5px] p-1 w-6 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
                                                                 >
                                                                     <RiDeleteBin2Line className='text-inherit lg:text-xl' />
                                                                 </div>
