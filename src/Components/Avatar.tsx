@@ -50,8 +50,12 @@ const Avatar = ({ className }: { className?: string }) => {
                 </div>
             </div>
             {isPortalActive ? (
-                <Portal>
-                    <div className='relative p-4 w-full max-w-md max-h-full'>
+                <Portal
+                    closePortal={() => {
+                        setIsPortalActive(false)
+                    }}
+                >
+                    <div className='relative w-full max-w-md max-h-full'>
                         <div className='relative bg-added-bg-primary rounded-lg shadow-md shadow-added-border'>
                             <button
                                 type='button'

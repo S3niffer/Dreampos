@@ -23,6 +23,7 @@ const Profile = () => {
     const [isShowPasswordGetter, setIsShowPasswordGetter] = useState({ status: false, Value: "" })
     const getAdminAvatarInput = useRef<HTMLInputElement>(null)
     const Page_Ref = useRef<HTMLDivElement>(null)
+    const PasswordModal_Ref = useRef<HTMLInputElement>(null)
     const Form_Ref = useRef<HTMLFormElement>(null)
     const [CurrentImage, setCurrentImage] = useState<I_CurrentImage>({ link: "", name: "", file: undefined, status: "idle" })
     const InitialState = { ...User, Password: "" }
@@ -169,6 +170,12 @@ const Profile = () => {
             setFormIsvalid(false)
         }
     }, [])
+    useEffect(() => {
+        if (!isShowPasswordGetter.status) return
+        if (!PasswordModal_Ref.current) return
+
+        PasswordModal_Ref.current.focus()
+    }, [isShowPasswordGetter.status])
 
     return (
         <OutLetParent DRef={Page_Ref}>
@@ -177,6 +184,11 @@ const Profile = () => {
                 className={`absolute w-full h-full z-20 backdrop-blur-sm flex items-center justify-center ${
                     isShowPasswordGetter.status ? "block" : "hidden"
                 }`}
+                onClick={e => {
+                    if (e.target === e.currentTarget) {
+                        setIsShowPasswordGetter({ status: false, Value: "" })
+                    }
+                }}
             >
                 <div className='relative p-4 w-full max-w-md max-h-full'>
                     <div className='relative bg-added-bg-primary rounded-lg shadow shadow-added-border dir-ltr'>
@@ -228,6 +240,7 @@ const Profile = () => {
                                     type={passwordVisibility ? "text" : "password"}
                                     className='outline-none absolute left-1 top-2 bottom-1 right-9 bg-transparent'
                                     value={isShowPasswordGetter.Value}
+                                    ref={PasswordModal_Ref}
                                     onChange={e => {
                                         setIsShowPasswordGetter(prv => ({ ...prv, Value: e.target.value }))
                                     }}

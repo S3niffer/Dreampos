@@ -166,7 +166,16 @@ const Register = () => {
                 ></img>
             </div>
             {isShowModal ? (
-                <Portal>
+                <Portal
+                    closePortal={() => {
+                        setIsShowModal(false)
+
+                        if (UserState.status.value === "Email_Already_Used") {
+                            Dispatch(ChangeStatus("Idle"))
+                            setRegisterParameters(prv => ({ ...prv, Email: "" }))
+                        }
+                    }}
+                >
                     <div className='relative p-4 w-full max-w-md max-h-full'>
                         <div className='relative bg-added-bg-primary rounded-lg shadow'>
                             <button

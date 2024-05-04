@@ -2,7 +2,7 @@ import Portal from "./Portal"
 
 const ImagePortal = ({ imageSrc, _CloseHandler }: { imageSrc: string; _CloseHandler: () => void }) => {
     return (
-        <Portal>
+        <Portal closePortal={_CloseHandler}>
             <div className='relative'>
                 <div className='relative bg-added-bg-primary rounded-lg shadow-md shadow-added-border max-w-full max-h-[calc(100vh-16px)] my-auto overflow-y-auto px-4'>
                     <button

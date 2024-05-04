@@ -135,7 +135,21 @@ const Login = () => {
                 ></img>
             </div>
             {isShowModal ? (
-                <Portal>
+                <Portal
+                    closePortal={() => {
+                        setIsShowModal(false)
+                        if (UserState.status.value === "NotFound") {
+                            Dispatch(ChangeStatus("Idle"))
+                            setLoginParameters({ Email: "", Password: "" })
+                            setFormIsValid(false)
+                        }
+                        if (UserState.status.value === "InValidPassword") {
+                            Dispatch(ChangeStatus("Idle"))
+                            setLoginParameters(prv => ({ ...prv, Password: "" }))
+                            setFormIsValid(false)
+                        }
+                    }}
+                >
                     <div className='relative p-4 w-full max-w-md max-h-full'>
                         <div className='relative bg-added-bg-primary rounded-lg shadow-md shadow-added-border'>
                             <button

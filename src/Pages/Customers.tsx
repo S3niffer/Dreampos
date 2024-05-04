@@ -718,7 +718,13 @@ const Customers = () => {
                 </div>
             </div>
             {selectedCustomer.job !== "IDLE" ? (
-                <Portal>
+                <Portal
+                    closePortal={() => {
+                        setSelectedCustomer(prv => ({ ...prv, job: "IDLE" }))
+                        setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
+                        setValuesForEdit({ Email: "", ImgSrce: "", Name: "", Password: "" })
+                    }}
+                >
                     <div className='relative'>
                         <div className='relative bg-added-bg-primary rounded-lg shadow-md shadow-added-border max-w-full max-h-[calc(100vh-16px)] my-auto overflow-y-auto px-4'>
                             <button

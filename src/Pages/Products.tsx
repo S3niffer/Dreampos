@@ -240,7 +240,7 @@ const Products = () => {
     }, [CurrentImage.link, CurrentImage.name])
 
     useEffect(() => {
-        if (valuesForEdit.ImgSrce && valuesForEdit.Name && typeof valuesForEdit.Price === 'number') {
+        if (valuesForEdit.ImgSrce && valuesForEdit.Name && typeof valuesForEdit.Price === "number") {
             setFormIsvalid(true)
         } else {
             setFormIsvalid(false)
@@ -466,7 +466,13 @@ const Products = () => {
                 </div>
             </div>
             {selectedProduct.job !== "IDLE" ? (
-                <Portal>
+                <Portal
+                    closePortal={() => {
+                        setSelectedProduct(prv => ({ ...prv, job: "IDLE" }))
+                        setCurrentImage({ file: undefined, link: "", name: "", status: "idle" })
+                        setValuesForEdit({ Name: "", ImgSrce: "", Price: 0 })
+                    }}
+                >
                     <div className='relative'>
                         <div className='relative bg-added-bg-primary rounded-lg shadow-md shadow-added-border max-w-full max-h-[calc(100vh-16px)] my-auto overflow-y-auto px-4'>
                             <button
