@@ -1,6 +1,24 @@
+import { useEffect } from "react"
 import Portal from "./Portal"
 
-const ImagePortal = ({ imageSrc, _CloseHandler }: { imageSrc: string; _CloseHandler: () => void }) => {
+const ImagePortal = ({ imageSrc, _CloseHandler, status }: { imageSrc: string; status: string; _CloseHandler: () => void }) => {
+    useEffect(() => {
+        const keyDownHandler = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                _CloseHandler()
+            }
+        }
+        if (status) {
+            window.addEventListener("keydown", keyDownHandler)
+        } else {
+            window.removeEventListener("keydown", keyDownHandler)
+        }
+
+        return () => {
+            window.removeEventListener("keydown", keyDownHandler)
+        }
+    }, [status])
+
     return (
         <Portal closePortal={_CloseHandler}>
             <div className='relative'>

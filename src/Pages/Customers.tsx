@@ -978,6 +978,7 @@ const Customers = () => {
             ) : null}
             {ImgSrc4ImagePOrtal ? (
                 <ImagePortal
+                    status={ImgSrc4ImagePOrtal}
                     imageSrc={ImgSrc4ImagePOrtal}
                     _CloseHandler={() => setImgSrc4ImagePOrtal("")}
                 />
