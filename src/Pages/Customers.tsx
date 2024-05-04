@@ -326,7 +326,8 @@ const Customers = () => {
         if (!Page) return
 
         const wheelHandler = (event: WheelEvent) => {
-            if (isTableHovered.current) {
+            console.log(event)
+            if (isTableHovered.current && !event.ctrlKey) {
                 event.preventDefault()
             }
         }
@@ -408,7 +409,9 @@ const Customers = () => {
                                 className='relative overflow-x-auto sm:rounded-lg p-1 min-h-40 cursor-col-resize'
                                 onWheel={e => {
                                     let itsNegative = e.deltaY < 0 ? true : false
-                                    e.currentTarget.scrollBy({ behavior: "instant", left: itsNegative ? -80 : 80 })
+                                    if (!e.altKey) {
+                                        e.currentTarget.scrollBy({ behavior: "instant", left: itsNegative ? -80 : 80 })
+                                    }
                                 }}
                                 onMouseEnter={() => {
                                     isTableHovered.current = true
