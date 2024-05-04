@@ -25,6 +25,7 @@ const Customers = () => {
     const [isShowAlert, setIsShowAlert] = useState<{ status: boolean; job: "DELETE" | "EDIT" }>({ status: false, job: "DELETE" })
     const Page_Ref = useRef<HTMLDivElement>(null)
     const isTableHovered = useRef(false)
+    const isTableScrollActivated = useRef(true)
     const ImageProgress_Ref = useRef(0)
     const [formISvalid, setFormIsvalid] = useState<boolean>(false)
     const [passwordVisibility, setPasswordVisibility] = useState(false)
@@ -326,8 +327,17 @@ const Customers = () => {
         if (!Page) return
 
         const wheelHandler = (event: WheelEvent) => {
-            console.log(event)
-            if (isTableHovered.current && !event.ctrlKey) {
+            const width = window.innerWidth
+            if (width <= 594) {
+                isTableScrollActivated.current = true
+            } else if (width > 594 && width < 768) {
+                isTableScrollActivated.current = false
+            } else if (width >= 768 && width < 909) {
+                isTableScrollActivated.current = true
+            } else {
+                isTableScrollActivated.current = false
+            }
+            if (isTableScrollActivated.current && isTableHovered.current && !event.ctrlKey) {
                 event.preventDefault()
             }
         }
@@ -406,7 +416,7 @@ const Customers = () => {
                     {Customers.length !== 0 ? (
                         <>
                             <div
-                                className='relative overflow-x-auto sm:rounded-lg p-1 min-h-40 cursor-col-resize'
+                                className='relative overflow-x-auto sm:rounded-lg p-1 min-h-40 cursor-col-resize min-[595px]:cursor-default md:cursor-col-resize min-[910px]:cursor-default'
                                 onWheel={e => {
                                     let itsNegative = e.deltaY < 0 ? true : false
                                     if (!e.altKey) {
