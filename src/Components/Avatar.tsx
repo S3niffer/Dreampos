@@ -3,7 +3,7 @@ import DefaultAvatar from "../assets/Pics/Default Avatar.png"
 import { LuLogOut, LuShirt } from "react-icons/lu"
 import { Link } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Portal from "./Portal"
 import { Get_UserINFo, LogOut } from "../Apps/Slices/User"
 
@@ -12,6 +12,22 @@ const Avatar = ({ className }: { className?: string }) => {
     const Dispatch = useDispatch()
     const UserInfo = useSelector(Get_UserINFo)
     const User = UserInfo.user as I_UserInLocal
+    useEffect(() => {
+        const keyDownHandler = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                setIsPortalActive(false)
+            }
+        }
+        if (isPortalActive) {
+            window.addEventListener("keydown", keyDownHandler)
+        } else {
+            window.removeEventListener("keydown", keyDownHandler)
+        }
+
+        return () => {
+            window.removeEventListener("keydown", keyDownHandler)
+        }
+    }, [isPortalActive])
 
     return (
         <div className='flex items-center  gap-2 hover:bg-added-border cursor-pointer rounded-lg group relative'>

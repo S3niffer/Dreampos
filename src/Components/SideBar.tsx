@@ -2,7 +2,7 @@ import { RiDashboard2Line } from "react-icons/ri"
 import { LuLogOut, LuPackage, LuPackagePlus, LuShirt, LuUser, LuUserPlus } from "react-icons/lu"
 import SideBarLink from "./SideBarLink"
 import Portal from "./Portal"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useDispatch } from "react-redux"
 import { LogOut } from "../Apps/Slices/User"
 
@@ -21,6 +21,23 @@ const SideBar = () => {
 
         return status
     }, [])
+    useEffect(() => {
+        const keyDownHandler = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                setIsPortalActive(false)
+            }
+        }
+        if (isPortalActive) {
+            window.addEventListener("keydown", keyDownHandler)
+        } else {
+            window.removeEventListener("keydown", keyDownHandler)
+        }
+
+        return () => {
+            window.removeEventListener("keydown", keyDownHandler)
+        }
+    }, [isPortalActive])
+
     return (
         <>
             <div className={`h-[calc(100vh-var(--topBarHeight))] text-added-text-secondary sideBarContainer`}>
