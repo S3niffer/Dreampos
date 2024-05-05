@@ -3,7 +3,7 @@ import { ComponentProps, ReactNode } from "react"
 const OutLetParent = (props: ComponentProps<"div"> & { children: ReactNode; DRef?: React.LegacyRef<HTMLDivElement> }) => {
     return (
         <div
-            className={`dir-ltr overflow-auto h-[calc(100vh-var(--topBarHeight))] bg-added-bg-primary w-full md:w-[calc(100vw-var(--sideBarWidth))]
+            className={`dir-ltr overflow-auto h-full w-full bg-added-bg-primary
                     `}
             ref={props.DRef}
         >

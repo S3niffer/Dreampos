@@ -30,7 +30,7 @@ const Dashboard = () => {
                     <SideBar />
                 </div>
                 <div
-                    className='w-full h-full'
+                    className='w-full md:w-[calc(100vw-var(--sideBarWidth))] h-[calc(100vh-var(--topBarHeight))]'
                     onClick={() => {
                         if (sideBar) {
                             setSideBar(false)
