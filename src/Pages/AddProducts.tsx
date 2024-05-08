@@ -5,7 +5,7 @@ import { useEffect, useReducer, useRef, useState } from "react"
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
 import { storage } from "../Firebase"
 import { FiLock } from "react-icons/fi"
-import { AddProduct } from "../Apps/Slices/Products"
+import { AddProduct, Get_Products } from "../Apps/Slices/Products"
 import { UnknownAction } from "@reduxjs/toolkit"
 import Loading from "../Components/Loading"
 import OutLetParent from "../Components/OutLetParent"
@@ -74,11 +74,12 @@ const AddProducts = () => {
             _ResetValues()
             setIsShowLoading(false)
             setIsShowAlert(true)
+            setTimeout(() => {
+                Dispatch(Get_Products(() => {}) as unknown as UnknownAction)
+            }, 300)
         }
 
-        Dispatch(
-            AddProduct({ data: { ...ProductsData, Date: new Date() }, func: _AfterAdded }) as unknown as UnknownAction
-        )
+        Dispatch(AddProduct({ data: { ...ProductsData, Date: new Date() }, func: _AfterAdded }) as unknown as UnknownAction)
     }
 
     const _ConvertValueToPersianFormat = (value: number): string => {
