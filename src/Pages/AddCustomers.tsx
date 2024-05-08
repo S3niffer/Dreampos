@@ -6,7 +6,7 @@ import { FiEye, FiEyeOff, FiLock } from "react-icons/fi"
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
 import { storage } from "../Firebase"
 import { UnknownAction } from "@reduxjs/toolkit"
-import { AddCustomer } from "../Apps/Slices/Customers"
+import { AddCustomer, Get_Customers } from "../Apps/Slices/Customers"
 import Loading from "../Components/Loading"
 import OutLetParent from "../Components/OutLetParent"
 
@@ -85,12 +85,14 @@ const AddCustomers = () => {
             _ResetValues()
             setIsShowLoading(false)
             setIsShowAlert({ status: true, type: "Success" })
+
+            setTimeout(() => {
+                Dispatch(Get_Customers(() => {}) as unknown as UnknownAction)
+            }, 300)
         }
 
         if (Data.Password === secondaryPassword) {
-            Dispatch(
-                AddCustomer({ data: { ...Data, Date: new Date() }, func: _AfterAdded }) as unknown as UnknownAction
-            )
+            Dispatch(AddCustomer({ data: { ...Data, Date: new Date() }, func: _AfterAdded }) as unknown as UnknownAction)
         } else {
             setIsShowAlert({ status: true, type: "Danger" })
             setIsShowLoading(false)
