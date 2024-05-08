@@ -5,11 +5,15 @@ import { Get_Customers, GettAllCustomers } from "../Apps/Slices/Customers"
 import { useEffect } from "react"
 import { Get_Products, GettAllProducts } from "../Apps/Slices/Products"
 import { UnknownAction } from "@reduxjs/toolkit"
+import ProductsChart from "../Components/ProductsChart"
+import { Get_Theme } from "../Apps/Slices/Theme"
+import CustomersChart from "../Components/CustomersChart"
 
 const Overview = () => {
     const Dispatch = useDispatch()
     const Customers = useSelector(GettAllCustomers)
     const Products = useSelector(GettAllProducts)
+    const theme = useSelector(Get_Theme)
 
     useEffect(() => {
         Dispatch(Get_Customers(() => {}) as unknown as UnknownAction)
@@ -36,6 +40,16 @@ const Overview = () => {
                     </div>
                     <LuBoxes className='text-inherit text-5xl' />
                 </div>
+            </div>
+            <div className='flex flex-col items-center m-4 mb-0'>
+                <ProductsChart
+                    products={Products}
+                    theme={theme}
+                />
+                <CustomersChart
+                    customers={Customers}
+                    theme={theme}
+                />
             </div>
         </OutLetParent>
     )
