@@ -9,6 +9,7 @@ import AddProducts from "./Pages/AddProducts"
 import Customers from "./Pages/Customers"
 import AddCustomer from "./Pages/AddCustomers"
 import Profile from "./Pages/Profile"
+import Error404 from "./Pages/Error404"
 
 const Routes: RouteObject[] = [
     { path: "/signin", element: <Login /> },
@@ -28,6 +29,10 @@ const Routes: RouteObject[] = [
             { path: "add-customer", element: <AddCustomer /> },
             { path: "profile", element: <Profile /> },
         ],
+    },
+    {
+        path: "*",
+        element: <Error404 />,
     },
 ]
 
