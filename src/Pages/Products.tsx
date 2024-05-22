@@ -347,7 +347,7 @@ const Products = () => {
 
                     {Products.length !== 0 ? (
                         <>
-                            <div className='grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
+                            <div className='grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
                                 {PaginationValues.Items.map(product => {
                                     const productDate = product[1].Date
                                     const PersianDateParts = new Intl.DateTimeFormat("fa-IR").formatToParts(new Date(productDate))
@@ -384,18 +384,18 @@ const Products = () => {
                                                     <small>{PersianMonthWord}</small>
                                                 </div>
                                             </div>
-                                            <div className='px-2 py-2 cursor-default flex items-center justify-between flex-col sm:flex-row'>
-                                                <div>
-                                                    <div className='font-semibold text-lg block sm:inline-block hover:text-added-main transition duration-500 ease-in-out text-center'>
+                                            <div className='px-2 py-2 cursor-default flex items-start justify-between flex-col'>
+                                                <div className='flex flex-col h-20 justify-between'>
+                                                    <div className='font-semibold text-lg hover:text-added-main transition duration-500 ease-in-out line-clamp-2'>
                                                         {product[1].Name}
                                                     </div>
                                                     <p className='text-gray-500 text-sm'>
                                                         {product[1].Price.toLocaleString("fa-IR") + " "}تـومان
                                                     </p>
                                                 </div>
-                                                <div className='flex items-center gap-1 mt-3 sm:mt-0'>
+                                                <div className='flex items-center gap-1 mt-5 w-full justify-center'>
                                                     <div
-                                                        className='p-1 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
+                                                        className='p-1 rounded-md bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300 flex items-center'
                                                         onClick={() => {
                                                             setSelectedProduct({ target: product, job: "EDIT" })
                                                             setValuesForEdit({
@@ -405,14 +405,16 @@ const Products = () => {
                                                             })
                                                         }}
                                                     >
+                                                        ویرایش
                                                         <RiEdit2Line className='text-inherit' />
                                                     </div>
                                                     <div
-                                                        className='p-1 rounded-full bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300'
+                                                        className='p-1 rounded-md bg-added-main border border-added-main hover:bg-transparent hover:text-added-main cursor-pointer text-added-bg-primary transition-all duration-300 flex items-center'
                                                         onClick={() => {
                                                             setSelectedProduct({ target: product, job: "DELETE" })
                                                         }}
                                                     >
+                                                        حذف
                                                         <RiDeleteBin2Line className='text-inherit' />
                                                     </div>
                                                 </div>
