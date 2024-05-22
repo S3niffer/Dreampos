@@ -404,7 +404,7 @@ const Profile = () => {
                                             DataDipatcher({
                                                 type: "ImgSrc",
                                                 payload:
-                                                    "https://firebasestorage.googleapis.com/v0/b/dashboard-a5184.appspot.com/o/AdminAvatar%2FDefault%20Avatar.png?alt=media&token=f0295bd0-4768-45ee-9b6c-5df353df242d",
+                                                    "https://firebasestorage.googleapis.com/v0/b/dashboard-a5184.appspot.com/o/AdminAvatar%2FDefault%20Avatar.png?alt=media&token=30289c9c-2018-425f-a093-c0240742ce8a",
                                             })
                                         }}
                                     >
