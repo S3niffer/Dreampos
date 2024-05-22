@@ -99,6 +99,18 @@ const CustomersChart = ({ customers, theme }: { customers: T_Customers; theme: T
                         size: 14,
                         weight: "bold",
                     },
+                    callback: value => {
+                        return new Intl.NumberFormat("fa-IR").format(+value)
+                    },
+                },
+            },
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: value => {
+                        return `${value.dataset.label}: ${new Intl.NumberFormat("fa-IR").format(+(value.raw as string))}`
+                    },
                 },
             },
         },
