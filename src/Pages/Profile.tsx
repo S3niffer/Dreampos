@@ -380,6 +380,7 @@ const Profile = () => {
                                         }}
                                     >
                                         <img
+                                            loading='lazy'
                                             src={Data.ImgSrc ? Data.ImgSrc : User.ImgSrc ? User.ImgSrc : DefaultAvatar}
                                             alt='avatar'
                                             className='aspect-square w-full h-full rounded-full object-cover'

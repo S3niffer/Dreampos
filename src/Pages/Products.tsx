@@ -362,6 +362,7 @@ const Products = () => {
                                             <div className='relative'>
                                                 <div className='h-44'>
                                                     <img
+                                                        loading='lazy'
                                                         className='w-full h-full'
                                                         src={product[1].ImgSrce}
                                                         alt='Sunset in the mountains'
@@ -625,6 +626,7 @@ const Products = () => {
                                                                 disabled={CurrentImage.status !== "idle"}
                                                             />
                                                             <img
+                                                                loading='lazy'
                                                                 src={UploadSVG}
                                                                 alt='Icon'
                                                                 className='sm:w-12 lg:w-16'
@@ -641,6 +643,7 @@ const Products = () => {
                                                                 "درحال بارگذاری " + ImageProgress_Ref.current + "%"
                                                             ) : (
                                                                 <img
+                                                                    loading='lazy'
                                                                     src={
                                                                         CurrentImage.link
                                                                             ? CurrentImage.link

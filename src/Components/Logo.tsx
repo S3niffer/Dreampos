@@ -16,9 +16,13 @@ const Logo = ({ className, small }: { className?: string; small?: boolean }) => 
     return (
         <Link to={pathname.includes("/sign") ? pathname : "/"}>
             <img
+                loading='lazy'
                 src={Theme === "dark" ? darkLogoAddress : lightLogoAddress}
                 alt='logo'
-                className={className + ` cursor-pointer transition-all duration-300 ${small ? 'hover:scale-[1.75] scale-150' : 'hover:scale-105'}`}
+                className={
+                    className +
+                    ` cursor-pointer transition-all duration-300 ${small ? "hover:scale-[1.75] scale-150" : "hover:scale-105"}`
+                }
             />
         </Link>
     )

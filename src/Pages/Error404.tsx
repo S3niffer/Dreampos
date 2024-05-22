@@ -4,6 +4,7 @@ const Error404 = () => {
     return (
         <div className='h-screen w-screen overflow-hidden flex justify-center flex-col items-center px-2 gap-1 bg-added-bg-primary'>
             <img
+                loading='lazy'
                 src={error404Pic}
                 alt='error404'
                 className='w-5/12  lg:w-auto'

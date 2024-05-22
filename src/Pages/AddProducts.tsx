@@ -352,6 +352,7 @@ const AddProducts = () => {
                                         disabled={CurrentImage.status !== "idle"}
                                     />
                                     <img
+                                        loading='lazy'
                                         src={UploadSVG}
                                         alt='Icon'
                                         className='sm:w-12 lg:w-16'
@@ -368,6 +369,7 @@ const AddProducts = () => {
                                         "درحال بارگذاری " + ImageProgress_Ref.current + "%"
                                     ) : (
                                         <img
+                                            loading='lazy'
                                             src={CurrentImage.link ? CurrentImage.link : UploadSVG}
                                             className='w-full h-full object-contain'
                                             alt='product'

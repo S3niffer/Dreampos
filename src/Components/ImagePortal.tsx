@@ -47,6 +47,7 @@ const ImagePortal = ({ imageSrc, _CloseHandler, status }: { imageSrc: string; st
                     </button>
                     <div className='mt-12'>
                         <img
+                            loading='lazy'
                             src={imageSrc}
                             alt='pic'
                             className='h-60 md:h-96 mb-4 aspect-square object-fill border-2 border-added-main rounded-md'

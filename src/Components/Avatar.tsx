@@ -33,6 +33,7 @@ const Avatar = ({ className }: { className?: string }) => {
         <div className='flex items-center  gap-2 hover:bg-added-border cursor-pointer rounded-lg group relative'>
             <IconeBox className={className}>
                 <img
+                    loading='lazy'
                     src={User.ImgSrc ? User.ImgSrc : DefaultAvatar}
                     alt='Avatar'
                     className='h-full w-full object-cover'

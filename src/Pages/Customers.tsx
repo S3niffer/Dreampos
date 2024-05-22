@@ -640,6 +640,7 @@ const Customers = () => {
                                                                 }}
                                                             >
                                                                 <img
+                                                                    loading='lazy'
                                                                     src={customer[1].ImgSrce}
                                                                     alt='Avatar'
                                                                     className='h-full w-full object-cover'
@@ -925,6 +926,7 @@ const Customers = () => {
                                                                 disabled={CurrentImage.status !== "idle"}
                                                             />
                                                             <img
+                                                                loading='lazy'
                                                                 src={UploadSVG}
                                                                 alt='Icon'
                                                                 className='sm:w-12 lg:w-16'
@@ -941,6 +943,7 @@ const Customers = () => {
                                                                 "درحال بارگذاری " + ImageProgress_Ref.current + "%"
                                                             ) : (
                                                                 <img
+                                                                    loading='lazy'
                                                                     src={
                                                                         CurrentImage.link
                                                                             ? CurrentImage.link

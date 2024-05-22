@@ -161,6 +161,7 @@ const Register = () => {
                     </form>
                 </div>
                 <img
+                    loading='lazy'
                     src={loginPic}
                     className='hidden lg:block w-[60%] h-screen'
                 ></img>
