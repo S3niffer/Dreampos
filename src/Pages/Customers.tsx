@@ -351,7 +351,7 @@ const Customers = () => {
                 isTableScrollActivated.current = true
             } else if (width > 594 && width < 768) {
                 isTableScrollActivated.current = false
-            } else if (width >= 768 && width < 909) {
+            } else if (width >= 768 && width < 969) {
                 isTableScrollActivated.current = true
             } else {
                 isTableScrollActivated.current = false
@@ -435,7 +435,7 @@ const Customers = () => {
                     {Customers.length !== 0 ? (
                         <>
                             <div
-                                className='relative overflow-x-auto sm:rounded-lg p-1 min-h-40 cursor-col-resize min-[595px]:cursor-default md:cursor-col-resize min-[910px]:cursor-default'
+                                className='relative overflow-x-auto sm:rounded-lg p-1 min-h-40 cursor-col-resize min-[595px]:cursor-default md:cursor-col-resize min-[970px]:cursor-default'
                                 onWheel={e => {
                                     let itsNegative = e.deltaY < 0 ? true : false
                                     if (!e.altKey) {
@@ -572,7 +572,7 @@ const Customers = () => {
                                     </div>
                                 </div>
 
-                                <table className='min-w-[550px] md:min-w-[600px] w-full m-auto text-left text-added-text-secondary outline outline-added-border rounded-md overflow-hidden text-sm md:text-base lg:text-lg xl:text-xl'>
+                                <table className='min-w-[600px] md:min-w-[660px] w-full m-auto text-left text-added-text-secondary outline outline-added-border rounded-md overflow-hidden text-sm md:text-base lg:text-lg xl:text-xl'>
                                     <thead className='text-added-text-primary uppercase bg-added-border'>
                                         <tr>
                                             <th
