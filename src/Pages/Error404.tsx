@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 import error404Pic from "../assets/Pics/error-404.png"
 const Error404 = () => {
     return (
-        <div className='h-screen w-screen overflow-hidden flex justify-center flex-col items-center px-2 gap-1'>
+        <div className='h-screen w-screen overflow-hidden flex justify-center flex-col items-center px-2 gap-1 bg-added-bg-primary'>
             <img
                 src={error404Pic}
                 alt='error404'
@@ -16,7 +16,7 @@ const Error404 = () => {
                 <div>
                     <Link
                         to={"/"}
-                        className='bg-added-main text-added-bg-primary rounded-sm px-1.5 py-0.5 transition-all duration-300 hover:bg-[#ff8d1f] text-xs sm:text-base md:text-xl lg:text-2xl'
+                        className='bg-added-main text-white rounded-md px-1.5 py-0.5 transition-all duration-300 hover:bg-[#ff8d1f] text-xs sm:text-base md:text-xl lg:text-2xl'
                     >
                         صفحه اصلی
                     </Link>
